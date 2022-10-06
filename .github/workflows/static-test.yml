@@ -11,7 +11,7 @@ jobs:
             password: ${{  secrets.GITLAB_REGISTRY_TOKEN }}
     steps:
       - uses: actions/checkout@v3
-      - run: export PATH=$PATH:/root/.local/bin
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: nbdev_export
       - run: nbdev_install
       - run: bandit -r airt_service
