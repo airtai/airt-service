@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: echo $PATH
-      - run: pip install nbdev==2.3.7
+      - run: pip install nbdev==2.3.7 bandit==1.7.4 semgrep==0.101.1
       - run: nbdev_export
       - run: nbdev_install
       - run: bandit -r airt_service
