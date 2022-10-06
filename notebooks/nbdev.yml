@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "airt-service"
+  site-url: "https://airtai.github.io/airt-service"
+  description: "Webservice to host airt models"
+  repo-branch: main
+  repo-url: "https://github.com/airtai/airt-service"
