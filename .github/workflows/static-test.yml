@@ -1,0 +1,29 @@
+name: Static Tests
+on: [push]
+
+jobs:
+  sast:
+    runs-on: ubuntu-20.04
+    container:
+        image: registry.gitlab.com/airt.ai/airt-docker-dask-tf2:dev
+        credentials:
+            username: github-registry-access
+            password: ${{  secrets.GITLAB_REGISTRY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - run: nbdev_export
+      - run: nbdev_install
+      - run: bandit -r airt_service
+      - run: semgrep --config auto --error airt_service
+  trivy:
+    runs-on: ubuntu-20.04
+    container:
+        image: docker.io/aquasec/trivy:latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: nbdev_export
+      - run: nbdev_install
+      - run: apk update
+      - run: apk add make
+      - run: trivy --version
+      - run: sh ./scripts/trivy_scan_repo.sh
