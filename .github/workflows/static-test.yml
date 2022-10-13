@@ -5,7 +5,7 @@ jobs:
   sast:
     runs-on: ubuntu-20.04
     container:
-        image: gcr.io/airtai/airt-docker-dask-tf2:dev
+        image: ghcr.io/airtai/airt-docker-dask-tf2:dev
         credentials:
             username: ${{ github.actor }}
             password: ${{  secrets.GITHUB_TOKEN }}
