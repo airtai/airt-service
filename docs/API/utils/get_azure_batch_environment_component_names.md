@@ -1,0 +1,2 @@
+#get_azure_batch_environment_component_names
+::: airt_service.azure.utils.get_azure_batch_environment_component_names

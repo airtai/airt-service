@@ -1,0 +1,49 @@
+version: "3"
+services:
+    mysql:
+        networks:
+            - airt-service-network
+
+    airt-service-devel:
+        image: $AIRT_SERVER_DOCKER
+        hostname: $USER-airt-service-devel
+        container_name: $USER-airt-service-devel
+        ports:
+            - "$AIRT_JUPYTER_PORT:8888"
+            - "$AIRT_TB_PORT:6006"
+            - "$AIRT_DASK_PORT:8787"
+            - "$AIRT_DOCS_PORT:4000"
+            - "$AIRFLOW_PORT:8080"
+        networks:
+            - airt-service-network
+        volumes:
+            - $AIRT_PROJECT:/tf/airt-service
+            - $AIRT_DATA:/work/data
+            - /etc/passwd:/etc/passwd
+            - /etc/group:/etc/group
+            - /etc/shadow:/etc/shadow
+            - $HOME/.ssh:$HOME/.ssh
+            - $HOME/.gitconfig:/root/.gitconfig
+            - $HOME/.aws:/root/.aws
+        environment:
+            STORAGE_PATH: $STORAGE_PATH
+            JUPYTER_CONFIG_DIR: /root/.jupyter
+            USER: $USER
+            USERNAME: $USERNAME
+        env_file:
+            - ../.env.dev.config
+            - ../.env.dev.secrets
+        user: $UID:$GID
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                    - driver: nvidia
+                      device_ids: ['$GPU_PARAMS']
+                      capabilities: [gpu]
+        depends_on:
+            - mysql
+
+networks:
+    airt-service-network:
+        name: "${USER}-airt-service-network"

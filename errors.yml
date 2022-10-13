@@ -1,0 +1,72 @@
+# Common errors
+NOT_ENOUGH_PERMISSION: "Insufficient permission to access route"
+INTERNAL_SERVER_ERROR: "Internal server error"
+QUOTA_EXCEEDED: "Quota exceeded"
+
+# DataBlob notebook specific errors
+INCORRECT_DATABLOB_ID: "Incorrect datablob id"
+DATABLOB_IS_DELETED: "DataBlob is deleted"
+DATABLOB_CSV_FILES_NOT_AVAILABLE: "CSV files not available for the datablob"
+AZURE_NOT_SUPPORTED: "Azure cloud provider not supported for from_local route"
+
+# DataSource_Router notebook specific errors
+INCORRECT_DATASOURCE_ID: "Incorrect datasource id"
+DATASOURCE_IS_DELETED: "Datasource is deleted"
+PULL_NOT_AVAILABLE: "Pull not available"
+PUSH_NOT_AVAILABLE: "Push not available"
+DATASOURCE_IS_NOT_PULLED: "Datasource is not pulled yet, please call /pull first"
+
+# Model_Train notebook specific errors
+INCORRECT_MODEL_ID: "Incorrect model id"
+MODEL_IS_DELETED: "Model is deleted"
+
+# Model_Prediction notebook specific errors
+INCORRECT_PREDICTION_ID: "Incorrect prediction id"
+PREDICTION_IS_DELETED: "Prediction is deleted"
+INCORRECT_PREDICTION_PUSH_ID: "Incorrect prediction push id"
+
+# Auth notebook specific errors
+INCORRECT_USERNAME_OR_PASSWORD: "Incorrect username or password"
+INCORRECT_APIKEY: "No such apikey or not enough authorization to access the apikey"
+APIKEY_REVOKED: "Apikey is revoked"
+INVALID_CREDENTIALS: "Could not validate credentials. Wrong or expired key provided."
+INACTIVE_USER: "Inactive user"
+
+# Users notebook specific errors
+USERNAME_ALREADY_EXISTS: "Username already exists"
+EMAIL_ALREADY_EXISTS: "Email already exists"
+USERNAME_OR_EMAIL_ALREADY_EXISTS: "Username or email already exists"
+INVALID_EMAIL: "Invalid email"
+INCORRECT_USER_USERNAME: "Incorrect username"
+INCORRECT_USER_UUID: "Incorrect user id"
+USER_ALREADY_DISABLED: "User already disabled"
+USER_ALREADY_ENABLED: "User already enabled"
+INVALID_OTP: "Invalid OTP"
+OTP_REQUIRED: "OTP is required"
+GENERATE_MFA_URL_NOT_GENERATED: "MFA code is not generated for this user, please call /user/mfa/generate first"
+NOT_ENOUGH_PERMISSION_TO_ACCESS_OTHERS_DATA: "Insufficient permission to access other user's data"
+MFA_ALREADY_DISABLED: "MFA is already disabled for the user"
+CANT_CLEANUP_SELF: "User cannot cleanup self"
+INCORRECT_USERNAME: "Incorrect username"
+APIKEY_NAME_ALREADY_EXISTS: "An Api-key with the same name already exists"
+MFA_NOT_ACTIVATED_BUT_PASSES_OTP: "MFA is not activated for the account. Please pass the OTP only after activating the MFA for your account."
+INCORRECT_USERNAME_OR_OTP: "Something went wrong. The username or OTP you entered is incorrect. Please try again or contact your administrator."
+# sso specific errors
+SSO_ALREADY_DISABLED: "SSO is already disabled for the provider."
+SSO_ALREADY_ENABLED_FOR_SERVICE: "SSO is already enabled for the provider."
+SSO_NOT_ENABLED_FOR_SERVICE: "SSO is not enabled for the provider."
+SSO_EMAIL_NOT_SAME: "Email Address Mismatch. Please authenticate using the same email address that you have used while enabling the SSO for this provider."
+SSO_SESSION_EXPIRED: "Your session has expired. Please re-generate the authentication URL and initiate the SSO login process again."
+SSO_CSRF_WARNING: "Request check failed: State not equal in request and response. For your protection, access to this resource is secured against CSRF. Please re-generate the authentication URL and initiate the SSO login process again."
+SERVICE_UNAVAILABLE: "The Service is unavailable. Please try again later."
+SSO_PROVIDER_REQUIRED: "SSO provider name is required."
+SSO_NOT_YET_FINISHED: "SSO authentication is not complete. Please click on the authentication link you have received while requesting a new token and complete the login process first."
+INVALID_SSO_PROVIDER: "Invalid SSO provider. Valid SSO providers are"
+# sms specific errors
+MESSAGING_SERVICE_UNAVAILABLE: "Messaging service is unavailable. Please try again later."
+NO_PHONE_NUMBER_TO_REGISTER: "Please pass a phone number to register."
+PHONE_NUMBER_NOT_REGISTERED: "The phone number is not yet registered. Please register your phone number before calling this method."
+WRONG_PIN: "Incorrect OTP. Please enter the OTP you have received on your registered phone number and try again."
+NO_MORE_PIN_ATTEMPTS: "Too many failed attempts. Please initiate the phone registration process again."
+MESSAGE_NOT_SENT: "Failed to send OTP via SMS. Please check the phone number you have registered is valid and can receive SMS. Also, make sure the format of the phone number you have entered follows the pattern of country code followed by your phone number (without spaces). For example, 440123456789, +440123456789, and 00440123456789 are all valid formats for registering a UK phone number."
+TTL_EXPIRED: "OTP entered is expired. Please generate a new OTP and try again."

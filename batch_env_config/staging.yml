@@ -1,0 +1,784 @@
+ap-northeast-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+ap-northeast-2:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+ap-south-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+ap-southeast-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+ap-southeast-2:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+ca-central-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+eu-central-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+eu-north-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+eu-west-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+eu-west-2:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+eu-west-3:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+sa-east-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+us-east-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+us-east-2:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+us-west-1:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
+us-west-2:
+  csv_processing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_csv_processing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_csv_processing_job_definition
+    job_queue:
+      name: staging_csv_processing_job_queue
+      priority: 100
+  predictions:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_predictions_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_predictions_job_definition
+    job_queue:
+      name: staging_predictions_job_queue
+      priority: 100
+  preprocessing:
+    compute_environment:
+      instance_type: r5.16xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_preprocessing_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_preprocessing_job_definition
+    job_queue:
+      name: staging_preprocessing_job_queue
+      priority: 100
+  training:
+    compute_environment:
+      instance_type: g4dn.xlarge
+      max_instances: 10
+      min_instances: 0
+      name: staging_training_compute_environment
+    job_definition:
+      image: registry.gitlab.com/airt.ai/airt-service:dev
+      name: staging_training_job_definition
+    job_queue:
+      name: staging_training_job_queue
+      priority: 100
