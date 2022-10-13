@@ -5,10 +5,10 @@ jobs:
   sast:
     runs-on: ubuntu-20.04
     container:
-        image: ghcr.io/airtai/airt-docker-dask-tf2:dev
-        credentials:
-            username: ${{ github.actor }}
-            password: ${{ github.token }}
+      image: ghcr.io/airtai/airt-docker-dask-tf2:dev
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
       - uses: actions/checkout@v3
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
@@ -21,7 +21,7 @@ jobs:
   trivy:
     runs-on: ubuntu-20.04
     container:
-        image: docker.io/aquasec/trivy:latest
+      image: docker.io/aquasec/trivy:latest
     steps:
       - uses: actions/checkout@v3
       - run: apk update
