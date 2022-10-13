@@ -5,10 +5,10 @@ jobs:
   sast:
     runs-on: ubuntu-20.04
     container:
-        image: registry.gitlab.com/airt.ai/airt-docker-dask-tf2:dev
+        image: gcr.io/airtai/airt-docker-dask-tf2:dev
         credentials:
-            username: github-registry-access
-            password: ${{  secrets.GITLAB_REGISTRY_TOKEN }}
+            username: ${{ github.actor }}
+            password: ${{  secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
