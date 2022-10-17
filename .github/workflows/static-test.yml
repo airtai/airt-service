@@ -45,6 +45,7 @@ jobs:
       - uses: actions/checkout@v3
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
       - run: echo $(pwd)/.env
+      - run: git branch
       - run: set -a && source .env && set +a
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
