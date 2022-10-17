@@ -1,10 +1,8 @@
 name: Build wheel, build docker and check docker
 on:
   workflow_run:
-    workflows:
-      - Static Tests
-    branches:
-      - '**'
+    workflows: [Static Tests]
+    branches: ['**']
     types:
       - completed
 
