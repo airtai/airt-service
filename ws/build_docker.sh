@@ -35,5 +35,10 @@ else
 	docker build --build-arg ACCESS_REP_TOKEN --build-arg AIRT_LIB_BRANCH=$AIRT_LIB_BRANCH --build-arg TAG=$CACHE_FROM --cache-from $CI_REGISTRY_IMAGE:$CACHE_FROM -t $CI_REGISTRY_IMAGE:$TAG .
 fi
 
+if [ "$CI_COMMIT_REF_NAME" == "main" ]
+then
+	docker tag $CI_REGISTRY_IMAGE:$TAG $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+fi
+
 # Initiate trivy
 sh ./ws/check_docker.sh
