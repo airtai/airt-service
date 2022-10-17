@@ -43,12 +43,12 @@ jobs:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
       - uses: actions/checkout@v3
-      - run: if [[ $CI_COMMIT_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
       - run: echo $(pwd)/.env
       - run: set -a && source .env && set +a
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
-      - run: if [[ $CI_COMMIT_REF_NAME == "main" ]]; then CONFIG="production.yml" ; elif [[ $CI_COMMIT_REF_NAME == "dev" ]]; then CONFIG="staging.yml" ; fi;
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then CONFIG="production.yml" ; elif [[ $GITHUB_REF_NAME == "dev" ]]; then CONFIG="staging.yml" ; fi;
 
       - name: Create batch environment if branch name is main or dev
         if: github.ref_name == 'main' || github.ref_name == 'dev'
