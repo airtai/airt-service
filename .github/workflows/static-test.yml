@@ -32,12 +32,12 @@ jobs:
 
   build_wheel:
     runs-on: ubuntu-20.04
-    needs: [sast, trivy]
+    # needs: [sast, trivy]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
       - uses: actions/checkout@v3
-      - run: if [ $CI_COMMIT_REF_NAME == "main" ]; then cat "$PROD_CONFIG" > "$(pwd)/.env" ; else cat "$STAGING_CONFIG" > "$(pwd)/.env" ; fi;
+      - run: if [ $CI_COMMIT_REF_NAME == "main" ]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
       - run: set -a && source .env && set +a
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
