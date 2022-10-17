@@ -3,6 +3,8 @@ on:
   workflow_run:
     workflows:
       - "Static Tests"
+    branches:
+      - '**'
     types:
       - completed
 
