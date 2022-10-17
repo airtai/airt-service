@@ -4,6 +4,7 @@ on: [push]
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
 
 jobs:
   sast:
@@ -41,6 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: if [[ $CI_COMMIT_REF_NAME == "main" ]]; then echo ${{ secrets.PROD_CONFIG }} > "$(pwd)/.env" ; else echo ${{ secrets.STAGING_CONFIG }} > "$(pwd)/.env" ; fi;
+      - run: echo $(pwd)/.env
       - run: set -a && source .env && set +a
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
