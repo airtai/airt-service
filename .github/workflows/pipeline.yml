@@ -1,4 +1,4 @@
-name: Static Tests
+name: Pipeline
 on: [push]
 
 env:
@@ -38,7 +38,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    # needs: [sast, trivy]
+    needs: [sast, trivy]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
@@ -46,8 +46,6 @@ jobs:
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
-      - run: echo $(pwd)/.env
-      - run: git branch
       - run: set -a && source .env && set +a
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
@@ -86,6 +84,9 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download artifacts from build_wheel job
+        uses: actions/download-artifact@v3
 
       - run: sudo apt update
       - run: wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
