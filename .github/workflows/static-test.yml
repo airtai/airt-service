@@ -5,6 +5,8 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
+  PROD_CONFIG: ${{ secrets.PROD_CONFIG }}
+  STAGING_CONFIG: ${{ secrets.STAGING_CONFIG }}
 
 jobs:
   sast:
@@ -41,7 +43,7 @@ jobs:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
       - uses: actions/checkout@v3
-      - run: if [[ $CI_COMMIT_REF_NAME == "main" ]]; then echo ${{ secrets.PROD_CONFIG }} > "$(pwd)/.env" ; else echo ${{ secrets.STAGING_CONFIG }} > "$(pwd)/.env" ; fi;
+      - run: if [[ $CI_COMMIT_REF_NAME == "main" ]]; then cat "$PROD_CONFIG" > "$(pwd)/.env" ; else cat "$STAGING_CONFIG" > "$(pwd)/.env" ; fi;
       - run: echo $(pwd)/.env
       - run: set -a && source .env && set +a
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
