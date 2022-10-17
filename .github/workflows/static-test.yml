@@ -37,14 +37,14 @@ jobs:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
       - uses: actions/checkout@v3
-      - run: if [[ $CI_COMMIT_REF_NAME == "main" ]]; then cat "$PROD_CONFIG" > "$(pwd)/.env" ; else cat "$STAGING_CONFIG" > "$(pwd)/.env" ; fi;
+      - run: if [ $CI_COMMIT_REF_NAME == "main" ]; then cat "$PROD_CONFIG" > "$(pwd)/.env" ; else cat "$STAGING_CONFIG" > "$(pwd)/.env" ; fi;
       - run: set -a && source .env && set +a
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
-      - run: if [[ $CI_COMMIT_REF_NAME == "main" ]]; then CONFIG="production.yml" ; elif [[ $CI_COMMIT_REF_NAME == "dev" ]]; then CONFIG="staging.yml" ; fi;
-      - run: if [[ $CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME == "dev" ]]; then create_batch_environment "batch_env_config/$CONFIG" ./batch_environment.yml ; fi;
+      - run: if [ $CI_COMMIT_REF_NAME == "main" ]; then CONFIG="production.yml" ; elif [ $CI_COMMIT_REF_NAME == "dev" ]; then CONFIG="staging.yml" ; fi;
+      - run: if [ $CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME == "dev" ]; then create_batch_environment "batch_env_config/$CONFIG" ./batch_environment.yml ; fi;
       # If running in other branches then include config yml as output yml for building docker
-      - run: if [[ ! -f ./batch_environment.yml ]]; then cp "batch_env_config/staging.yml" ./batch_environment.yml ; fi;
+      - run: if [ ! -f ./batch_environment.yml ]; then cp "batch_env_config/staging.yml" ./batch_environment.yml ; fi;
       - uses: actions/upload-artifact@v3
         with:
           path: |
@@ -100,5 +100,5 @@ jobs:
       - run: sudo apt update
       - run: wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
       - run: sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
-      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then docker pull ghcr.io/$GITHUB_REPOSITORY:latest ; else docker pull ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME ; fi;
+      - run: if [ $GITHUB_REF_NAME == "main" ]; then docker pull ghcr.io/$GITHUB_REPOSITORY:latest ; else docker pull ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME ; fi;
       - run: sh ws/check_docker.sh
