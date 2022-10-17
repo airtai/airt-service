@@ -32,6 +32,9 @@ jobs:
 
   build_wheel:
     runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
     # needs: [sast, trivy]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
@@ -42,9 +45,16 @@ jobs:
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
       - run: if [ $CI_COMMIT_REF_NAME = "main" ]; then CONFIG="production.yml" ; elif [ $CI_COMMIT_REF_NAME = "dev" ]; then CONFIG="staging.yml" ; fi;
-      - run: if [ $CI_COMMIT_REF_NAME = "main" || $CI_COMMIT_REF_NAME = "dev" ]; then create_batch_environment "batch_env_config/$CONFIG" ./batch_environment.yml ; fi;
+
+      - name: Create batch environment if branch name is main or dev
+        if: github.ref_name == 'main' || github.ref_name == 'dev'
+        run: create_batch_environment "batch_env_config/$CONFIG" ./batch_environment.yml
+
       # If running in other branches then include config yml as output yml for building docker
-      - run: if [ ! -f ./batch_environment.yml ]; then cp "batch_env_config/staging.yml" ./batch_environment.yml ; fi;
+      - name: Create dummy batch environment in other branches
+        if: github.ref_name != 'main' || github.ref_name != 'dev'
+        run: cp "batch_env_config/staging.yml" ./batch_environment.yml
+
       - uses: actions/upload-artifact@v3
         with:
           path: |
