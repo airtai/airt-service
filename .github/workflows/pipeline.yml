@@ -33,12 +33,32 @@ jobs:
       - run: trivy --version
       - run: sh ./scripts/trivy_scan_repo.sh
 
+  secrets_scan:
+    runs-on: ubuntu-20.04
+    container:
+      image: ghcr.io/airtai/airt-docker-dask-tf2:dev
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: make check_git_history_for_secrets
+
+  detect_secrets:
+    runs-on: ubuntu-20.04
+    container:
+      image: ghcr.io/airtai/airt-docker-dask-tf2:dev
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: make detect_secrets
+
   build_wheel:
     runs-on: ubuntu-20.04
     defaults:
       run:
         shell: bash
-    needs: [sast, trivy]
+    needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
