@@ -11,15 +11,18 @@ from fastcore.script import call_parse, Param
 from fastcore.utils import *
 from sqlmodel import select
 
+import airt_service.sanitizer
 from airt.data.importers import import_parquet
 from airt.logger import get_logger
 from airt.remote_path import RemotePath
 from ..aws.utils import create_s3_datasource_path
 from ..azure.utils import create_azure_blob_storage_datasource_path
 from ..helpers import truncate
-from .utils import calculate_azure_data_object_folder_size_and_path
-from .utils import calculate_data_object_folder_size_and_path
-from .utils import calculate_data_object_pulled_on
+from airt_service.data.utils import (
+    calculate_azure_data_object_folder_size_and_path,
+    calculate_data_object_folder_size_and_path,
+    calculate_data_object_pulled_on,
+)
 from ..db.models import get_session_with_context, DataBlob
 from .datasource import DataSource
 

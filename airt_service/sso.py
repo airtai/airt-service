@@ -21,6 +21,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlmodel import select
 from fastapi import status, Request, HTTPException
 
+import airt_service.sanitizer
 from .db.models import SSOProvider, SSO, SSOProtocol, User
 from .db.models import get_session_with_context
 from .errors import ERRORS
@@ -64,7 +65,7 @@ def _generate_callback_url() -> str:
 
 
 # %% ../notebooks/SSO.ipynb 9
-def _get_google_provider_cfg(api_uri: str = None) -> Union[str, dict]:
+def _get_google_provider_cfg(api_uri: Optional[str] = None) -> Union[str, dict]:
     """Get google's OpenID Connect configuration
 
     This configuration includes the URIs of the authorization, token, revocation, userinfo, and public-keys endpoints.

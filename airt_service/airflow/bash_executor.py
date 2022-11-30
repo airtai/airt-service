@@ -7,11 +7,11 @@ __all__ = ["AirflowBashExecutor"]
 from pathlib import Path
 from typing import *
 
+from ..sanitizer import sanitized_print
 from airt.executor.subcommand import CLICommandBase
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
-
 from .base_executor import BaseAirflowExecutor, dag_template
 from .utils import trigger_dag
 

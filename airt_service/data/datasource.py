@@ -22,6 +22,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import Session, select
 
+import airt_service.sanitizer
 from airt.logger import get_logger
 from airt.remote_path import RemotePath
 from airt.patching import patch
@@ -29,8 +30,15 @@ from airt.patching import patch
 # import airt_service
 from ..auth import get_current_active_user
 from .utils import delete_data_object_files_in_cloud
-from ..db.models import get_session, DataBlob, DataSource
-from ..db.models import DataSourceRead, Tag, TagCreate, User
+from airt_service.db.models import (
+    get_session,
+    DataBlob,
+    DataSource,
+    DataSourceRead,
+    Tag,
+    TagCreate,
+    User,
+)
 from ..errors import HTTPError, ERRORS
 from ..helpers import commit_or_rollback, df_to_dict
 from ..constants import METADATA_FOLDER_PATH, DS_HEAD_FILE_NAME

@@ -3,7 +3,9 @@
 # %% auto 0
 __all__ = ["get_environment_vars_for_batch_job", "create_batch_job"]
 
-# %% ../notebooks/BatchJob.ipynb 2
+# %% ../notebooks/BatchJob.ipynb 3
+import airt_service.sanitizer
+
 from .batch_job_components.base import BatchJobContext
 
 from .batch_job_components.aws import AwsBatchJobContext
@@ -11,17 +13,17 @@ from .batch_job_components.azure import AzureBatchJobContext
 from .batch_job_components.fastapi import FastAPIBatchJobContext
 from .batch_job_components.none import NoneBatchJobContext
 
-# %% ../notebooks/BatchJob.ipynb 4
+# %% ../notebooks/BatchJob.ipynb 5
 from os import environ
 
 from fastapi import BackgroundTasks
 
 from airt.logger import get_logger
 
-# %% ../notebooks/BatchJob.ipynb 6
+# %% ../notebooks/BatchJob.ipynb 7
 logger = get_logger(__name__)
 
-# %% ../notebooks/BatchJob.ipynb 7
+# %% ../notebooks/BatchJob.ipynb 8
 def get_environment_vars_for_batch_job() -> dict:
     """Get the necessary environment variables for creating a batch job
 
@@ -53,7 +55,7 @@ def get_environment_vars_for_batch_job() -> dict:
     }
 
 
-# %% ../notebooks/BatchJob.ipynb 9
+# %% ../notebooks/BatchJob.ipynb 10
 def create_batch_job(
     command: str,
     task: str,
@@ -83,7 +85,7 @@ def create_batch_job(
         )
 
 
-# %% ../notebooks/BatchJob.ipynb 13
+# %% ../notebooks/BatchJob.ipynb 14
 def update_all():
     global __all__
     __all__ = [

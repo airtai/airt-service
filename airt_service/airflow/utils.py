@@ -26,6 +26,8 @@ from contextlib import contextmanager
 import tempfile
 from time import sleep
 
+from ..sanitizer import sanitized_print
+
 # %% ../../notebooks/Airflow_Utils.ipynb 11
 def list_dags(
     *,
@@ -39,7 +41,7 @@ def list_dags(
     try:
         return json.loads(p.stdout)
     except Exception as e:
-        print(f"{p.stdout=}")
+        sanitized_print(f"{p.stdout=}")
         raise e
 
 
@@ -74,7 +76,7 @@ def create_dag(
         df = pd.DataFrame.from_dict(list_dags())
         if (dag_id == df["dag_id"]).sum():
             break
-        print(".", end="")
+        sanitized_print(".", end="")
         sleep(1)
     return tmp_file_path
 
@@ -149,10 +151,10 @@ def trigger_dag(
     run_id = f"airt-service__{datetime.now().isoformat()}"
     command = f"{airflow_command} dags trigger {dag_id} --conf {shlex.quote(json.dumps(conf))} --run-id {run_id}"
     p = run_subprocess_with_retry(command, no_retries=no_retries)
-    print(p)
+    sanitized_print(p)
 
     runs = list_dag_runs(dag_id=dag_id)
-    print(runs)
+    sanitized_print(runs)
 
     return run_id
 

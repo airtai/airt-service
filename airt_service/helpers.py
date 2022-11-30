@@ -16,6 +16,7 @@ __all__ = [
     "df_to_dict",
     "dict_to_df",
     "validate_user_inputs",
+    "get_attr_by_name",
 ]
 
 # %% ../notebooks/Helpers.ipynb 3
@@ -34,6 +35,7 @@ from fastcore.utils import *
 from passlib.context import CryptContext
 from sqlmodel import Session
 
+import airt_service.sanitizer
 from airt.logger import get_logger
 
 # %% ../notebooks/Helpers.ipynb 7
@@ -241,3 +243,27 @@ def validate_user_inputs(xs: List[str]):
     for i in xs:
         if _detect_sql_code_injection(i):
             raise ValueError(f"The input {i} is invalid. SQL code injection detected.")
+
+
+# %% ../notebooks/Helpers.ipynb 34
+def get_attr_by_name(xs: Dict[str, Any], attr_name: str) -> Union[str, None]:
+    """Get the attribute by name from the input dictionary
+
+    The input dictionary may contain nested objects, and the attribute may present at the root
+    level or nested within the dictionary. This function searches the entire dictionary and
+    returns the attribute's value if a match is found; otherwise, it returns None.
+
+    Args:
+        xs: Input dictionary
+        attr_name: The name of the attribute for which the value must be retrieved
+
+    Returns:
+        If the given attribute name is found in the input dictionary, the value of the attribute will be returned; otherwise, None
+    """
+    if attr_name in xs:
+        ret_val = xs[attr_name]
+    else:
+        ret_val = next(
+            (getattr(v, attr_name) for v in xs.values() if hasattr(v, attr_name)), None
+        )
+    return ret_val

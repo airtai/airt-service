@@ -90,6 +90,7 @@ from airt.logger import get_logger
 from airt.patching import patch
 
 # from airt_service.data.tag import Tag
+from ..sanitizer import sanitized_print
 from ..helpers import get_password_hash
 
 # %% ../../notebooks/DB_Models.ipynb 4
@@ -1235,7 +1236,7 @@ def create_initial_users():
     """Create initial users"""
     check_db_is_up()
 
-    print(f"Creating users")
+    sanitized_print(f"Creating users")
     with get_session_with_context() as session:
         for user_dict in users_to_create:
             user_dict["password"] = get_password_hash(
@@ -1250,4 +1251,4 @@ def create_initial_users():
                 user = User(**user_dict)
             session.add(user)
             session.commit()
-    print(f"Users created")
+    sanitized_print(f"Users created")

@@ -18,6 +18,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 import airt_service
+from .sanitizer import sanitized_print
 from .auth import auth_router
 from .data.datablob import datablob_router
 from .data.datasource import datasource_router

@@ -27,6 +27,7 @@ from pydantic import BaseModel
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import Session, select
 
+import airt_service.sanitizer
 from airt.logger import get_logger
 from airt.remote_path import RemotePath
 from ..auth import get_current_active_user
@@ -35,9 +36,17 @@ from ..azure.utils import create_azure_blob_storage_prediction_path
 from ..batch_job import create_batch_job
 from ..constants import METADATA_FOLDER_PATH
 from ..data.datasource import get_datasource_responses
-from ..db.models import get_session, get_session_with_context
-from ..db.models import User, DataSource, DataSourceSelect, Model
-from ..db.models import ModelRead, Prediction, PredictionRead
+from airt_service.db.models import (
+    get_session,
+    get_session_with_context,
+    User,
+    DataSource,
+    DataSourceSelect,
+    Model,
+    ModelRead,
+    Prediction,
+    PredictionRead,
+)
 from ..errors import HTTPError, ERRORS
 from ..helpers import truncate
 

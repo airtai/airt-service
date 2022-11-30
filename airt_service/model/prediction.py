@@ -19,13 +19,14 @@ __all__ = [
 import boto3
 import pandas as pd
 
-# from fastcore.foundation import patch
+from botocore.client import Config
 from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from pathlib import Path
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import Session, select
 from typing import *
 
+import airt_service.sanitizer
 from airt.logger import get_logger
 from airt.patching import patch
 
@@ -33,14 +34,27 @@ from ..auth import get_current_active_user
 from ..aws.utils import get_s3_bucket_and_path_from_uri
 from ..batch_job import create_batch_job
 from ..data.clickhouse import create_db_uri_for_clickhouse_datablob
-from ..data.datablob import AzureBlobStorageRequest, ClickHouseRequest
-from ..data.datablob import DBRequest, S3Request
-from ..data.utils import create_db_uri_for_azure_blob_storage_datablob
-from ..data.utils import create_db_uri_for_db_datablob
-from ..data.utils import create_db_uri_for_s3_datablob
-from ..data.utils import delete_data_object_files_in_cloud
-from ..db.models import get_session, User, Model, Prediction
-from ..db.models import PredictionRead, PredictionPush, PredictionPushRead
+from airt_service.data.datablob import (
+    AzureBlobStorageRequest,
+    ClickHouseRequest,
+    DBRequest,
+    S3Request,
+)
+from airt_service.data.utils import (
+    create_db_uri_for_azure_blob_storage_datablob,
+    create_db_uri_for_db_datablob,
+    create_db_uri_for_s3_datablob,
+    delete_data_object_files_in_cloud,
+)
+from airt_service.db.models import (
+    get_session,
+    User,
+    Model,
+    Prediction,
+    PredictionRead,
+    PredictionPush,
+    PredictionPushRead,
+)
 from ..errors import HTTPError, ERRORS
 from ..helpers import commit_or_rollback
 
@@ -218,15 +232,23 @@ def to_local(
     """
     bucket, s3_path = get_s3_bucket_and_path_from_uri(self.path)  # type: ignore
 
-    client = boto3.client("s3")
+    client = boto3.client(
+        "s3",
+        region_name=self.region,
+        config=Config(signature_version="s3v4"),
+        endpoint_url=f"https://s3.{self.region}.amazonaws.com",
+    )
 
     return {
         Path(s3_file.key).name: client.generate_presigned_url(
             "get_object",
-            Params={"Bucket": bucket.name, "Key": s3_file.key},
+            Params={
+                "Bucket": str(bucket.name).strip(),
+                "Key": str(s3_file.key).strip(),
+            },
             ExpiresIn=60 * 60 * 24,
         )
-        for s3_file in bucket.objects.filter(Prefix=s3_path)
+        for s3_file in bucket.objects.filter(Prefix=s3_path + "/")
         if Path(s3_file.key).name != str(self.id)
     }
 

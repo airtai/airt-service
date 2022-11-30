@@ -15,12 +15,19 @@ from typing import *
 
 from sqlmodel import Session, select
 
+import airt_service.sanitizer
 from airt.logger import get_logger
 from .auth import delete_apikey
 from .data.datasource import delete_datasource
 from .data.datablob import delete_datablob
-from .db.models import User, Prediction, Model
-from .db.models import DataSource, DataBlob, APIKey
+from airt_service.db.models import (
+    User,
+    Prediction,
+    Model,
+    DataSource,
+    DataBlob,
+    APIKey,
+)
 from .aws.utils import get_s3_storage_bucket
 from .model.prediction import delete_prediction
 from .model.train import delete_model
@@ -129,7 +136,7 @@ def cleanup_user(user_to_cleanup: User, session: Session):
         f"{base_path}/{user_to_cleanup.id}" if base_path else str(user_to_cleanup.id)
     )
     logger.info(f"Deleting user files in s3://{bucket.name}/{s3_path}")
-    bucket.objects.filter(Prefix=s3_path).delete()
+    bucket.objects.filter(Prefix=s3_path + "/").delete()
 
     logger.info("deleting user")
     session.delete(user_to_cleanup)

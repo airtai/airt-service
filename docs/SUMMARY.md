@@ -261,6 +261,7 @@
         - [df_to_dict](API/helpers/df_to_dict.md)
         - [dict_to_df](API/helpers/dict_to_df.md)
         - [validate_user_inputs](API/helpers/validate_user_inputs.md)
+        - [get_attr_by_name](API/helpers/get_attr_by_name.md)
     - airt_service.integraion_tests
         - [integration_scenario_docs](API/integraion_tests/integration_scenario_docs.md)
         - [test_auth](API/integraion_tests/test_auth.md)
@@ -305,6 +306,12 @@
             - [get_all_model](API/train/get_all_model.md)
             - [predict_model](API/train/predict_model.md)
             - [predict](API/train/predict.md)
+    - airt_service.sanitizer
+        - [old_log](API/sanitizer/old_log.md)
+        - [old_publish_display_data](API/sanitizer/old_publish_display_data.md)
+        - [sanitize_secrets](API/sanitizer/sanitize_secrets.md)
+        - [new_publish_display_data](API/sanitizer/new_publish_display_data.md)
+        - [sanitized_print](API/sanitizer/sanitized_print.md)
     - airt_service.server
         - [description](API/server/description.md)
         - [create_ws_server](API/server/create_ws_server.md)
@@ -322,7 +329,7 @@
     - airt_service.totp
         - [generate_mfa_secret](API/totp/generate_mfa_secret.md)
         - [generate_mfa_provisioning_url](API/totp/generate_mfa_provisioning_url.md)
-        - [validate_otp](API/totp/validate_otp.md)
+        - [validate_totp](API/totp/validate_totp.md)
         - [require_otp_if_mfa_enabled](API/totp/require_otp_if_mfa_enabled.md)
     - airt_service.users
         - [user_router](API/users/user_router.md)
@@ -333,6 +340,7 @@
         - [activate_mfa](API/users/activate_mfa.md)
         - [get_user_to_disable_mfa](API/users/get_user_to_disable_mfa.md)
         - [send_sms_otp](API/users/send_sms_otp.md)
+        - [require_otp_or_totp_if_mfa_enabled](API/users/require_otp_or_totp_if_mfa_enabled.md)
         - [disable_mfa](API/users/disable_mfa.md)
         - [create_user](API/users/create_user.md)
         - [UserUpdateRequest](API/users/UserUpdateRequest.md)
@@ -348,6 +356,7 @@
         - [register_phone_number](API/users/register_phone_number.md)
         - [validate_phone_number](API/users/validate_phone_number.md)
         - [ResetPasswordRequest](API/users/ResetPasswordRequest.md)
+        - [require_otp_or_totp](API/users/require_otp_or_totp.md)
         - [reset_password](API/users/reset_password.md)
         - [UserCleanupRequest](API/users/UserCleanupRequest.md)
         - [cleanup](API/users/cleanup.md)

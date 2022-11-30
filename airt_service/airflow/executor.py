@@ -7,6 +7,7 @@ __all__ = ["AirflowExecutor"]
 from os import environ
 from typing import *
 
+import airt_service.sanitizer
 from airt.executor.subcommand import CLICommandBase
 from airt.logger import get_logger
 from .base_executor import BaseAirflowExecutor

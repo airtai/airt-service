@@ -1584,6 +1584,10 @@ d = {
                 "helpers.html#generate_random_string",
                 "airt_service/helpers.py",
             ),
+            "airt_service.helpers.get_attr_by_name": (
+                "helpers.html#get_attr_by_name",
+                "airt_service/helpers.py",
+            ),
             "airt_service.helpers.get_datasource_path": (
                 "helpers.html#get_datasource_path",
                 "airt_service/helpers.py",
@@ -1799,6 +1803,24 @@ d = {
                 "airt_service/model/train.py",
             ),
         },
+        "airt_service.sanitizer": {
+            "airt_service.sanitizer.Logger._log": (
+                "sanitize_secrets.html#logger._log",
+                "airt_service/sanitizer.py",
+            ),
+            "airt_service.sanitizer.new_publish_display_data": (
+                "sanitize_secrets.html#new_publish_display_data",
+                "airt_service/sanitizer.py",
+            ),
+            "airt_service.sanitizer.sanitize_secrets": (
+                "sanitize_secrets.html#sanitize_secrets",
+                "airt_service/sanitizer.py",
+            ),
+            "airt_service.sanitizer.sanitized_print": (
+                "sanitize_secrets.html#sanitized_print",
+                "airt_service/sanitizer.py",
+            ),
+        },
         "airt_service.server": {
             "airt_service.server.create_ws_server": (
                 "api_web_service.html#create_ws_server",
@@ -1852,6 +1874,10 @@ d = {
             ),
             "airt_service.sms_utils.send_sms": (
                 "sms_utils.html#send_sms",
+                "airt_service/sms_utils.py",
+            ),
+            "airt_service.sms_utils.validate_otp": (
+                "sms_utils.html#validate_otp",
                 "airt_service/sms_utils.py",
             ),
             "airt_service.sms_utils.verify_pin": (
@@ -1914,13 +1940,12 @@ d = {
                 "totp.html#generate_mfa_secret",
                 "airt_service/totp.py",
             ),
-            "airt_service.totp.get_otp": ("totp.html#get_otp", "airt_service/totp.py"),
             "airt_service.totp.require_otp_if_mfa_enabled": (
                 "totp.html#require_otp_if_mfa_enabled",
                 "airt_service/totp.py",
             ),
-            "airt_service.totp.validate_otp": (
-                "totp.html#validate_otp",
+            "airt_service.totp.validate_totp": (
+                "totp.html#validate_totp",
                 "airt_service/totp.py",
             ),
         },
@@ -2009,10 +2034,6 @@ d = {
                 "users.html#_send_sms_otp_to_user",
                 "airt_service/users.py",
             ),
-            "airt_service.users._validate_sms_otp": (
-                "users.html#_validate_sms_otp",
-                "airt_service/users.py",
-            ),
             "airt_service.users.activate_mfa": (
                 "users.html#activate_mfa",
                 "airt_service/users.py",
@@ -2079,6 +2100,14 @@ d = {
             ),
             "airt_service.users.register_phone_number": (
                 "users.html#register_phone_number",
+                "airt_service/users.py",
+            ),
+            "airt_service.users.require_otp_or_totp": (
+                "users.html#require_otp_or_totp",
+                "airt_service/users.py",
+            ),
+            "airt_service.users.require_otp_or_totp_if_mfa_enabled": (
+                "users.html#require_otp_or_totp_if_mfa_enabled",
                 "airt_service/users.py",
             ),
             "airt_service.users.reset_password": (

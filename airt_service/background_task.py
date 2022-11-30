@@ -17,6 +17,7 @@ import asyncio
 
 
 import airt_service
+import airt_service.sanitizer
 from airt.logger import get_logger
 
 # %% ../notebooks/Background_Task.ipynb 5

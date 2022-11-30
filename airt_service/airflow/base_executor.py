@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import *
 
+from ..sanitizer import sanitized_print
 from airt.executor.subcommand import (
     ModelExecutor,
     CLICommandBase,

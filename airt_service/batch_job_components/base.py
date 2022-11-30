@@ -7,6 +7,7 @@ __all__ = ["BatchJobContext"]
 from typing import *
 from os import environ
 
+import airt_service.sanitizer
 from airt.logger import get_logger
 from ..aws.utils import get_available_aws_regions
 from ..azure.utils import get_available_azure_regions

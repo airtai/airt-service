@@ -27,6 +27,7 @@ from azure.storage.blob import BlobServiceClient
 from azure.storage.blob._container_client import ContainerClient
 from fastapi import status, HTTPException
 
+import airt_service.sanitizer
 from airt.helpers import get_s3_bucket_name_and_folder_from_uri
 from airt.logger import get_logger
 

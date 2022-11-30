@@ -16,14 +16,17 @@ from typing import *
 
 from fastcore.script import call_parse, Param
 
+from ..sanitizer import sanitized_print
 from airt.executor.subcommand import CLICommandBase, ClassCLICommand
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
 from .base_executor import BaseAirflowExecutor, dag_template
 from .utils import trigger_dag, wait_for_run_to_complete
-from ..aws.batch_utils import _create_default_batch_environment_config
-from ..aws.batch_utils import create_testing_batch_environment_ctx
+from airt_service.aws.batch_utils import (
+    _create_default_batch_environment_config,
+    create_testing_batch_environment_ctx,
+)
 from ..aws.utils import get_batch_environment_arns, get_queue_definition_arns
 from ..batch_job import get_environment_vars_for_batch_job
 from ..helpers import generate_random_string
@@ -35,7 +38,7 @@ logger = get_logger(__name__)
 def setup_test_paths(td: str) -> Tuple[str, str]:
     d = Path(td)
     paths = [d / sd for sd in ["data", "model"]]
-    print(f"{paths=}")
+    sanitized_print(f"{paths=}")
 
     # create tmp dirs for data and model
     for p in paths:
@@ -260,7 +263,7 @@ def _test_aws_batch_executor(region: str = "eu-west-1"):  # type: ignore
         td = Path(d)
         env_config_path = td / "env_config.yaml"
         created_env_info_path = td / "output_file.yaml"
-        print("above")
+
         prefix = f"airflow_batch_execute_testing_{generate_random_string()}"
         regions = [region]
         _create_default_batch_environment_config(
@@ -268,7 +271,7 @@ def _test_aws_batch_executor(region: str = "eu-west-1"):  # type: ignore
             output_path=env_config_path,
             regions=regions,
         )
-        print("below")
+
         with open(env_config_path) as f:
             env_config = yaml.safe_load(f)
         logger.info(f"{env_config=}")

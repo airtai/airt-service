@@ -9,6 +9,7 @@ from typing import *
 from airt.logger import get_logger
 
 import airt_service
+import airt_service.sanitizer
 from .base import BatchJobContext
 from ..aws.utils import get_queue_definition_arns
 from ..aws.batch_utils import aws_batch_create_job

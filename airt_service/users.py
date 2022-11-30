@@ -10,6 +10,7 @@ __all__ = [
     "activate_mfa",
     "get_user_to_disable_mfa",
     "send_sms_otp",
+    "require_otp_or_totp_if_mfa_enabled",
     "disable_mfa",
     "create_user",
     "UserUpdateRequest",
@@ -25,6 +26,7 @@ __all__ = [
     "register_phone_number",
     "validate_phone_number",
     "ResetPasswordRequest",
+    "require_otp_or_totp",
     "reset_password",
     "UserCleanupRequest",
     "cleanup",
@@ -46,17 +48,36 @@ from airt.logger import get_logger
 from airt.patching import patch
 
 import airt_service
+import airt_service.sanitizer
 from .auth import get_current_active_user, get_valid_user, get_user
 from .cleanup import cleanup_user
-from .db.models import get_session, User, UserCreate, UserRead
-from .db.models import SSORead, SSO, SSOBase, SSOProvider, SMS, SMSProtocol
+from airt_service.db.models import (
+    get_session,
+    User,
+    UserCreate,
+    UserRead,
+    SSORead,
+    SSO,
+    SSOBase,
+    SSOProvider,
+    SMS,
+    SMSProtocol,
+)
 from .errors import HTTPError, ERRORS
-from .helpers import commit_or_rollback, get_password_hash
-from .totp import generate_mfa_provisioning_url
-from .totp import generate_mfa_secret, validate_otp
-from .totp import require_otp_if_mfa_enabled
-from .sms_utils import get_app_and_message_id, send_sms
-from .sms_utils import verify_pin, get_application_and_message_config
+from .helpers import commit_or_rollback, get_password_hash, get_attr_by_name
+from airt_service.totp import (
+    generate_mfa_provisioning_url,
+    generate_mfa_secret,
+    validate_totp,
+    require_otp_if_mfa_enabled,
+)
+from airt_service.sms_utils import (
+    get_app_and_message_id,
+    send_sms,
+    verify_pin,
+    get_application_and_message_config,
+    validate_otp,
+)
 
 # %% ../notebooks/Users.ipynb 5
 logger = get_logger(__name__)
@@ -158,7 +179,7 @@ def activate_mfa(
             detail=ERRORS["GENERATE_MFA_URL_NOT_GENERATED"],
         )
 
-    validate_otp(user.mfa_secret, user_otp)  # type: ignore
+    validate_totp(user.mfa_secret, user_otp)  # type: ignore
 
     with commit_or_rollback(session):
         user.is_mfa_active = True
@@ -334,84 +355,61 @@ def send_sms_otp(
 
 
 # %% ../notebooks/Users.ipynb 31
-def _validate_sms_otp(
-    user: User,
-    otp: str,
-    message_template_name: str,
-    session: Session,
-):
-    """Validate the SMS OTP
+def require_otp_or_totp_if_mfa_enabled(message_template_name: str):
+    """A decorator function to validate the totp/otp for MFA enabled user
+
+    If the totp/otp validation fails, the user will not be granted access to the decorated route
 
     Args:
-        user: User object for whom the SMS OTP needs to be checked
-        otp: The SMS OTP to validate
-        message_template_name: Message template name to validate the OTP
-        session: Session object
-
-    Raises:
-        HTTPException: If the Phone number is not registered and not verified
-        HTTPException: If the OTP is invalid
+        message_template_name: Name of the message template that was used to send the SMS
     """
-    application_id, message_id = get_app_and_message_id(
-        message_template_name=message_template_name
-    )
 
-    sms = session.exec(
-        select(SMS)
-        .where(SMS.user == user)
-        .where(SMS.application_id == application_id)
-        .where(SMS.message_id == message_id)
-    ).one_or_none()
-    if sms is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ERRORS["PHONE_NUMBER_NOT_REGISTERED"],
-        )
+    def outer_wrapper(func):
+        @functools.wraps(func)
+        def inner_wrapper(*args, **kwargs):
+            user = kwargs["user"]
+            session = kwargs["session"]
+            otp_or_totp = get_attr_by_name(kwargs, "otp")
 
-    sms_protocol = session.exec(
-        select(SMSProtocol).where(SMSProtocol.sms_id == sms.id)
-    ).one_or_none()
+            if not user.is_mfa_active and otp_or_totp is not None:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=ERRORS["MFA_NOT_ACTIVATED_BUT_PASSES_OTP"],
+                )
 
-    if sms_protocol is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ERRORS["PHONE_NUMBER_NOT_REGISTERED"],
-        )
+            if user.is_mfa_active:
+                if otp_or_totp is not None:
+                    try:
+                        validate_totp(user.mfa_secret, otp_or_totp)  # type: ignore
+                    except HTTPException as e:
+                        try:
+                            validate_otp(
+                                user=user,
+                                otp=otp_or_totp,
+                                message_template_name=message_template_name,
+                                session=session,
+                            )
+                        except HTTPException as e:
+                            raise HTTPException(
+                                status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=ERRORS["INVALID_OTP"],
+                            )
+                else:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=ERRORS["OTP_REQUIRED"],
+                    )
 
-    if sms_protocol.pin_attempts_remaining == 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ERRORS["NO_MORE_PIN_ATTEMPTS"],
-        )
+            # Do something before
+            return func(*args, **kwargs)
+            # Do something after
 
-    pin_verification_status = airt_service.sms_utils.verify_pin(
-        sms_protocol.pin_id, otp
-    )
+        return inner_wrapper
 
-    if "requestError" in pin_verification_status:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"{pin_verification_status['requestError']['serviceException']['text']}",
-        )
-
-    if not pin_verification_status["verified"]:
-        with commit_or_rollback(session):
-            sms_protocol.pin_verified = pin_verification_status["verified"]  # type: ignore
-            sms_protocol.pin_attempts_remaining = pin_verification_status[
-                "attemptsRemaining"
-            ]  # type: ignore
-            session.add(sms_protocol)
-
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ERRORS[f"{pin_verification_status['pinError']}"],
-        )
-
-    with commit_or_rollback(session):
-        session.delete(sms_protocol)
+    return outer_wrapper
 
 
-# %% ../notebooks/Users.ipynb 32
+# %% ../notebooks/Users.ipynb 33
 @user_router.delete(
     "/mfa/{user_uuid_or_name}/disable",
     response_model=UserRead,
@@ -426,6 +424,7 @@ def _validate_sms_otp(
         },
     },
 )
+@require_otp_or_totp_if_mfa_enabled(message_template_name="disable_mfa")
 def disable_mfa(
     user_uuid_or_name: str,
     otp: Optional[str] = None,
@@ -435,36 +434,6 @@ def disable_mfa(
     """Disable MFA"""
 
     user = session.merge(user)
-
-    if not user.is_mfa_active and otp is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ERRORS["MFA_NOT_ACTIVATED_BUT_PASSES_OTP"],
-        )
-
-    if user.is_mfa_active:
-        if otp is not None:
-            try:
-                validate_otp(user.mfa_secret, otp)  # type: ignore
-            except HTTPException as e:
-                try:
-                    _validate_sms_otp(
-                        user=user,
-                        otp=otp,
-                        message_template_name="disable_mfa",
-                        session=session,
-                    )
-                except HTTPException as e:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail=ERRORS["INVALID_OTP"],
-                    )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=ERRORS["OTP_REQUIRED"],
-            )
-
     user_to_disable_mfa = get_user_to_disable_mfa(user, session, user_uuid_or_name)
 
     with commit_or_rollback(session):
@@ -475,7 +444,7 @@ def disable_mfa(
     return user_to_disable_mfa
 
 
-# %% ../notebooks/Users.ipynb 40
+# %% ../notebooks/Users.ipynb 41
 @patch(cls_method=True)
 def _create(cls: User, user_to_create: UserCreate, session: Session) -> User:
     """Method to create new user
@@ -504,7 +473,7 @@ def _create(cls: User, user_to_create: UserCreate, session: Session) -> User:
     return new_user
 
 
-# %% ../notebooks/Users.ipynb 41
+# %% ../notebooks/Users.ipynb 42
 @user_router.post(
     "/",
     response_model=UserRead,
@@ -531,7 +500,7 @@ def create_user(
     return User._create(user_to_create, session)  # type: ignore
 
 
-# %% ../notebooks/Users.ipynb 46
+# %% ../notebooks/Users.ipynb 47
 @patch(cls_method=True)
 def get(cls: User, uuid: str, session: Session) -> User:
     """Function to get user object based on given user id
@@ -557,7 +526,7 @@ def get(cls: User, uuid: str, session: Session) -> User:
     return user
 
 
-# %% ../notebooks/Users.ipynb 47
+# %% ../notebooks/Users.ipynb 48
 class UserUpdateRequest(BaseModel):
     """Request object to update user
 
@@ -576,7 +545,7 @@ class UserUpdateRequest(BaseModel):
     otp: Optional[str] = None
 
 
-# %% ../notebooks/Users.ipynb 48
+# %% ../notebooks/Users.ipynb 49
 @patch(cls_method=True)
 def check_username_exists(cls: User, username: str, session: Session):
     """Check given username already exists in database or not
@@ -599,7 +568,7 @@ def check_username_exists(cls: User, username: str, session: Session):
     )
 
 
-# %% ../notebooks/Users.ipynb 49
+# %% ../notebooks/Users.ipynb 50
 def check_valid_email(email: str) -> str:
     """Check the given email is valid or not
 
@@ -621,7 +590,7 @@ def check_valid_email(email: str) -> str:
     return email
 
 
-# %% ../notebooks/Users.ipynb 52
+# %% ../notebooks/Users.ipynb 53
 @patch(cls_method=True)
 def check_email_exists(cls: User, email: str, session: Session):
     """Check given email already exists in database or not
@@ -647,7 +616,7 @@ def check_email_exists(cls: User, email: str, session: Session):
     )
 
 
-# %% ../notebooks/Users.ipynb 53
+# %% ../notebooks/Users.ipynb 54
 @patch
 def _update(self: User, to_update: UserUpdateRequest, session: Session):
     if to_update.username:
@@ -669,7 +638,7 @@ def _update(self: User, to_update: UserUpdateRequest, session: Session):
     return self
 
 
-# %% ../notebooks/Users.ipynb 54
+# %% ../notebooks/Users.ipynb 55
 @user_router.post(
     "/{user_uuid_or_name}/update",
     response_model=UserRead,
@@ -698,7 +667,7 @@ def update_user(
     return user_to_update._update(to_update, session)  # type: ignore
 
 
-# %% ../notebooks/Users.ipynb 59
+# %% ../notebooks/Users.ipynb 60
 @patch
 def disable(self: User, session: Session):
     """Disable user
@@ -728,7 +697,7 @@ def disable(self: User, session: Session):
     return self
 
 
-# %% ../notebooks/Users.ipynb 60
+# %% ../notebooks/Users.ipynb 61
 @user_router.delete(
     "/{user_uuid_or_name}",
     response_model=UserRead,
@@ -756,7 +725,7 @@ def disable_user(
     return user_to_disable.disable(session)
 
 
-# %% ../notebooks/Users.ipynb 64
+# %% ../notebooks/Users.ipynb 65
 @patch
 def enable(self: User, session: Session):
     """Enable user
@@ -778,7 +747,7 @@ def enable(self: User, session: Session):
     return self
 
 
-# %% ../notebooks/Users.ipynb 65
+# %% ../notebooks/Users.ipynb 66
 @user_router.get(
     "/{user_uuid_or_name}/enable",
     response_model=UserRead,
@@ -805,7 +774,7 @@ def enable_user(
     return user_to_enable.enable(session)
 
 
-# %% ../notebooks/Users.ipynb 69
+# %% ../notebooks/Users.ipynb 70
 @patch(cls_method=True)
 def get_all(
     cls: User,
@@ -831,7 +800,7 @@ def get_all(
     return session.exec(statement.offset(offset).limit(limit)).all()
 
 
-# %% ../notebooks/Users.ipynb 70
+# %% ../notebooks/Users.ipynb 71
 @user_router.get(
     "/",
     response_model=List[UserRead],
@@ -856,7 +825,7 @@ def get_all_users(
     return User.get_all(disabled=disabled, offset=offset, limit=limit, session=session)  # type: ignore
 
 
-# %% ../notebooks/Users.ipynb 73
+# %% ../notebooks/Users.ipynb 74
 @user_router.get("/details", response_model=UserRead)
 def get_user_details(
     user_uuid_or_name: Optional[str] = None,
@@ -875,7 +844,7 @@ def get_user_details(
     return User.get(_user.uuid, session)  # type: ignore
 
 
-# %% ../notebooks/Users.ipynb 76
+# %% ../notebooks/Users.ipynb 77
 @patch  # type: ignore
 def enable(self: SSO, session: Session, sso_email: EmailStr) -> SSO:
     """Enable SSO for a particular service
@@ -895,7 +864,7 @@ def enable(self: SSO, session: Session, sso_email: EmailStr) -> SSO:
     return self
 
 
-# %% ../notebooks/Users.ipynb 77
+# %% ../notebooks/Users.ipynb 78
 def check_valid_sso_provider(sso_provider: str) -> str:
     """Validate if the given sso_provider
 
@@ -917,7 +886,7 @@ def check_valid_sso_provider(sso_provider: str) -> str:
     return sso_provider
 
 
-# %% ../notebooks/Users.ipynb 79
+# %% ../notebooks/Users.ipynb 80
 class EnableSSORequest(SSOBase):
     """A base class for enabling sso for the account
 
@@ -940,7 +909,7 @@ class EnableSSORequest(SSOBase):
         return sso_email
 
 
-# %% ../notebooks/Users.ipynb 80
+# %% ../notebooks/Users.ipynb 81
 @user_router.post("/sso/enable", response_model=SSORead)
 @require_otp_if_mfa_enabled
 def enable_sso(
@@ -972,7 +941,7 @@ def enable_sso(
     return _sso
 
 
-# %% ../notebooks/Users.ipynb 84
+# %% ../notebooks/Users.ipynb 85
 @patch  # type: ignore
 def disable(self: SSO, session: Session):
     """Disable SSO for a particular service
@@ -999,7 +968,7 @@ def disable(self: SSO, session: Session):
     return self
 
 
-# %% ../notebooks/Users.ipynb 85
+# %% ../notebooks/Users.ipynb 86
 @user_router.delete(
     "/sso/{user_uuid_or_name}/disable/{sso_provider}",
     response_model=SSORead,
@@ -1046,7 +1015,7 @@ def disable_sso(
     return sso_provider_to_disable.disable(session)  # type: ignore
 
 
-# %% ../notebooks/Users.ipynb 89
+# %% ../notebooks/Users.ipynb 90
 class RegisterPhoneNumberRequest(BaseModel):
     """A base class for registering a new phone number
 
@@ -1059,7 +1028,7 @@ class RegisterPhoneNumberRequest(BaseModel):
     otp: Optional[str] = None
 
 
-# %% ../notebooks/Users.ipynb 90
+# %% ../notebooks/Users.ipynb 91
 @user_router.post(
     "/register_phone_number",
     response_model=UserRead,
@@ -1102,7 +1071,7 @@ def register_phone_number(
     return user
 
 
-# %% ../notebooks/Users.ipynb 95
+# %% ../notebooks/Users.ipynb 96
 @user_router.get(
     "/validate_phone_number",
     response_model=UserRead,
@@ -1124,7 +1093,7 @@ def validate_phone_number(
             detail=ERRORS["PHONE_NUMBER_NOT_REGISTERED"],
         )
 
-    _validate_sms_otp(
+    validate_otp(
         user=user,
         otp=otp,
         message_template_name="register_phone_number",
@@ -1138,9 +1107,9 @@ def validate_phone_number(
     return user
 
 
-# %% ../notebooks/Users.ipynb 99
+# %% ../notebooks/Users.ipynb 100
 class ResetPasswordRequest(BaseModel):
-    """A base class for resettgin the user's password
+    """Request object to reset user's password
 
     Args:
         username: Username to reset the password
@@ -1153,38 +1122,41 @@ class ResetPasswordRequest(BaseModel):
     otp: str
 
 
-# %% ../notebooks/Users.ipynb 100
-@user_router.post(
-    "/reset_password",
-    responses={
-        401: {"model": HTTPError, "description": ERRORS["INCORRECT_USERNAME_OR_OTP"]},
-    },
-)
-def reset_password(
-    reset_password_request: ResetPasswordRequest,
-    session: Session = Depends(get_session),
-) -> str:
-    """Reset passowrd for the user"""
-    username = reset_password_request.username
-    new_password = reset_password_request.new_password
-    otp = reset_password_request.otp
+# %% ../notebooks/Users.ipynb 101
+def require_otp_or_totp(message_template_name: str):
+    """A decorator function to validate the totp/otp
 
-    user = get_user(username)
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=ERRORS["INCORRECT_USERNAME_OR_OTP"],
-        )
+    If the totp/otp validation fails, the user will not be granted access to the decorated route
 
-    if user.is_mfa_active:
-        try:
-            validate_otp(user.mfa_secret, otp)  # type: ignore
-        except HTTPException as e:
+    Args:
+        message_template_name: Name of the message template that was used to send the SMS
+    """
+
+    def outer_wrapper(func):
+        @functools.wraps(func)
+        def inner_wrapper(*args, **kwargs):
+            username = get_attr_by_name(kwargs, "username")
+            otp_or_totp = get_attr_by_name(kwargs, "otp")
+            session = kwargs["session"]
+
+            user = get_user(username)
+            if user is None:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=ERRORS["INCORRECT_USERNAME_OR_OTP"],
+                )
+
+            if user.is_mfa_active:
+                try:
+                    validate_totp(user.mfa_secret, otp_or_totp)  # type: ignore
+                    return func(*args, **kwargs)
+                except HTTPException as e:
+                    pass
             try:
-                _validate_sms_otp(
+                validate_otp(
                     user=user,
-                    otp=otp,
-                    message_template_name="reset_password",
+                    otp=otp_or_totp,
+                    message_template_name=message_template_name,
                     session=session,
                 )
             except HTTPException as e:
@@ -1192,29 +1164,43 @@ def reset_password(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail=ERRORS["INCORRECT_USERNAME_OR_OTP"],
                 )
-    else:
-        try:
-            _validate_sms_otp(
-                user=user,
-                otp=otp,
-                message_template_name="reset_password",
-                session=session,
-            )
-        except HTTPException as e:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=ERRORS["INCORRECT_USERNAME_OR_OTP"],
-            )
 
+            # Do something before
+            return func(*args, **kwargs)
+            # Do something after
+
+        return inner_wrapper
+
+    return outer_wrapper
+
+
+# %% ../notebooks/Users.ipynb 105
+@user_router.post(
+    "/reset_password",
+    responses={
+        401: {"model": HTTPError, "description": ERRORS["INCORRECT_USERNAME_OR_OTP"]},
+    },
+)
+@require_otp_or_totp(message_template_name="reset_password")
+def reset_password(
+    reset_password_request: ResetPasswordRequest,
+    session: Session = Depends(get_session),
+) -> str:
+    """Reset passowrd for the user"""
+    username = reset_password_request.username
+    new_password = reset_password_request.new_password
+
+    user = get_user(username)
     user = session.merge(user)
+
     with commit_or_rollback(session):
-        user.password = get_password_hash(new_password)
+        user.password = get_password_hash(new_password)  # type: ignore
         session.add(user)
 
     return PASSWORD_RESET_MSG
 
 
-# %% ../notebooks/Users.ipynb 113
+# %% ../notebooks/Users.ipynb 118
 class UserCleanupRequest(BaseModel):
     """Request object to cleanup user
 
@@ -1227,7 +1213,7 @@ class UserCleanupRequest(BaseModel):
     otp: Optional[str] = None
 
 
-# %% ../notebooks/Users.ipynb 114
+# %% ../notebooks/Users.ipynb 119
 @user_router.post(
     "/cleanup",
     response_model=UserRead,

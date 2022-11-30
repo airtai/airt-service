@@ -22,10 +22,11 @@ from typing import *
 
 import boto3
 import requests
+from botocore.client import Config
 from fastapi import status, HTTPException
 from mypy_boto3_s3.service_resource import Bucket
 
-
+from ..sanitizer import sanitized_print
 from airt.helpers import get_s3_bucket_name_and_folder_from_uri
 from airt.logger import get_logger
 
@@ -101,11 +102,13 @@ def get_s3_storage_bucket(region: str = "eu-west-1") -> Tuple[Bucket, str]:
     storage_bucket = f"s3://{os.environ['STORAGE_BUCKET_PREFIX']}-{region}"
     bucket_name, base_path = get_s3_bucket_name_and_folder_from_uri(storage_bucket)
 
-    s3 = boto3.resource("s3")
+    s3 = boto3.resource("s3", config=Config(signature_version="s3v4"))
     bucket = s3.Bucket(bucket_name)
 
     if not bucket.creation_date:
-        s3_client = boto3.client("s3", region_name=region)
+        s3_client = boto3.client(
+            "s3", region_name=region, config=Config(signature_version="s3v4")
+        )
         #         region = s3_client.meta.region_name
         try:
             s3_client.create_bucket(
@@ -246,9 +249,9 @@ def upload_to_s3_with_retry(
             response = requests.post(presigned_url, data=presigned_fields, files=files)
             assert response.status_code == 204, response.text  # nosec B101
     except requests.exceptions.ConnectionError as e:
-        print("Retrying upload")
+        sanitized_print("Retrying upload")
         if curr_iteration == max_retry:
-            print("Retry failed")
+            sanitized_print("Retry failed")
             raise e
         upload_to_s3_with_retry(
             file_to_upload,
@@ -269,7 +272,7 @@ def get_s3_bucket_and_path_from_uri(uri: Union[str, Path]) -> Tuple[Bucket, str]
     Returns:
         The bucket object and the s3 path as a tuple
     """
-    s3 = boto3.resource("s3")
+    s3 = boto3.resource("s3", config=Config(signature_version="s3v4"))
     bucket_name, s3_path = get_s3_bucket_name_and_folder_from_uri(str(uri))
     bucket = s3.Bucket(bucket_name)
     return bucket, s3_path

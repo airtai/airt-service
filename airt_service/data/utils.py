@@ -25,15 +25,26 @@ from urllib.parse import unquote_plus as urlunquote
 import dask.dataframe as dd
 from mypy_boto3_s3.service_resource import Bucket
 
+import airt_service.sanitizer
 from airt.logger import get_logger
-from ..db.models import create_connection_string, DataSource
-from ..db.models import DataBlob, Model, Prediction
-from ..aws.utils import create_s3_datablob_path, create_s3_datasource_path
-from ..aws.utils import get_s3_bucket_and_path_from_uri
-from ..aws.utils import get_s3_bucket_name_and_folder_from_uri
-from ..azure.utils import create_azure_blob_storage_datablob_path
-from ..azure.utils import create_azure_blob_storage_datasource_path
-from ..azure.utils import get_azure_blob_storage_container
+from airt_service.db.models import (
+    create_connection_string,
+    DataSource,
+    DataBlob,
+    Model,
+    Prediction,
+)
+from airt_service.aws.utils import (
+    create_s3_datablob_path,
+    create_s3_datasource_path,
+    get_s3_bucket_and_path_from_uri,
+    get_s3_bucket_name_and_folder_from_uri,
+)
+from airt_service.azure.utils import (
+    create_azure_blob_storage_datablob_path,
+    create_azure_blob_storage_datasource_path,
+    get_azure_blob_storage_container,
+)
 from ..constants import METADATA_FOLDER_PATH
 
 # %% ../../notebooks/Data_Utils.ipynb 6
@@ -198,7 +209,7 @@ def calculate_azure_data_object_folder_size_and_path(
             user_id=data_object.user.id, datasource_id=data_object.id, region=data_object.region  # type: ignore
         )
     destination_container_objects = list(
-        container_client.list_blobs(name_starts_with=azure_blob_storage_path)
+        container_client.list_blobs(name_starts_with=azure_blob_storage_path + "/")
     )
     data_object.completed_steps = 1
     data_object.folder_size = sum(
@@ -226,7 +237,9 @@ def calculate_s3_data_object_folder_size_and_path(
         destination_bucket, s3_path = create_s3_datasource_path(
             user_id=data_object.user.id, datasource_id=data_object.id, region=data_object.region  # type: ignore
         )
-    destination_bucket_objects = list(destination_bucket.objects.filter(Prefix=s3_path))
+    destination_bucket_objects = list(
+        destination_bucket.objects.filter(Prefix=s3_path + "/")
+    )
     data_object.completed_steps = 1
     data_object.folder_size = sum(
         obj.size
@@ -280,7 +293,7 @@ def delete_data_object_files_in_cloud(
 
     if data_object.cloud_provider == "aws":
         bucket, s3_path = get_s3_bucket_and_path_from_uri(data_object.path)  # type: ignore
-        bucket.objects.filter(Prefix=s3_path).delete()
+        bucket.objects.filter(Prefix=s3_path + "/").delete()
     elif data_object.cloud_provider == "azure":
         container_client, _ = get_azure_blob_storage_container(
             region=data_object.region
@@ -288,5 +301,5 @@ def delete_data_object_files_in_cloud(
         blob_folder = "/".join(
             get_s3_bucket_name_and_folder_from_uri(data_object.path)[1].split("/")[1:]
         )
-        for blob in container_client.list_blobs(name_starts_with=blob_folder):
+        for blob in container_client.list_blobs(name_starts_with=blob_folder + "/"):
             container_client.delete_blob(blob)

@@ -33,9 +33,10 @@ import boto3
 from fastcore.script import call_parse, Param
 from fastcore.utils import patch
 
+from airt_service.sanitizer import sanitized_print
 from airt.helpers import ensure
 from airt.logger import get_logger
-from .utils import get_available_aws_regions
+from airt_service.aws.utils import get_available_aws_regions
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 5
 logger = get_logger(__name__)
@@ -1194,18 +1195,18 @@ def _create_batch_environment(input_yaml_path: str, output_yaml_path: str):
     for region, config in d.items():
         output[region] = {}
         for task_name, value in config.items():
-            print(f"{task_name=}")
+            sanitized_print(f"{task_name=}")
 
             compute_env = ComputeEnvironment.create(
                 region=region, **value["compute_environment"]
             )
-            print(f"{compute_env.arn=}")
+            sanitized_print(f"{compute_env.arn=}")
 
             job_queue = compute_env.create_job_queue(**value["job_queue"])  # type: ignore
-            print(f"{job_queue.arn=}")
+            sanitized_print(f"{job_queue.arn=}")
 
             job_definition = compute_env.create_job_definition(**value["job_definition"])  # type: ignore
-            print(f"{job_definition.arn=}")
+            sanitized_print(f"{job_definition.arn=}")
 
             output[region][task_name] = dict(
                 compute_environment_arn=compute_env.arn,
@@ -1252,18 +1253,18 @@ def create_testing_batch_environment_ctx(input_yaml_path: str, output_yaml_path:
 
         for region, config in d.items():
             for task_name, value in config.items():
-                print(f"deleting job definition - {task_name}")
+                sanitized_print(f"deleting job definition - {task_name}")
                 job_definition = JobDefinition.from_name_or_arn(
                     value["job_definition_arn"], region
                 )
                 job_definition.delete()
-                print(f"deleting job queue - {task_name}")
+                sanitized_print(f"deleting job queue - {task_name}")
                 job_queue = JobQueue.from_name_or_arn(value["job_queue_arn"], region)
                 job_queue.update(state="DISABLED")
                 job_queue.wait(status="VALID", state="DISABLED")
                 job_queue.delete()
                 job_queue.wait(is_deleted=True)
-                print(f"deleting compute env - {task_name}")
+                sanitized_print(f"deleting compute env - {task_name}")
                 compute_env = ComputeEnvironment.from_name_or_arn(
                     value["compute_environment_arn"], region
                 )

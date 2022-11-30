@@ -8,6 +8,7 @@ import yaml
 from typing import *
 from pathlib import Path
 
+import airt_service.sanitizer
 from pydantic import BaseModel
 
 # %% ../notebooks/Errors.ipynb 5

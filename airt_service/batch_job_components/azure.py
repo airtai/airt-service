@@ -11,6 +11,7 @@ import azure.batch.models as batchmodels
 from airt.logger import get_logger
 
 import airt_service
+import airt_service.sanitizer
 from .base import BatchJobContext
 from ..azure.utils import get_batch_account_pool_job_names
 from ..azure.batch_utils import azure_batch_create_job

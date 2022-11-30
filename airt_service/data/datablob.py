@@ -38,7 +38,7 @@ import uuid as uuid_pkg
 
 import numpy as np
 import boto3
-
+from botocore.client import Config
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from sqlalchemy.exc import NoResultFound
@@ -51,21 +51,34 @@ from airt.logger import get_logger
 from airt.patching import patch
 
 import airt_service
+import airt_service.sanitizer
 from ..airflow.executor import AirflowExecutor
 from ..auth import get_current_active_user
-from ..aws.utils import create_s3_datablob_path
-from ..aws.utils import get_s3_bucket_and_path_from_uri, verify_aws_region
+from airt_service.aws.utils import (
+    create_s3_datablob_path,
+    get_s3_bucket_and_path_from_uri,
+    verify_aws_region,
+)
 from ..azure.utils import verify_azure_region
 from ..batch_job import create_batch_job
 from .clickhouse import create_db_uri_for_clickhouse_datablob
 from .datasource import DataSource
-from .utils import create_db_uri_for_azure_blob_storage_datablob
-from .utils import create_db_uri_for_s3_datablob
-from .utils import create_db_uri_for_db_datablob
-from .utils import create_db_uri_for_local_datablob
-from .utils import delete_data_object_files_in_cloud
-from ..db.models import User, DataBlob, DataBlobRead, DataSourceRead
-from ..db.models import TagCreate, get_session, Tag
+from airt_service.data.utils import (
+    create_db_uri_for_azure_blob_storage_datablob,
+    create_db_uri_for_s3_datablob,
+    create_db_uri_for_db_datablob,
+    create_db_uri_for_local_datablob,
+    delete_data_object_files_in_cloud,
+)
+from airt_service.db.models import (
+    User,
+    DataBlob,
+    DataBlobRead,
+    DataSourceRead,
+    TagCreate,
+    get_session,
+    Tag,
+)
 from ..errors import HTTPError, ERRORS
 from ..helpers import commit_or_rollback
 
@@ -260,6 +273,7 @@ def from_s3(
             "s3",
             aws_access_key_id=from_s3_request.access_key,
             aws_secret_access_key=from_s3_request.secret_key,
+            config=Config(signature_version="s3v4"),
         )
         bucket_name, folder = get_s3_bucket_name_and_folder_from_uri(
             from_s3_request.uri
@@ -807,7 +821,9 @@ def from_local(
         datablob.uri = uri
         session.add(datablob)
 
-    presigned = boto3.client("s3", region_name=region).generate_presigned_post(
+    presigned = boto3.client(
+        "s3", region_name=region, config=Config(signature_version="s3v4")
+    ).generate_presigned_post(
         Bucket=destination_bucket.name,
         Key=s3_path + "/" + "${filename}",
         Fields=None,
@@ -900,7 +916,7 @@ def is_ready(self: DataBlob):
         else:
             bucket, s3_path = create_s3_datablob_path(user_id=self.user.id, datablob_id=self.id, region=self.region)  # type: ignore
 
-        if len(list(bucket.objects.filter(Prefix=s3_path))) == 0:
+        if len(list(bucket.objects.filter(Prefix=s3_path + "/"))) == 0:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=ERRORS["DATABLOB_CSV_FILES_NOT_AVAILABLE"],

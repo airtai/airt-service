@@ -39,6 +39,7 @@ from azure.mgmt.storage import StorageManagementClient
 from fastcore.script import call_parse, Param
 from sqlmodel import select
 
+from .sanitizer import sanitized_print
 from .aws.utils import upload_to_s3_with_retry
 from airt.remote_path import RemotePath
 
@@ -49,11 +50,11 @@ def integration_scenario_docs(base_url: str = "http://127.0.0.1:6006"):
     Args:
         base_url: Base url
     """
-    print("getting /docs")
+    sanitized_print("getting /docs")
     r = httpx.get(f"{base_url}/docs")
     assert not r.is_error, r  # nosec B101
 
-    print("getting /redocs")
+    sanitized_print("getting /redocs")
     r = httpx.get(f"{base_url}/redoc")
     assert not r.is_error, r  # nosec B101
 
@@ -70,7 +71,7 @@ def test_auth(base_url: str, username: str, password: str) -> str:
         The jwt token for the given username and password
     """
     # Authenticate
-    print("authenticating and getting token")
+    sanitized_print("authenticating and getting token")
     r = httpx.post(
         f"{base_url}/token",
         data=dict(username=username, password=password),
@@ -93,7 +94,7 @@ def test_create_user(base_url: str) -> Tuple[Dict[str, Any], str]:
     token = os.environ["AIRT_SERVICE_TOKEN"]
     headers = {"Authorization": f"Bearer {token}"}
 
-    print("creating user")
+    sanitized_print("creating user")
     username = "".join(  # nosec
         random.choice(string.ascii_lowercase) for _ in range(10)
     )
@@ -132,7 +133,7 @@ def test_apikey(
     Returns:
         The apikey jwt token
     """
-    print("creating apikey")
+    sanitized_print("creating apikey")
     r = httpx.post(
         f"{base_url}/apikey",
         json=dict(
@@ -155,7 +156,7 @@ def check_steps_completed(url: str, headers: Dict[str, str]) -> Dict[str, Any]:
     Returns:
         The dictionary returned by url
     """
-    print("start waiting for steps to complete")
+    sanitized_print("start waiting for steps to complete")
     while True:
         r = httpx.get(url, headers=headers)
         assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
@@ -163,7 +164,7 @@ def check_steps_completed(url: str, headers: Dict[str, str]) -> Dict[str, Any]:
         if obj["completed_steps"] == obj["total_steps"]:
             break
         time.sleep(5)
-    print("stop waiting for steps to complete")
+    sanitized_print("stop waiting for steps to complete")
     return obj
 
 
@@ -180,7 +181,7 @@ def test_csv_local_datablob_and_datasource(
         Datablob and datasource dictionaries as a tuple
     """
     # Create csv datablob
-    print("creating datablob")
+    sanitized_print("creating datablob")
     r = httpx.post(
         f"{base_url}/datablob/from_local/start",
         json=dict(path="tmp/test-folder/"),
@@ -190,7 +191,7 @@ def test_csv_local_datablob_and_datasource(
     datablob_uuid = r.json()["uuid"]
     presigned = r.json()["presigned"]
 
-    print("downloading csv file")
+    sanitized_print("downloading csv file")
     with RemotePath.from_url(
         remote_url=f"s3://test-airt-service/account_312571_events",
         pull_on_enter=True,
@@ -203,13 +204,13 @@ def test_csv_local_datablob_and_datasource(
         df = pd.read_parquet(test_s3_path.as_path())
         df.to_csv(test_s3_path.as_path() / "file.csv", index=False)
 
-        print("uploading csv file using presigned url")
+        sanitized_print("uploading csv file using presigned url")
         upload_to_s3_with_retry(
             test_s3_path.as_path() / "file.csv", presigned["url"], presigned["fields"]
         )
 
     # Create datasource from csv datablob
-    print("creating datasource")
+    sanitized_print("creating datasource")
     r = httpx.post(
         f"{base_url}/datablob/{datablob_uuid}/to_datasource",
         json=dict(
@@ -232,7 +233,7 @@ def test_csv_local_datablob_and_datasource(
     datasource = check_steps_completed(
         url=f"{base_url}/datasource/{datasource['uuid']}", headers=headers
     )
-    print("pull completed for datasource")
+    sanitized_print("pull completed for datasource")
 
     # Get datablob object to return
     datablob = check_steps_completed(
@@ -241,11 +242,11 @@ def test_csv_local_datablob_and_datasource(
 
     # Display head and dtypes
     r = httpx.get(f"{base_url}/datasource/{datasource['uuid']}/head", headers=headers)
-    print("head of datasource")
-    print(r.json())
+    sanitized_print("head of datasource")
+    sanitized_print(r.json())
     r = httpx.get(f"{base_url}/datasource/{datasource['uuid']}/dtypes", headers=headers)
-    print("dtypes of datasource")
-    print(r.json())
+    sanitized_print("dtypes of datasource")
+    sanitized_print(r.json())
 
     return datablob, datasource
 
@@ -269,7 +270,7 @@ def test_azure_datablob(base_url: str, headers: Dict[str, str]) -> Dict[str, Any
     credential = keys.keys[0].value
 
     # Create azure datablob
-    print("creating azure datablob")
+    sanitized_print("creating azure datablob")
     r = httpx.post(
         f"{base_url}/datablob/from_azure_blob_storage",
         json=dict(
@@ -287,7 +288,7 @@ def test_azure_datablob(base_url: str, headers: Dict[str, str]) -> Dict[str, Any
     datablob = check_steps_completed(
         url=f"{base_url}/datablob/{datablob['uuid']}", headers=headers
     )
-    print("pull completed for azure datablob")
+    sanitized_print("pull completed for azure datablob")
 
     return datablob
 
@@ -306,7 +307,7 @@ def test_model(
         The model dictionary
     """
     # Train model
-    print("training model")
+    sanitized_print("training model")
     r = httpx.post(
         f"{base_url}/model/train",
         json=dict(
@@ -325,13 +326,13 @@ def test_model(
     model = check_steps_completed(
         url=f"{base_url}/model/{model['uuid']}", headers=headers
     )
-    print("model training completed")
+    sanitized_print("model training completed")
 
     # Evaluate model
     r = httpx.get(f"{base_url}/model/{model['uuid']}/evaluate", headers=headers)
     assert not r.is_error  # nosec B101
-    print("model evaluation")
-    print(r.json())
+    sanitized_print("model evaluation")
+    sanitized_print(r.json())
 
     return model
 
@@ -350,7 +351,7 @@ def test_prediction(
         The prediction dictionary
     """
     # Run prediction for the model
-    print("running prediction")
+    sanitized_print("running prediction")
     r = httpx.post(
         f"{base_url}/model/{model['uuid']}/predict",
         headers=headers,
@@ -362,13 +363,13 @@ def test_prediction(
     prediction = check_steps_completed(
         url=f"{base_url}/prediction/{prediction['uuid']}", headers=headers
     )
-    print("prediction completed")
+    sanitized_print("prediction completed")
 
     # Get prediction as pandas
     r = httpx.get(f"{base_url}/prediction/{prediction['uuid']}/pandas", headers=headers)
     assert not r.is_error  # nosec B101
-    print("prediction as pandas")
-    print(r.json())
+    sanitized_print("prediction as pandas")
+    sanitized_print(r.json())
 
     return prediction
 
@@ -387,7 +388,7 @@ def test_generate_mfa_url(base_url: str, headers: Dict[str, str]) -> Dict[str, A
 
     r = httpx.get(f"{base_url}/user/mfa/generate", headers=headers)
     assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
-    print("Generating mfa url")
+    sanitized_print("Generating mfa url")
     return r.json()
 
 
@@ -424,7 +425,7 @@ def test_activate_mfa(
         headers=headers,
     )
     assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
-    print("Activate mfa")
+    sanitized_print("Activate mfa")
     return r.json()
 
 
@@ -433,13 +434,13 @@ def reset_test_user_password(
     base_url: str, headers: Dict[str, str], username: str, password: str, otp: str
 ):
     """Reset the test user password"""
-    print(f"Resetting password for: {username}")
+    sanitized_print(f"Resetting password for: {username}")
     r = httpx.post(
         f"{base_url}/user/reset_password",
         json=dict(username=username, new_password=password, otp=otp),
     )
     assert not r.is_error, r.text  # nosec B101
-    print(r.text)
+    sanitized_print(r.text)
 
 
 # %% ../notebooks/Integration_Test.ipynb 18
@@ -456,9 +457,9 @@ def test_disable_mfa(
         headers=headers,
     )
     assert not r.is_error, r.text  # nosec B101
-    print(r.text)
+    sanitized_print(r.text)
     assert username in r.text  # nosec B101
-    print("Deactivate mfa")
+    sanitized_print("Deactivate mfa")
 
 
 # %% ../notebooks/Integration_Test.ipynb 19
@@ -477,7 +478,7 @@ def test_auth_with_otp(
         The jwt token for the given username and password
     """
     # Authenticate
-    print("authenticating with otp and getting token")
+    sanitized_print("authenticating with otp and getting token")
     for i in range(retry_limit):
         otp = get_valid_otp(mfa_url)
         r = httpx.post(
@@ -513,7 +514,7 @@ def delete_test_user(base_url: str, test_username: str):
     token = os.environ["AIRT_SERVICE_TOKEN"]
     headers = {"Authorization": f"Bearer {token}"}
 
-    print("deleting test user")
+    sanitized_print("deleting test user")
     r = httpx.post(
         f"{base_url}/user/cleanup",
         json=dict(
@@ -532,7 +533,7 @@ def integration_tests(base_url: str = "http://127.0.0.1:6006"):
     Args:
         base_url: Base url
     """
-    print("starting integration tests")
+    sanitized_print("starting integration tests")
     integration_scenario_docs(base_url)
 
     user, password = test_create_user(base_url)
@@ -597,7 +598,7 @@ def integration_tests(base_url: str = "http://127.0.0.1:6006"):
 
     delete_test_user(base_url, test_username=user["username"])
 
-    print("ok")
+    sanitized_print("ok")
 
 
 # %% ../notebooks/Integration_Test.ipynb 23

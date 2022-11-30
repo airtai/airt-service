@@ -4,7 +4,7 @@
 __all__ = [
     "generate_mfa_secret",
     "generate_mfa_provisioning_url",
-    "validate_otp",
+    "validate_totp",
     "require_otp_if_mfa_enabled",
 ]
 
@@ -17,8 +17,10 @@ from fastapi import HTTPException, status
 
 from airt.logger import get_logger
 
+import airt_service.sanitizer
 from .errors import ERRORS
 from .constants import MFA_ISSUER_NAME
+from .helpers import get_attr_by_name
 
 # %% ../notebooks/TOTP.ipynb 5
 logger = get_logger(__name__)
@@ -53,15 +55,15 @@ def generate_mfa_provisioning_url(mfa_secret: str, user_email: str) -> str:
 
 
 # %% ../notebooks/TOTP.ipynb 13
-def validate_otp(mfa_secret: str, user_otp: str):
-    """Validate the user OTP against the valid OTP
+def validate_totp(mfa_secret: str, user_otp: str):
+    """Validate the OTP passed in against the current time OTP
 
     Args:
         mfa_secret: The 16 character base32 secret string assigned to the user
-        user_otp: OTP passed by the user
+        user_otp: The OTP to validate against the current time OTP
 
     Raises:
-        HTTPError: If the user OTP is not matching with the actual OTP
+        HTTPError: If the user OTP does not match the current time OTP
     """
     totp = pyotp.TOTP(mfa_secret)
 
@@ -73,23 +75,6 @@ def validate_otp(mfa_secret: str, user_otp: str):
 
 
 # %% ../notebooks/TOTP.ipynb 15
-def get_otp(xs: Dict[str, Any]) -> Union[str, None]:
-    """Get otp from the input dictionary
-
-    Args:
-        xs: Input dictionary
-
-    Returns:
-        The otp if present in input dictionary else None
-    """
-    if "otp" in xs:
-        otp = xs["otp"]
-    else:
-        otp = next((getattr(v, "otp") for v in xs.values() if hasattr(v, "otp")), None)
-    return otp
-
-
-# %% ../notebooks/TOTP.ipynb 17
 def require_otp_if_mfa_enabled(func):
     """A decorator function to validate the otp for MFA enabled user
 
@@ -100,7 +85,7 @@ def require_otp_if_mfa_enabled(func):
     def wrapper(*args, **kwargs):
         user = kwargs["user"]
         session = kwargs["session"]
-        otp = get_otp(kwargs)
+        otp = get_attr_by_name(kwargs, "otp")
 
         if not user.is_mfa_active and otp is not None:
             raise HTTPException(
@@ -110,7 +95,7 @@ def require_otp_if_mfa_enabled(func):
 
         if user.is_mfa_active:
             if otp is not None:
-                validate_otp(user.mfa_secret, otp)
+                validate_totp(user.mfa_secret, otp)
             else:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,

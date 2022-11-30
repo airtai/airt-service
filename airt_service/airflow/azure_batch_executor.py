@@ -18,16 +18,23 @@ from typing import *
 from azure.batch.batch_auth import SharedKeyCredentials
 from fastcore.script import call_parse, Param
 
+from ..sanitizer import sanitized_print
 from airt.executor.subcommand import CLICommandBase, ClassCLICommand
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
 from .base_executor import BaseAirflowExecutor, dag_template
 from .utils import trigger_dag, wait_for_run_to_complete
-from ..azure.batch_utils import get_random_string, BatchPool, BatchJob
-from ..azure.batch_utils import AUTO_SCALE_FORMULA
-from ..azure.utils import get_azure_batch_environment_component_names
-from ..azure.utils import get_batch_account_pool_job_names
+from airt_service.azure.batch_utils import (
+    get_random_string,
+    BatchPool,
+    BatchJob,
+    AUTO_SCALE_FORMULA,
+)
+from airt_service.azure.utils import (
+    get_azure_batch_environment_component_names,
+    get_batch_account_pool_job_names,
+)
 from ..batch_job import get_environment_vars_for_batch_job
 from ..helpers import generate_random_string
 
@@ -38,7 +45,7 @@ logger = get_logger(__name__)
 def setup_test_paths(td: str) -> Tuple[str, str]:
     d = Path(td)
     paths = [d / sd for sd in ["data", "model"]]
-    print(f"{paths=}")
+    sanitized_print(f"{paths=}")
 
     # create tmp dirs for data and model
     for p in paths:
@@ -151,7 +158,6 @@ def _create_step_template(
         azure_batch_environment_vars = (
             azure_batch_environment_vars + f" --env {name}='{value}'"
         )
-    #     print(f"{azure_batch_environment_vars=}")
 
     (
         batch_account_name,
@@ -298,8 +304,8 @@ def _test_azure_batch_executor(region: str = "northeurope"):  # type: ignore
         )
         batch_job = BatchJob.from_name(name="test-cpu-job", batch_pool=batch_pool)
 
-        print(f"{batch_pool.name=}")
-        print(f"{batch_job.name=}")
+        sanitized_print(f"{batch_pool.name=}")
+        sanitized_print(f"{batch_job.name=}")
         region = "northeurope"
         test_batch_environment_names = {
             region: {
@@ -316,7 +322,7 @@ def _test_azure_batch_executor(region: str = "northeurope"):  # type: ignore
                 ]
             }
         }
-        print(f"{test_batch_environment_names=}")
+        sanitized_print(f"{test_batch_environment_names=}")
         with open(created_azure_env_path, "w") as f:
             yaml.dump(test_batch_environment_names, f, default_flow_style=False)
 
@@ -333,12 +339,12 @@ def _test_azure_batch_executor(region: str = "northeurope"):  # type: ignore
             tags="test_tag",
         )
 
-        print(f"{dag_file_path=}")
-        print(f"{run_id=}")
+        sanitized_print(f"{dag_file_path=}")
+        sanitized_print(f"{run_id=}")
 
         dag_id = str(dag_file_path).split("/")[-1].split(".py")[0]
         state = wait_for_run_to_complete(dag_id=dag_id, run_id=run_id, timeout=3600)
-        print(f"{state=}")
+        sanitized_print(f"{state=}")
         dag_file_path.unlink()
 
 

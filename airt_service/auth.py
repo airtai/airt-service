@@ -46,14 +46,22 @@ from sqlmodel import Session, select
 from airt.logger import get_logger
 from airt.patching import patch
 
+import airt_service.sanitizer
 from .db.models import get_session, get_session_with_context
 from .db.models import APIKeyCreate, APIKey, APIKeyRead, User, UserRead, SSO
 from .errors import HTTPError, ERRORS
 from .helpers import commit_or_rollback, verify_password
-from .totp import validate_otp, require_otp_if_mfa_enabled
-from .sso import SSOAuthURL, get_valid_sso_providers, initiate_sso_flow
-from .sso import get_sso_if_enabled_for_user, validate_sso_response
-from .sso import get_sso_protocol_and_email, SESSION_TIME_LIMIT
+from .totp import validate_totp, require_otp_if_mfa_enabled
+from airt_service.sso import (
+    SSOAuthURL,
+    get_valid_sso_providers,
+    initiate_sso_flow,
+    get_sso_if_enabled_for_user,
+    validate_sso_response,
+    get_sso_protocol_and_email,
+    SESSION_TIME_LIMIT,
+)
+from .sms_utils import validate_otp
 
 # %% ../notebooks/Auth.ipynb 5
 logger = get_logger(__name__)
@@ -106,7 +114,7 @@ def get_password_and_otp_from_json(password: str) -> Tuple[str, str]:
     return password, user_otp
 
 
-# %% ../notebooks/Auth.ipynb 14
+# %% ../notebooks/Auth.ipynb 15
 def authenticate_user(username: str, password: str) -> Optional[User]:
     """Validate if the password matches the user's previously stored password.
 
@@ -127,18 +135,32 @@ def authenticate_user(username: str, password: str) -> Optional[User]:
         return None
 
     if user.is_mfa_active:
-        password, user_otp = get_password_and_otp_from_json(password)
+        password, otp_or_totp = get_password_and_otp_from_json(password)
 
     if not verify_password(password, user.password):
         return None
 
     if user.is_mfa_active:
-        validate_otp(user.mfa_secret, user_otp)  # type: ignore
+        try:
+            validate_totp(user.mfa_secret, otp_or_totp)  # type: ignore
+        except HTTPException as e:
+            try:
+                validate_otp(
+                    user=user,
+                    otp=otp_or_totp,
+                    message_template_name="get_token",
+                    session=next(get_session()),
+                )
+            except HTTPException as e:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=ERRORS["INVALID_OTP"],
+                )
 
     return user
 
 
-# %% ../notebooks/Auth.ipynb 16
+# %% ../notebooks/Auth.ipynb 17
 def create_access_token(data: dict, expire: Optional[datetime] = None) -> str:
     """Create new jwt access token
 
@@ -162,7 +184,7 @@ def create_access_token(data: dict, expire: Optional[datetime] = None) -> str:
     return encoded_jwt
 
 
-# %% ../notebooks/Auth.ipynb 19
+# %% ../notebooks/Auth.ipynb 20
 auth_router = APIRouter(
     responses={
         500: {
@@ -172,7 +194,7 @@ auth_router = APIRouter(
     }
 )
 
-# %% ../notebooks/Auth.ipynb 20
+# %% ../notebooks/Auth.ipynb 21
 class Token(BaseModel):
     """A base class for creating and managing Access token
 
@@ -185,7 +207,7 @@ class Token(BaseModel):
     token_type: str
 
 
-# %% ../notebooks/Auth.ipynb 21
+# %% ../notebooks/Auth.ipynb 22
 def generate_token(username: str) -> Token:
     """Generate access token
 
@@ -206,7 +228,7 @@ def generate_token(username: str) -> Token:
     return Token(access_token=access_token, token_type="bearer")  # nosec B106
 
 
-# %% ../notebooks/Auth.ipynb 23
+# %% ../notebooks/Auth.ipynb 24
 @auth_router.post(
     "/token",
     response_model=Token,
@@ -234,7 +256,7 @@ def login_for_access_token(
     return token
 
 
-# %% ../notebooks/Auth.ipynb 31
+# %% ../notebooks/Auth.ipynb 32
 class SSOInitiateRequest(BaseModel):
     """A base class for initiating SSO for the provider
 
@@ -249,7 +271,7 @@ class SSOInitiateRequest(BaseModel):
     sso_provider: str
 
 
-# %% ../notebooks/Auth.ipynb 32
+# %% ../notebooks/Auth.ipynb 33
 @auth_router.post(
     "/sso/initiate",
     response_model=SSOAuthURL,
@@ -295,7 +317,7 @@ def login_for_sso_access_token(
     )
 
 
-# %% ../notebooks/Auth.ipynb 41
+# %% ../notebooks/Auth.ipynb 42
 @auth_router.get("/sso/callback")
 def sso_google_callback(request: Request) -> str:
     """SSO callback route"""
@@ -304,7 +326,7 @@ def sso_google_callback(request: Request) -> str:
     return validate_sso_response(request=request, sso_provider=sso_provider)
 
 
-# %% ../notebooks/Auth.ipynb 42
+# %% ../notebooks/Auth.ipynb 43
 @auth_router.get(
     "/sso/token",
     responses={
@@ -341,7 +363,7 @@ def finish_sso_flow(authorization_url: str) -> Token:
         return token
 
 
-# %% ../notebooks/Auth.ipynb 47
+# %% ../notebooks/Auth.ipynb 48
 get_apikey_responses = {
     400: {"model": HTTPError, "description": ERRORS["APIKEY_REVOKED"]},
     401: {"model": HTTPError, "description": ERRORS["INCORRECT_APIKEY"]},
@@ -400,7 +422,7 @@ def get(cls: APIKey, key_uuid_or_name: str, user: User, session: Session) -> API
     return apikey
 
 
-# %% ../notebooks/Auth.ipynb 51
+# %% ../notebooks/Auth.ipynb 52
 def get_current_active_user(token: str = Depends(oauth2_scheme)) -> User:
     """Get active user details
 
@@ -444,7 +466,7 @@ def get_current_active_user(token: str = Depends(oauth2_scheme)) -> User:
     return user  # type: ignore
 
 
-# %% ../notebooks/Auth.ipynb 53
+# %% ../notebooks/Auth.ipynb 54
 @patch(cls_method=True)
 def _create(
     cls: APIKey, apikey_to_create: APIKeyCreate, user: User, session: Session
@@ -465,7 +487,7 @@ def _create(
     return apikey
 
 
-# %% ../notebooks/Auth.ipynb 54
+# %% ../notebooks/Auth.ipynb 55
 @auth_router.post("/apikey", response_model=Token)
 @require_otp_if_mfa_enabled
 def create_apikey(
@@ -508,7 +530,7 @@ def create_apikey(
     return Token(access_token=access_token, token_type="bearer")  # nosec B106
 
 
-# %% ../notebooks/Auth.ipynb 61
+# %% ../notebooks/Auth.ipynb 62
 @auth_router.get(
     "/apikey/{key_uuid_or_name}", response_model=APIKeyRead, responses=get_apikey_responses  # type: ignore
 )
@@ -523,7 +545,7 @@ def get_details_of_apikey(
     return APIKey.get(key_uuid_or_name=key_uuid_or_name, user=user, session=session)  # type: ignore
 
 
-# %% ../notebooks/Auth.ipynb 64
+# %% ../notebooks/Auth.ipynb 65
 def get_valid_user(user: User, session: Session, user_uuid_or_name: str) -> User:
     """Get valid user object to perform the operation
 
@@ -564,7 +586,7 @@ def get_valid_user(user: User, session: Session, user_uuid_or_name: str) -> User
     return _user
 
 
-# %% ../notebooks/Auth.ipynb 66
+# %% ../notebooks/Auth.ipynb 67
 @patch
 def disable(self: APIKey, session: Session) -> APIKey:
     """Disable an APIKey
@@ -581,7 +603,7 @@ def disable(self: APIKey, session: Session) -> APIKey:
     return self
 
 
-# %% ../notebooks/Auth.ipynb 67
+# %% ../notebooks/Auth.ipynb 68
 @auth_router.delete(
     "/{user_uuid_or_name}/apikey/{key_uuid_or_name}", response_model=APIKeyRead, responses=get_apikey_responses  # type: ignore
 )
@@ -601,7 +623,7 @@ def delete_apikey(
     return apikey.disable(session)  # type: ignore
 
 
-# %% ../notebooks/Auth.ipynb 74
+# %% ../notebooks/Auth.ipynb 75
 @patch(cls_method=True)
 def get_all(
     cls: APIKey,
@@ -629,7 +651,7 @@ def get_all(
     return session.exec(statement.offset(offset).limit(limit)).all()
 
 
-# %% ../notebooks/Auth.ipynb 75
+# %% ../notebooks/Auth.ipynb 76
 @auth_router.get(
     "/{user_uuid_or_name}/apikey",
     response_model=List[APIKeyRead],

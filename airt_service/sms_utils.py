@@ -16,12 +16,16 @@ import os
 from time import sleep
 
 import numpy as np
-
 from fastapi import status, HTTPException
+from sqlmodel import Session, select
 
 from airt.logger import get_logger
 
+import airt_service
+import airt_service.sanitizer
 from .errors import ERRORS
+from .db.models import SMS, SMSProtocol, User
+from .helpers import commit_or_rollback
 
 # %% ../notebooks/SMS_Utils.ipynb 5
 logger = get_logger(__name__)
@@ -77,6 +81,12 @@ def get_application_and_message_config() -> Dict[str, Dict[str, Any]]:
                 "senderId": f"{os.environ['INFOBIP_SENDER_ID']}",
                 "pinType": "NUMERIC",
                 "messageText": "{{pin}} is your OTP to disable the multi-factor authentication (MFA). This OTP is valid for the next 15 mins.",
+                "pinLength": 6,
+            },
+            "get_token": {
+                "senderId": f"{os.environ['INFOBIP_SENDER_ID']}",
+                "pinType": "NUMERIC",
+                "messageText": "{{pin}} is your OTP to get an application token. This OTP is valid for the next 15 mins.",
                 "pinLength": 6,
             },
         },
@@ -383,3 +393,81 @@ def verify_pin(pin_id: str, otp: str) -> Dict[str, Any]:
         "pin": otp,
     }
     return _send_post_request_to_infobip(relative_url, data)
+
+
+# %% ../notebooks/SMS_Utils.ipynb 31
+def validate_otp(
+    user: User,
+    otp: str,
+    message_template_name: str,
+    session: Session,
+):
+    """Validate the SMS OTP
+
+    Args:
+        user: User object for whom the SMS OTP needs to be checked
+        otp: The SMS OTP to validate
+        message_template_name: Message template name to validate the OTP
+        session: Session object
+
+    Raises:
+        HTTPException: If the Phone number is not registered and not verified
+        HTTPException: If the OTP is invalid
+    """
+    application_id, message_id = get_app_and_message_id(
+        message_template_name=message_template_name
+    )
+
+    sms = session.exec(
+        select(SMS)
+        .where(SMS.user == user)
+        .where(SMS.application_id == application_id)
+        .where(SMS.message_id == message_id)
+    ).one_or_none()
+    if sms is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ERRORS["PHONE_NUMBER_NOT_REGISTERED"],
+        )
+
+    sms_protocol = session.exec(
+        select(SMSProtocol).where(SMSProtocol.sms_id == sms.id)
+    ).one_or_none()
+
+    if sms_protocol is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ERRORS["PHONE_NUMBER_NOT_REGISTERED"],
+        )
+
+    if sms_protocol.pin_attempts_remaining == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ERRORS["NO_MORE_PIN_ATTEMPTS"],
+        )
+
+    pin_verification_status = airt_service.sms_utils.verify_pin(
+        sms_protocol.pin_id, otp
+    )
+
+    if "requestError" in pin_verification_status:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"{pin_verification_status['requestError']['serviceException']['text']}",
+        )
+
+    if not pin_verification_status["verified"]:
+        with commit_or_rollback(session):
+            sms_protocol.pin_verified = pin_verification_status["verified"]  # type: ignore
+            sms_protocol.pin_attempts_remaining = pin_verification_status[
+                "attemptsRemaining"
+            ]  # type: ignore
+            session.add(sms_protocol)
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ERRORS[f"{pin_verification_status['pinError']}"],
+        )
+
+    with commit_or_rollback(session):
+        session.delete(sms_protocol)

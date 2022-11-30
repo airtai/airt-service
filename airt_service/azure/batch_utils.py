@@ -27,7 +27,7 @@ from azure.batch.models import BatchErrorException
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.batch import BatchManagementClient
 
-
+import airt_service.sanitizer
 from airt.logger import get_logger
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 5

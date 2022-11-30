@@ -8,6 +8,7 @@ from typing import *
 
 from airt.logger import get_logger
 
+import airt_service.sanitizer
 from .base import BatchJobContext
 from ..background_task import execute_cli
 
