@@ -1,25 +1,26 @@
 SRC = $(wildcard notebooks/*.ipynb)
 
+.PHONY: all
 all: clean dist install alembic_migrate webservice.py site
 
-airt_service: $(SRC) .build_installs
+airt_service: $(SRC) /tmp/.build_installs .install_git_secrets_hooks .add_allowed_git_secrets .install_pre_commit_hooks
 	nbdev_export
 	black airt_service
 	touch airt_service
 
-dast: .dast_zast
+dast: dast_zast
 
-.dast_zast:
-	./scripts/dast.sh
-	touch .dast_zast
+dast_zast:
+	echo "Dast not implemented yet"
+	# ./scripts/dast.sh
     
-sast: .sast_bandit .sast_semgrep
+sast: sast_bandit sast_semgrep
 
-.sast_bandit: airt_service
+sast_bandit: airt_service
 	bandit -r airt_service
 	touch .sast_bandit
     
-.sast_semgrep: airt_service
+sast_semgrep: airt_service
 	semgrep --config auto --error airt_service
 	touch .sast_semgrep
 
@@ -29,7 +30,7 @@ docs/SUMMARY.md: dist
 docs/index.md: notebooks/index.ipynb dist
 	jupyter nbconvert --to markdown --stdout --RegexRemovePreprocessor.patterns="['\# hide', '\#hide']" notebooks/index.ipynb | sed "s/{{ get_airt_service_version }}/$$(pip show airt-service | grep Version | cut -d ":" -f 2 | xargs)/" > docs/index.md
 
-site: .build_installs install docs/index.md docs/SUMMARY.md
+site: install docs/index.md docs/SUMMARY.md
 	mkdocs build
 	cp docs/index.md README.md
 	touch site
@@ -49,6 +50,11 @@ empty_bucket:
 	aws s3 ls | cut -d' ' -f3- | grep "^${STORAGE_BUCKET_PREFIX}" | xargs -I {} aws s3 rb --force s3://{}
 	az login --service-principal --username ${AZURE_CLIENT_ID} --tenant ${AZURE_TENANT_ID} --password ${AZURE_CLIENT_SECRET}
 	az storage account list --query "[*].name" -o tsv | grep "^${AZURE_STORAGE_ACCOUNT_PREFIX}" | xargs -I {} az storage account delete --yes --name {} --resource-group ${AZURE_RESOURCE_GROUP}
+
+check_secrets:
+	git secrets --scan -r
+
+check: mypy check_secrets detect_secrets sast dast trivy_scan_repo
 
 test: install mypy alembic_migrate empty_bucket
 	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
@@ -71,7 +77,7 @@ clean:
 	rm -rf dist
 	rm -rf site
 	rm -rf docs/index.md docs/SUMMARY.md docs/API
-	rm -rf .build_installs
+	rm -rf /tmp/.build_installs
 	pip uninstall -r build_and_test_requirements.txt -y
 	pip uninstall airt-service -y
 
@@ -84,11 +90,32 @@ install_airflow:
 start_airflow: install_airflow
 	./scripts/start_airflow.sh
 
+.install_git_secrets_hooks:
+	git secrets --install -f
+	git secrets --register-aws
+	touch .install_git_secrets_hooks
+
+.add_allowed_git_secrets: .install_git_secrets_hooks allowed_secrets.txt
+	git secrets --add -a "dummy"
+	git config --unset-all secrets.allowed
+	cat allowed_secrets.txt | xargs -I {} git secrets --add -a {}
+	touch .add_allowed_git_secrets
+
+.install_pre_commit_hooks:
+	pre-commit install
+	touch .install_pre_commit_hooks
+
 install: dist install_airt start_airflow
 	pip install --force-reinstall dist/airt_service-*-py3-none-any.whl
 
-mypy: airt_service
+mypy: install
 	mypy airt_service --ignore-missing-imports
+
+check_git_history_for_secrets: .add_allowed_git_secrets
+	git secrets --scan-history
+
+detect_secrets: .install_pre_commit_hooks
+	git ls-files -z | xargs -0 detect-secrets-hook --baseline .secrets.baseline
 
 webservice.py: install
 	jupyter nbconvert --to python notebooks/services/webservice.ipynb --output ../../webservice
@@ -105,6 +132,6 @@ build_and_check_docker_image: batch_environment.yml
 trivy_scan_repo:
 	./scripts/trivy_scan_repo.sh
 
-.build_installs: build_and_test_requirements.txt
+/tmp/.build_installs: build_and_test_requirements.txt
 	pip install -r build_and_test_requirements.txt
-	touch .build_installs
+	touch /tmp/.build_installs

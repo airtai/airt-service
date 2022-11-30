@@ -171,3 +171,8 @@ batch_environment.yml
 
 # dast report html file
 dast-api-scan-report.html
+
+# Empty files created by 
+.install_git_secrets_hooks
+.add_allowed_git_secrets
+.install_pre_commit_hooks

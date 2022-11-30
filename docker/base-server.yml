@@ -4,10 +4,3 @@ services:
         image: $AIRT_SERVER_DOCKER
         hostname: airt-service
         container_name: airt-service
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                    - driver: nvidia
-                      device_ids: ['all']
-                      capabilities: [gpu]
