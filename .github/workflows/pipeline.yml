@@ -72,7 +72,7 @@ jobs:
       - run: set -a && source .env && set +a
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
-      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then CONFIG="production.yml" ; elif [[ $GITHUB_REF_NAME == "dev" ]]; then CONFIG="staging.yml" ; fi;
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "CONFIG=production.yml" >> $GITHUB_ENV ; elif [[ $GITHUB_REF_NAME == "dev" ]]; then echo "CONFIG=staging.yml" >> $GITHUB_ENV ; fi;
 
       - name: Create batch environment if branch name is main or dev
         if: github.ref_name == 'main' || github.ref_name == 'dev'
