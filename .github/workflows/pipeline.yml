@@ -70,17 +70,19 @@ jobs:
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
       - run: set -a && source .env && set +a
+      - run: cat env
+      - run: env
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "CONFIG=production.yml" >> $GITHUB_ENV ; elif [[ $GITHUB_REF_NAME == "dev" ]]; then echo "CONFIG=staging.yml" >> $GITHUB_ENV ; fi;
 
       - name: Create batch environment if branch name is main or dev
         if: github.ref_name == 'main' || github.ref_name == 'dev'
-        run: create_batch_environment "batch_env_config/$CONFIG" ./batch_environment.yml
+        run: set -a && source .env && set +a && create_batch_environment "batch_env_config/$CONFIG" ./batch_environment.yml
 
       # If running in other branches then include config yml as output yml for building docker
       - name: Create dummy batch environment in other branches
-        if: github.ref_name != 'main' || github.ref_name != 'dev'
+        if: github.ref_name != 'main' && github.ref_name != 'dev'
         run: cp "batch_env_config/staging.yml" ./batch_environment.yml
 
       - uses: actions/upload-artifact@v3
