@@ -1,0 +1,2 @@
+#require_otp_or_totp_if_mfa_enabled
+::: airt_service.users.require_otp_or_totp_if_mfa_enabled

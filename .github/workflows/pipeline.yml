@@ -1,0 +1,145 @@
+name: Pipeline
+on: [push]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
+  PROD_CONFIG: ${{ secrets.PROD_CONFIG }}
+  STAGING_CONFIG: ${{ secrets.STAGING_CONFIG }}
+
+jobs:
+  sast:
+    runs-on: ubuntu-20.04
+    container:
+      image: ghcr.io/airtai/airt-docker-dask-tf2:dev
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: make dist
+      - run: make sast
+
+  trivy:
+    runs-on: ubuntu-20.04
+    container:
+      image: docker.io/aquasec/trivy:latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: apk update
+      - run: apk add make
+      - run: trivy --version
+      - run: sh ./scripts/trivy_scan_repo.sh
+
+  secrets_scan:
+    runs-on: ubuntu-20.04
+    container:
+      image: ghcr.io/airtai/airt-docker-dask-tf2:dev
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: make check_git_history_for_secrets
+
+  detect_secrets:
+    runs-on: ubuntu-20.04
+    container:
+      image: ghcr.io/airtai/airt-docker-dask-tf2:dev
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: make detect_secrets
+
+  build_wheel:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+    needs: [sast, trivy, secrets_scan, detect_secrets]
+    container:
+      image: ghcr.io/airtai/airt-docker-dask-tf2:dev
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
+      - run: set -a && source .env && set +a
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: make webservice.py
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then CONFIG="production.yml" ; elif [[ $GITHUB_REF_NAME == "dev" ]]; then CONFIG="staging.yml" ; fi;
+
+      - name: Create batch environment if branch name is main or dev
+        if: github.ref_name == 'main' || github.ref_name == 'dev'
+        run: create_batch_environment "batch_env_config/$CONFIG" ./batch_environment.yml
+
+      # If running in other branches then include config yml as output yml for building docker
+      - name: Create dummy batch environment in other branches
+        if: github.ref_name != 'main' || github.ref_name != 'dev'
+        run: cp "batch_env_config/staging.yml" ./batch_environment.yml
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: |
+            dist/
+            webservice.py
+            batch_environment.yml
+          if-no-files-found: error
+
+  docker_build_push:
+    runs-on: ubuntu-20.04
+    needs: build_wheel
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download artifacts from build_wheel job
+        uses: actions/download-artifact@v3
+
+      - run: cp -a artifact/. ./ # Copy contents of build_wheel artifacts to current directory
+      - run: wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
+      - run: sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
+      - run: docker pull ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME || docker pull ghcr.io/$GITHUB_REPOSITORY:dev || true
+      - run: sh ws/build_docker.sh
+      - name: Push only if branch name is main or dev
+        if: github.ref_name == 'main' || github.ref_name == 'dev'
+        run: docker push ghcr.io/$GITHUB_REPOSITORY --all-tags
+
+  docker_image_check:
+    runs-on: ubuntu-20.04
+    needs: docker_build_push
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: sudo apt update
+      - run: wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
+      - run: sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then docker pull ghcr.io/$GITHUB_REPOSITORY:latest ; else docker pull ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME ; fi;
+      - run: sh ws/check_docker.sh
