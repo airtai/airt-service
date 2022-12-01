@@ -10,7 +10,7 @@ env:
 
 jobs:
   sast:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
@@ -22,7 +22,7 @@ jobs:
       - run: make sast
 
   trivy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: docker.io/aquasec/trivy:latest
     steps:
@@ -33,7 +33,7 @@ jobs:
       - run: sh ./scripts/trivy_scan_repo.sh
 
   secrets_scan:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
@@ -46,7 +46,7 @@ jobs:
       - run: make check_git_history_for_secrets
 
   detect_secrets:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
@@ -57,7 +57,7 @@ jobs:
       - run: make detect_secrets
 
   build_wheel:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -92,7 +92,7 @@ jobs:
           if-no-files-found: error
 
   docker_build_push:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: build_wheel
     permissions:
       contents: read
@@ -121,7 +121,7 @@ jobs:
         run: docker push ghcr.io/$GITHUB_REPOSITORY --all-tags
 
   docker_image_check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: docker_build_push
     if: github.ref_name == 'main' || github.ref_name == 'dev'
     permissions:
