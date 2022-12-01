@@ -61,7 +61,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: [sast, trivy, secrets_scan, detect_secrets]
+    # needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     steps:
@@ -70,7 +70,7 @@ jobs:
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
       - run: set -a && source .env && set +a
-      - run: cat env
+      - run: cat .env
       - run: env
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
