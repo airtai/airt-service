@@ -63,8 +63,8 @@ def list_dag_runs(
         )
     except subprocess.CalledProcessError as e:
         raise RuntimeError(
-            "command '{}' return with error (code {}): {}".format(
-                e.cmd, e.returncode, e.output
+            "command '{}' return with error (code {}): output={}, stdout={}, stderr={}".format(
+                e.cmd, e.returncode, e.output, e.stdout, e.stderr
             )
         )
     return json.loads(p.stdout)
