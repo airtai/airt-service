@@ -62,7 +62,7 @@ def list_dag_runs(
             check=True,
         )
     except subprocess.CalledProcessError as e:
-        p_glob = Path(f"{os.environ['HOME']}/airflow/dags").glob("*")
+        p_glob = Path(f"/root/airflow/dags").glob("*")
         files = [x for x in p_glob if x.is_file()]
         raise RuntimeError(
             "command '{}' return with error (code {}): output={}, stdout={}, stderr={}, files={}, dags={}".format(
