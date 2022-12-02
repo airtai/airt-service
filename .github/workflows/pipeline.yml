@@ -95,6 +95,13 @@ jobs:
       INFOBIP_BASE_URL: ${{ secrets.CI_INFOBIP_BASE_URL }}
       INFOBIP_API_KEY: ${{ secrets.CI_INFOBIP_API_KEY }}
       INFOBIP_SENDER_ID: ${{ secrets.CI_INFOBIP_SENDER_ID }}
+      CLICKHOUSE_USERNAME: ${{ secrets.CLICKHOUSE_USERNAME }}
+      CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD }}
+      CLICKHOUSE_HOST: ${{ secrets.CLICKHOUSE_HOST }}
+      CLICKHOUSE_DATABASE: ${{ secrets.CLICKHOUSE_DATABASE }}
+      CLICKHOUSE_PORT: ${{ secrets.CLICKHOUSE_PORT }}
+      CLICKHOUSE_PROTOCOL: ${{ secrets.CLICKHOUSE_PROTOCOL }}
+      CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
     services:
       mysql:
         image: mysql:8.0.27
