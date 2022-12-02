@@ -57,7 +57,6 @@ check_secrets:
 check: mypy check_secrets detect_secrets sast dast trivy_scan_repo
 
 test: install mypy alembic_migrate empty_bucket
-	nbdev_test --timing --do_print --path notebooks/Airflow_Utils.ipynb
 	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
 	nbdev_test --timing --do_print --pause 1 --skip_file_glob "DB_Models.ipynb"
 

@@ -52,29 +52,16 @@ def list_dag_runs(
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
 ):
     command = f"{airflow_command} dags list-runs -d {dag_id} -o json"
-    try:
-        # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
-        p = subprocess.run(  # nosec B603
-            shlex.split(command),
-            shell=False,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-    except subprocess.CalledProcessError as e:
-        p_glob = Path(f"/root/airflow/dags").glob("*")
-        files = [x for x in p_glob if x.is_file()]
-        raise RuntimeError(
-            "command '{}' return with error (code {}): output={}, stdout={}, stderr={}, files={}, dags={}".format(
-                e.cmd,
-                e.returncode,
-                e.output,
-                e.stdout,
-                e.stderr,
-                str(files),
-                list_dags(),
-            )
-        )
+
+    # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
+    p = subprocess.run(  # nosec B603
+        shlex.split(command),
+        shell=False,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+
     return json.loads(p.stdout)
 
 
