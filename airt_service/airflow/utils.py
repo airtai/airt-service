@@ -65,8 +65,14 @@ def list_dag_runs(
         p_glob = Path(f"{os.environ['HOME']}/airflow/dags").glob("*")
         files = [x for x in p_glob if x.is_file()]
         raise RuntimeError(
-            "command '{}' return with error (code {}): output={}, stdout={}, stderr={}, files={}".format(
-                e.cmd, e.returncode, e.output, e.stdout, e.stderr, str(files)
+            "command '{}' return with error (code {}): output={}, stdout={}, stderr={}, files={}, dags={}".format(
+                e.cmd,
+                e.returncode,
+                e.output,
+                e.stdout,
+                e.stderr,
+                str(files),
+                list_dags(),
             )
         )
     return json.loads(p.stdout)
