@@ -121,6 +121,7 @@ jobs:
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
+      - run: pgrep -x "airflow"
       - run: ps -aef | grep airflow
 
       - name: Run test without failing
