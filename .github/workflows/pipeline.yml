@@ -59,17 +59,12 @@ jobs:
 
   unit_test:
     runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: true
-      matrix:
-        tag: ["main", "dev"]
     defaults:
       run:
         shell: bash
     # needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
-      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ matrix.tag }}
-    if: github.ref_name == ${{ matrix.tag }} || ( github.ref_name != 'main' && ${{ matrix.tag }} != "main" )
+      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == "main" ? "latest":"dev" }}
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
