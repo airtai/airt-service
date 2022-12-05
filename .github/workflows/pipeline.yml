@@ -402,6 +402,8 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
+      PROD_AIRT_SERVICE_TOKEN: ${{ secrets.PROD_AIRT_SERVICE_TOKEN }}
+      STAGING_AIRT_SERVICE_TOKEN: ${{ secrets.STAGING_AIRT_SERVICE_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
