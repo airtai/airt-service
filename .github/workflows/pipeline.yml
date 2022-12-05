@@ -279,7 +279,7 @@ jobs:
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
-      - run: cat .env >> $GITHUB_ENV
+      - run: sed 's/\"//g' .env >> $GITHUB_ENV
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "CONFIG=production.yml" >> $GITHUB_ENV ; elif [[ $GITHUB_REF_NAME == "dev" ]]; then echo "CONFIG=staging.yml" >> $GITHUB_ENV ; fi;
@@ -373,7 +373,7 @@ jobs:
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "TAG=latest" >> $GITHUB_ENV ; else echo "TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV ; fi;
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
-      - run: cat .env >> $GITHUB_ENV
+      - run: sed 's/\"//g' .env >> $GITHUB_ENV
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
       - run: eval $(ssh-agent -s)
@@ -409,7 +409,7 @@ jobs:
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
-      - run: cat .env >> $GITHUB_ENV
+      - run: sed 's/\"//g' .env >> $GITHUB_ENV
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "AIRT_SERVICE_TOKEN=$PROD_AIRT_SERVICE_TOKEN" >> $GITHUB_ENV ; else echo "AIRT_SERVICE_TOKEN=$STAGING_AIRT_SERVICE_TOKEN" >> $GITHUB_ENV ; fi;
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "DOMAIN=api.airt.ai" >> $GITHUB_ENV ; else echo "DOMAIN=api.staging.airt.ai" >> $GITHUB_ENV ; fi;
