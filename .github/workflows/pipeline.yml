@@ -62,7 +62,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    # needs: [sast, trivy, secrets_scan, detect_secrets]
+    needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
     env:
@@ -137,7 +137,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    # needs: [sast, trivy, secrets_scan, detect_secrets]
+    needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
     env:
@@ -204,7 +204,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    # needs: [sast, trivy, secrets_scan, detect_secrets]
+    needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
     env:
@@ -271,7 +271,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: [sast, trivy, secrets_scan, detect_secrets]
+    needs: [unit_test, test_aws_batch_executor, test_azure_batch_executor]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
     steps:
