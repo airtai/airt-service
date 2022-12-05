@@ -383,7 +383,11 @@ jobs:
       - run: chmod 644 ~/.ssh/known_hosts
       - run: echo "$SSH_KEY" | base64 --decode > key.pem
       - run: chmod 600 key.pem
+
       - run: env
+      - run: echo $DOMAIN
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "DOMAIN=api.airt.ai" >> $GITHUB_ENV ; else echo "DOMAIN=api.staging.airt.ai" >> $GITHUB_ENV ; fi;
+      - run: echo $DOMAIN
       - run: ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker images"
 
       - run: sh ci/deploy.sh
