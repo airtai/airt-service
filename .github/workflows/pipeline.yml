@@ -366,6 +366,7 @@ jobs:
     env:
       GITHUB_USERNAME: ${{ github.actor }}
       GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
@@ -382,6 +383,8 @@ jobs:
       - run: chmod 644 ~/.ssh/known_hosts
       - run: echo "$SSH_KEY" | base64 --decode > key.pem
       - run: chmod 600 key.pem
+      - run: env
+      - run: ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker images"
 
       - run: sh ci/deploy.sh
 
