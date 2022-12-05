@@ -52,10 +52,16 @@ def list_dag_runs(
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
 ):
     command = f"{airflow_command} dags list-runs -d {dag_id} -o json"
+
     # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
     p = subprocess.run(  # nosec B603
-        shlex.split(command), shell=False, capture_output=True, text=True, check=True
+        shlex.split(command),
+        shell=False,
+        capture_output=True,
+        text=True,
+        check=True,
     )
+
     return json.loads(p.stdout)
 
 

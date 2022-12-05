@@ -27,4 +27,6 @@ else
     airflow scheduler -D
     airflow webserver -D
     deactivate
+
+    echo "airflow started successfully"
 fi
