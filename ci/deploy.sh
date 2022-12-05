@@ -19,15 +19,15 @@ then
 	export CI_REGISTRY="ghcr.io"
 fi
 
-if test -z "$CI_REGISTRY_USER"
+if test -z "$GITHUB_USERNAME"
 then
-	echo "ERROR: CI_REGISTRY_USER variable must be defined, exiting"
+	echo "ERROR: GITHUB_USERNAME variable must be defined, exiting"
 	exit -1
 fi
 
-if test -z "$CI_REGISTRY_PASSWORD"
+if test -z "$GITHUB_PASSWORD"
 then
-	echo "ERROR: CI_REGISTRY_PASSWORD variable must be defined, exiting"
+	echo "ERROR: GITHUB_PASSWORD variable must be defined, exiting"
 	exit -1
 fi
 
@@ -138,7 +138,7 @@ echo "INFO: Creating storage directory if it doesn't exists"
 ssh -i key.pem ubuntu@"$DOMAIN" "mkdir -p /home/ubuntu/storage"
 
 echo "INFO: pulling docker images"
-ssh -i key.pem ubuntu@"$DOMAIN" "echo $CI_REGISTRY_PASSWORD | docker login -u '$CI_REGISTRY_USER' --password-stdin '$CI_REGISTRY'"
+ssh -i key.pem ubuntu@"$DOMAIN" "echo $GITHUB_PASSWORD | docker login -u '$GITHUB_USERNAME' --password-stdin '$CI_REGISTRY'"
 ssh -i key.pem ubuntu@"$DOMAIN" "docker pull '$CI_REGISTRY_IMAGE':'$TAG'"
 sleep 10
 
