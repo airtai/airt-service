@@ -395,7 +395,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: [deploy]
+    # needs: [deploy]
     if: github.ref_name == 'main' || github.ref_name == 'dev'
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
