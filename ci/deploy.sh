@@ -123,25 +123,25 @@ then
 fi
 
 echo "INFO: stopping already running docker container"
-ssh -i key.pem ubuntu@"$DOMAIN" "set -a && source .env && set +a && docker-compose -p airt-service -f docker/dependencies.yml -f docker/base-server.yml -f docker/server.yml down || echo 'No containers available to stop'"
-ssh -i key.pem ubuntu@"$DOMAIN" "docker container prune -f || echo 'No stopped containers to delete'"
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "set -a && source .env && set +a && docker-compose -p airt-service -f docker/dependencies.yml -f docker/base-server.yml -f docker/server.yml down || echo 'No containers available to stop'"
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker container prune -f || echo 'No stopped containers to delete'"
 
 echo "INFO: copying docker compose files to server"
-ssh -i key.pem ubuntu@"$DOMAIN" "rm -rf /home/ubuntu/docker"
-scp -i key.pem -r ./docker ubuntu@"$DOMAIN":/home/ubuntu/docker
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "rm -rf /home/ubuntu/docker"
+scp -o StrictHostKeyChecking=no -i key.pem -r ./docker ubuntu@"$DOMAIN":/home/ubuntu/docker
 
 echo "INFO: copying .env file to server"
-ssh -i key.pem ubuntu@"$DOMAIN" "rm -rf /home/ubuntu/.env"
-scp -i key.pem .env ubuntu@"$DOMAIN":/home/ubuntu/.env
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "rm -rf /home/ubuntu/.env"
+scp -o StrictHostKeyChecking=no -i key.pem .env ubuntu@"$DOMAIN":/home/ubuntu/.env
 
 echo "INFO: Creating storage directory if it doesn't exists"
-ssh -i key.pem ubuntu@"$DOMAIN" "mkdir -p /home/ubuntu/storage"
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "mkdir -p /home/ubuntu/storage"
 
 echo "INFO: pulling docker images"
-ssh -i key.pem ubuntu@"$DOMAIN" "echo $GITHUB_PASSWORD | docker login -u '$GITHUB_USERNAME' --password-stdin '$CI_REGISTRY'"
-ssh -i key.pem ubuntu@"$DOMAIN" "docker pull '$CI_REGISTRY_IMAGE':'$TAG'"
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "echo $GITHUB_PASSWORD | docker login -u '$GITHUB_USERNAME' --password-stdin '$CI_REGISTRY'"
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker pull '$CI_REGISTRY_IMAGE':'$TAG'"
 sleep 10
 
 echo "INFO: starting docker containers using compose files"
-ssh -i key.pem ubuntu@"$DOMAIN" "set -a && source .env && set +a && docker-compose -p airt-service -f docker/dependencies.yml -f docker/base-server.yml -f docker/server.yml up -d --no-recreate"
-ssh -i key.pem ubuntu@"$DOMAIN" "docker system prune -f || echo 'No images to delete'"
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "set -a && source .env && set +a && docker-compose -p airt-service -f docker/dependencies.yml -f docker/base-server.yml -f docker/server.yml up -d --no-recreate"
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker system prune -f || echo 'No images to delete'"
