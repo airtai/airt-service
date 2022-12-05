@@ -402,14 +402,15 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.CI_AZURE_SUBSCRIPTION_ID }}
       PROD_AIRT_SERVICE_TOKEN: ${{ secrets.PROD_AIRT_SERVICE_TOKEN }}
       STAGING_AIRT_SERVICE_TOKEN: ${{ secrets.STAGING_AIRT_SERVICE_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       - run: chown -R $(id -u):$(id -g) $PWD
-      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
-      - run: sed 's/\"//g' .env >> $GITHUB_ENV
+      # - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
+      # - run: sed 's/\"//g' .env >> $GITHUB_ENV
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "AIRT_SERVICE_TOKEN=$PROD_AIRT_SERVICE_TOKEN" >> $GITHUB_ENV ; else echo "AIRT_SERVICE_TOKEN=$STAGING_AIRT_SERVICE_TOKEN" >> $GITHUB_ENV ; fi;
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "DOMAIN=api.airt.ai" >> $GITHUB_ENV ; else echo "DOMAIN=api.staging.airt.ai" >> $GITHUB_ENV ; fi;
