@@ -17,4 +17,5 @@ jobs:
       - run: sudo git clone https://github.com/awslabs/git-secrets.git && cd git-secrets && sudo make install && cd ../ && sudo rm -rf git-secrets
       - run: pip install pre-commit
       - run: make install
+      - run: sudo ls -la /usr/local/bin
       - uses: airtai/workflows/nbdev-mkdocs-ghp@main

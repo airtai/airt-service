@@ -3,7 +3,7 @@ SRC = $(wildcard notebooks/*.ipynb)
 .PHONY: all
 all: clean dist install alembic_migrate webservice.py site
 
-airt_service: $(SRC) /tmp/.build_installs .install_git_secrets_hooks .add_allowed_git_secrets .install_pre_commit_hooks
+airt_service: $(SRC) /tmp/.build_installs .install_pre_commit_hooks
 	nbdev_export
 	pip install -e '.[dev]'
 	black airt_service
@@ -52,7 +52,7 @@ empty_bucket:
 	az login --service-principal --username ${AZURE_CLIENT_ID} --tenant ${AZURE_TENANT_ID} --password ${AZURE_CLIENT_SECRET}
 	az storage account list --query "[*].name" -o tsv | grep "^${AZURE_STORAGE_ACCOUNT_PREFIX}" | xargs -I {} az storage account delete --yes --name {} --resource-group ${AZURE_RESOURCE_GROUP}
 
-check_secrets:
+check_secrets: .install_git_secrets_hooks .add_allowed_git_secrets
 	git secrets --scan -r
 
 check: mypy check_secrets detect_secrets sast dast trivy_scan_repo
