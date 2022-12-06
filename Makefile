@@ -71,7 +71,7 @@ dist: airt_service
 	python setup.py sdist bdist_wheel
 	touch dist
 
-PHONY: prepare
+.PHONY: prepare
 prepare: all check test
 	nbdev_clean
 

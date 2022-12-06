@@ -196,7 +196,7 @@ jobs:
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
-      - run: make
+      - run: make install
       - run: test_aws_batch_executor --region eu-west-3
 
   test_azure_batch_executor:
@@ -263,7 +263,7 @@ jobs:
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
-      - run: make
+      - run: make install
       - run: test_azure_batch_executor --region northeurope
 
   build_wheel:
