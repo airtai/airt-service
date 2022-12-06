@@ -8,4 +8,5 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - run: make
       - uses: airtai/workflows/nbdev-mkdocs-ghp@main
