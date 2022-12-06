@@ -31,12 +31,12 @@ docs/index.md: notebooks/index.ipynb dist
 	jupyter nbconvert --to markdown --stdout --RegexRemovePreprocessor.patterns="['\# hide', '\#hide']" notebooks/index.ipynb | sed "s/{{ get_airt_service_version }}/$$(pip show airt-service | grep Version | cut -d ":" -f 2 | xargs)/" > docs/index.md
 
 site: install docs/index.md docs/SUMMARY.md
-	mkdocs build
+	nbdev_mkdocs docs
 	cp docs/index.md README.md
 	touch site
     
 docs_serve: site
-	mkdocs serve -a 0.0.0.0:6006
+	nbdev_mkdocs preview
 
 alembic_commit: install
 	alembic revision --autogenerate -m '$(message)'
@@ -69,7 +69,11 @@ pypi: dist
 dist: airt_service
 	python setup.py sdist bdist_wheel
 	touch dist
-    
+
+PHONY: prepare
+prepare: all check test
+	nbdev_clean
+
 clean:
 	rm -rf airt_service
 	rm -rf airt_service.egg-info

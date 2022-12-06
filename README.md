@@ -1,9 +1,5 @@
----
-description: REST APIs to import, train, predict events data
-output-file: index.html
-title: Airt Service 2022.12.0rc0
-
----
+# Airt Service 2022.12.0rc0
+> description: REST APIs to import, train, predict events data
 
 
 ## Install
