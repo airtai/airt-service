@@ -110,7 +110,7 @@ start_airflow: install_airflow
 	touch .install_pre_commit_hooks
 
 install: dist install_airt start_airflow
-	pip install --force-reinstall dist/airt_service-*-py3-none-any.whl
+	pip install -e '.[dev]'
 
 mypy: install
 	mypy airt_service --ignore-missing-imports

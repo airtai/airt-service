@@ -13,7 +13,7 @@ pip install airt_service
 Fill me in please! Don't forget code examples:
 
 
-```python
+```
 1 + 1
 ```
 
@@ -25,6 +25,6 @@ Fill me in please! Don't forget code examples:
 
 
 
-```python
+```
 
 ```
