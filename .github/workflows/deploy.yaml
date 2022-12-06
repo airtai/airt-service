@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
+    env:
+      ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
