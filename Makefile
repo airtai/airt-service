@@ -6,7 +6,6 @@ all: clean dist install alembic_migrate webservice.py site
 airt_service: $(SRC) /tmp/.build_installs
 	nbdev_export
 	pip install -e '.[dev]'
-	black airt_service
 	touch airt_service
 
 dast: dast_zast
