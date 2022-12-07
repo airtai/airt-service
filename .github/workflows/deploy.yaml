@@ -12,5 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
+      - run: sudo apt update && sudo apt install default-libmysqlclient-dev -y
       - run: ./scripts/install_airt.sh
       - uses: airtai/workflows/nbdev-mkdocs-ghp@main
