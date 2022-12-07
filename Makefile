@@ -68,7 +68,7 @@ pypi: dist
 	twine upload --repository pypi dist/*
 
 dist: airt_service
-	python setup.py sdist bdist_wheel
+	python3 setup.py sdist bdist_wheel
 	touch dist
 
 .PHONY: prepare
