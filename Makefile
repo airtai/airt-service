@@ -3,7 +3,7 @@ SRC = $(wildcard notebooks/*.ipynb)
 .PHONY: all
 all: clean dist install alembic_migrate webservice.py site
 
-airt_service: $(SRC) /tmp/.build_installs .install_pre_commit_hooks
+airt_service: $(SRC) /tmp/.build_installs
 	nbdev_export
 	pip install -e '.[dev]'
 	black airt_service
@@ -68,7 +68,7 @@ pypi: dist
 	twine upload --repository pypi dist/*
 
 dist: airt_service
-	python setup.py sdist bdist_wheel
+	python3 setup.py sdist bdist_wheel
 	touch dist
 
 .PHONY: prepare
@@ -110,7 +110,7 @@ start_airflow: install_airflow
 	pre-commit install
 	touch .install_pre_commit_hooks
 
-install: dist install_airt start_airflow
+install: dist install_airt .install_pre_commit_hooks start_airflow
 	pip install --force-reinstall dist/airt_service-*-py3-none-any.whl
 
 mypy: install
@@ -119,7 +119,7 @@ mypy: install
 check_git_history_for_secrets: .add_allowed_git_secrets
 	git secrets --scan-history
 
-detect_secrets: .install_pre_commit_hooks
+detect_secrets: airt_service
 	git ls-files -z | xargs -0 detect-secrets-hook --baseline .secrets.baseline
 
 webservice.py: install
