@@ -36,7 +36,7 @@ jobs:
   secrets_scan:
     runs-on: ubuntu-22.04
     container:
-      image: ubuntu:22.04
+      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -44,7 +44,6 @@ jobs:
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
-      - run: apt-get update && apt-get install -y build-essential
       - run: make check_git_history_for_secrets
 
   detect_secrets:
