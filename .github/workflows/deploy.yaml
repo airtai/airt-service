@@ -16,5 +16,37 @@ jobs:
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
       - run: pip install pre-commit nbdev black
       - run: make install
-      - run: sudo ls -la /usr/local/bin
       - uses: airtai/workflows/nbdev-mkdocs-ghp@main
+
+  own_deploy:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
+    env:
+      ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: make
+      - name: Enable GitHub Pages
+        shell: python
+        run: |
+          import ghapi.core,nbdev.config,sys
+          msg="Please ensure GitHub Pages can publish from the root of the `gh-pages` branch per these instructions - https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-from-a-branch"
+          try:
+            api = ghapi.core.GhApi(owner=nbdev.config.get_config().user, repo=nbdev.config.get_config().repo, token="${{inputs.ghtoken}}")
+            api.enable_pages(branch='gh-pages')
+          except Exception as e:
+            print(f'::warning title="Could not enable GitHub Pages Automatically":: {msg}\n{e}')
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ inputs.ghtoken }}
+          force_orphan: true
+          publish_dir: ./mkdocs/site
+          # The following lines assign commit authorship to the official GH-Actions bot for deploys to `gh-pages` branch.
+          # You can swap them out with your own user credentials.
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
