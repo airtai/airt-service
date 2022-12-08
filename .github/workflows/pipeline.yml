@@ -192,10 +192,11 @@ jobs:
           MYSQL_ROOT_PASSWORD: "SuperSecretPassword"
         ports:
           - 3306:3306
-    matrix:
-      command:
-        - test_aws_batch_executor --region eu-west-3
-        - test_azure_batch_executor --region northeurope
+    strategy:
+      matrix:
+        command:
+          - test_aws_batch_executor --region eu-west-3
+          - test_azure_batch_executor --region northeurope
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
@@ -213,7 +214,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: [unit_test, test_aws_batch_executor, test_azure_batch_executor]
+    needs: [unit_test, test_cloud_provider_batch_executor]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
     steps:
