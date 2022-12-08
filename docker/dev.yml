@@ -19,16 +19,22 @@ services:
         volumes:
             - $AIRT_PROJECT:/work/airt-service
             - $HOME/.ssh:$HOME/.ssh
-            - $HOME/.gitconfig:/root/.gitconfig
-            - $HOME/.aws:/root/.aws
+            - $HOME/.gitconfig:$HOME/.gitconfig
+            - $HOME/.aws:$HOME/.aws
+            - /etc/passwd:/etc/passwd
+            - /etc/group:/etc/group
+            - /etc/shadow:/etc/shadow
         environment:
             STORAGE_PATH: $STORAGE_PATH
             JUPYTER_CONFIG_DIR: /root/.jupyter
+            USER: $USER
+            USERNAME: $USERNAME
         env_file:
             - ../.env.dev.config
             - ../.env.dev.secrets
         depends_on:
             - mysql
+        command: ["/usr/bin/bash", "-c", "env && chown -R $USER /home/$USER && sudo -u $USER jt -t airtd -cellw 90% -N -T  --logo /tmp/airt-neg-trans-small.png --fav_icon_dir /tmp/airt_favicons && sudo --preserve-env=$PRESERVE_ENVS -u $USER jupyter notebook --notebook-dir=/work --ip 0.0.0.0 --no-browser --allow-root"]
 
 networks:
     airt-service-network:

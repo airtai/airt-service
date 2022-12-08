@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export AIRT_SERVER_DOCKER=ghcr.io/airtai/nbdev-mkdocs:latest
+export AIRT_SERVER_DOCKER=ghcr.io/airtai/airt-service-dev:latest
 
 echo PORT_PREFIX variable set to $PORT_PREFIX
 
@@ -43,6 +43,8 @@ cp .env.dev.config /tmp/airt-service.env.dev.config && envsubst < /tmp/airt-serv
 cp .env.dev.secrets /tmp/airt-service.env.dev.secrets && envsubst < /tmp/airt-service.env.dev.secrets > .env.dev.secrets && rm /tmp/airt-service.env.dev.secrets
 # Export values in .env.dev.* files as environment variables for validation
 set -a && source .env.dev.config && source .env.dev.secrets && set +a
+
+export PRESERVE_ENVS=$(cat .env.dev.* | cut -f1 -d"=" | sed '/^#/d' |  tr '\n' ',')
 
 if test -z "$ACCESS_REP_TOKEN"; then
 	echo ERROR: ACCESS_REP_TOKEN must be defined in .env.dev.secrets file, exiting
