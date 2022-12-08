@@ -108,15 +108,8 @@ jobs:
       CLICKHOUSE_PROTOCOL: ${{ secrets.CLICKHOUSE_PROTOCOL }}
       CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
     services:
-      mysql:
-        image: mysql:8.0.27
-        env:
-          MYSQL_DATABASE: "airt_service"
-          MYSQL_USER: "airt"
-          MYSQL_PASSWORD: "SuperSecretPassword"
-          MYSQL_ROOT_PASSWORD: "SuperSecretPassword"
-        ports:
-          - 3306:3306
+      - uses: ./mysql_service.yml
+        alias: mysql
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
@@ -183,15 +176,8 @@ jobs:
       CLICKHOUSE_PROTOCOL: ${{ secrets.CLICKHOUSE_PROTOCOL }}
       CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
     services:
-      mysql:
-        image: mysql:8.0.27
-        env:
-          MYSQL_DATABASE: "airt_service"
-          MYSQL_USER: "airt"
-          MYSQL_PASSWORD: "SuperSecretPassword"
-          MYSQL_ROOT_PASSWORD: "SuperSecretPassword"
-        ports:
-          - 3306:3306
+      - uses: ./mysql_service.yml
+        alias: mysql
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
@@ -250,15 +236,8 @@ jobs:
       CLICKHOUSE_PROTOCOL: ${{ secrets.CLICKHOUSE_PROTOCOL }}
       CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
     services:
-      mysql:
-        image: mysql:8.0.27
-        env:
-          MYSQL_DATABASE: "airt_service"
-          MYSQL_USER: "airt"
-          MYSQL_PASSWORD: "SuperSecretPassword"
-          MYSQL_ROOT_PASSWORD: "SuperSecretPassword"
-        ports:
-          - 3306:3306
+      - uses: ./mysql_service.yml
+        alias: mysql
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
