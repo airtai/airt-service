@@ -55,8 +55,7 @@ jobs:
       - name: Build nbdev docs
         shell: bash
         run: |
-          nbdev_docs --path notebooks/DB_Models.ipynb
-          nbdev_docs --skip_file_glob "DB_Models.ipynb"
+          nbdev_docs --n_workers 1
       - name: Build mkdocs docs
         shell: bash
         run: nbdev_mkdocs docs
