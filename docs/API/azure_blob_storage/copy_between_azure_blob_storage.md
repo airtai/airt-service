@@ -1,2 +1,0 @@
-#copy_between_azure_blob_storage
-::: airt_service.data.azure_blob_storage.copy_between_azure_blob_storage

@@ -1,2 +1,0 @@
-#get_availability_zones_and_subnets_in_region
-::: airt_service.aws.batch_utils.get_availability_zones_and_subnets_in_region

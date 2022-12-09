@@ -1,2 +1,0 @@
-#create_default_batch_environment_config
-::: airt_service.aws.batch_utils.create_default_batch_environment_config

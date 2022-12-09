@@ -1,2 +1,0 @@
-#create_azure_blob_storage_prediction_path
-::: airt_service.azure.utils.create_azure_blob_storage_prediction_path

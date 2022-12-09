@@ -1,2 +1,0 @@
-#get_s3_connection_params_from_db_uri
-::: airt_service.data.utils.get_s3_connection_params_from_db_uri

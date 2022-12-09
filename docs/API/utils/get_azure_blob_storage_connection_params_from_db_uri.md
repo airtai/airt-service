@@ -1,2 +1,0 @@
-#get_azure_blob_storage_connection_params_from_db_uri
-::: airt_service.data.utils.get_azure_blob_storage_connection_params_from_db_uri

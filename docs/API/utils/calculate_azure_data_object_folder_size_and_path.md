@@ -1,2 +1,0 @@
-#calculate_azure_data_object_folder_size_and_path
-::: airt_service.data.utils.calculate_azure_data_object_folder_size_and_path

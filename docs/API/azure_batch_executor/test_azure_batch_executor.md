@@ -1,2 +1,0 @@
-#test_azure_batch_executor
-::: airt_service.airflow.azure_batch_executor.test_azure_batch_executor

@@ -1,2 +1,0 @@
-#get_application_and_message_config
-::: airt_service.sms_utils.get_application_and_message_config
