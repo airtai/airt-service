@@ -60,7 +60,7 @@ def create_dag(
     dag_id: str,
     dag_definition_template: str,
     *,
-    root_path: Path = Path("/root/airflow/dags/"),
+    root_path: Path = Path(f"{os.environ['HOME']}/airflow/dags/"),
     **kwargs,
 ):
     root_path.mkdir(exist_ok=True, parents=True)
@@ -81,7 +81,7 @@ def create_dag(
 def create_testing_dag_ctx(
     dag_definition_template: str,
     *,
-    root_path: Path = Path("/root/airflow/dags/"),
+    root_path: Path = Path(f"{os.environ['HOME']}/airflow/dags/"),
     **kwargs,
 ):
     tmp_file_path = None
