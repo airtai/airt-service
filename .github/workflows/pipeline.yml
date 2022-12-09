@@ -69,7 +69,7 @@ jobs:
         shell: bash
     needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
-      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
+      image: ghcr.io/airtai/airt-service-dev:latest
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
