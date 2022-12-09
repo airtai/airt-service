@@ -69,7 +69,7 @@ jobs:
         shell: bash
     needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
-      image: ghcr.io/airtai/airt-service-dev:latest
+      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
@@ -126,8 +126,8 @@ jobs:
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
-      - run: pip install pyOpenSSL==22.1.0 ndg-httpsclient pyasn1
-      - run: pip install pyopenssl ndg-httpsclient pyasn1 urllib3
+      # - run: pip install pyOpenSSL==22.1.0 ndg-httpsclient pyasn1
+      # - run: pip install pyopenssl ndg-httpsclient pyasn1 urllib3
 
 
       - name: Run test without failing
