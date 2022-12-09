@@ -16,6 +16,11 @@ jobs:
       - run: ./scripts/install_airt.sh
       - uses: airtai/workflows/nbdev-mkdocs-ghp@main
 
+  nbdev-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fastai/workflows/quarto-ghp@master
+
   test-deploy:
     runs-on: ubuntu-latest
     env:
