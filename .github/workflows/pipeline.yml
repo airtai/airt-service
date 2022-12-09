@@ -38,7 +38,7 @@ jobs:
   secrets_scan:
     runs-on: ubuntu-22.04
     container:
-      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
+      image: ghcr.io/airtai/airt-service-dev:latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -69,7 +69,7 @@ jobs:
         shell: bash
     needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
-      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
+      image: ghcr.io/airtai/airt-service-dev:latest
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
@@ -144,7 +144,7 @@ jobs:
         shell: bash
     needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
-      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
+      image: ghcr.io/airtai/airt-service-dev:latest
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
@@ -216,7 +216,7 @@ jobs:
         shell: bash
     needs: [unit_test, test_cloud_provider_batch_executor]
     container:
-      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
+      image: ghcr.io/airtai/airt-service-dev:latest
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
@@ -341,7 +341,7 @@ jobs:
     needs: [deploy]
     if: github.ref_name == 'main' || github.ref_name == 'dev'
     container:
-      image: ghcr.io/airtai/airt-docker-dask-tf2:${{ github.ref_name == 'main' && 'latest' || 'dev' }}
+      image: ghcr.io/airtai/airt-service-dev:latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
