@@ -80,8 +80,9 @@ clean:
 	rm -rf build
 	rm -rf dist
 	rm -rf site
-	rm -rf docs/index.md docs/SUMMARY.md docs/API
 	rm -rf /tmp/.build_installs
+	rm -rf mkdocs/docs/
+	rm -rf mkdocs/site/
 	pip uninstall -r build_and_test_requirements.txt -y
 	pip uninstall airt-service -y
 
