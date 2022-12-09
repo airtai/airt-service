@@ -127,6 +127,8 @@ jobs:
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
       - run: pip install pyOpenSSL==22.1.0 ndg-httpsclient pyasn1
+      - run: pip install pyopenssl ndg-httpsclient pyasn1 urllib3
+
 
       - name: Run test without failing
         id: run_test
