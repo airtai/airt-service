@@ -1,4 +1,0 @@
-#nbdev==2.3.9
-#black==22.10.0
-bandit==1.7.4
-semgrep==0.101.1

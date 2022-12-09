@@ -3,9 +3,8 @@ SRC = $(wildcard notebooks/*.ipynb)
 .PHONY: all
 all: clean dist install alembic_migrate webservice.py site
 
-airt_service: $(SRC) /tmp/.build_installs
+airt_service: $(SRC)
 	nbdev_export
-	pip install -e '.[dev]'
 	touch airt_service
 
 dast: dast_zast
@@ -24,15 +23,16 @@ sast_semgrep: airt_service
 	semgrep --config auto --error airt_service
 	touch .sast_semgrep
 
-docs/SUMMARY.md: dist
-	airt-docs airt_service
+# docs/SUMMARY.md: dist
+# 	airt-docs airt_service
 
-docs/index.md: notebooks/index.ipynb dist
-	jupyter nbconvert --to markdown --stdout --RegexRemovePreprocessor.patterns="['\# hide', '\#hide']" notebooks/index.ipynb | sed "s/{{ get_airt_service_version }}/$$(pip show airt-service | grep Version | cut -d ":" -f 2 | xargs)/" > docs/index.md
+# docs/index.md: notebooks/index.ipynb dist
+# 	jupyter nbconvert --to markdown --stdout --RegexRemovePreprocessor.patterns="['\# hide', '\#hide']" notebooks/index.ipynb | sed "s/{{ get_airt_service_version }}/$$(pip show airt-service | grep Version | cut -d ":" -f 2 | xargs)/" > docs/index.md
 
-site: install docs/index.md docs/SUMMARY.md
+#docs/index.md docs/SUMMARY.md
+# cp docs/index.md README.md
+site: install
 	nbdev_mkdocs docs
-	cp docs/index.md README.md
 	touch site
     
 docs_serve: site
@@ -80,16 +80,14 @@ clean:
 	rm -rf build
 	rm -rf dist
 	rm -rf site
-	rm -rf /tmp/.build_installs
 	rm -rf mkdocs/docs/
 	rm -rf mkdocs/site/
-	pip uninstall -r build_and_test_requirements.txt -y
 	pip uninstall airt-service -y
 
 install_airt:
 	./scripts/install_airt.sh
 
-install_airflow:
+install_airflow: .install_dependencies
 	./scripts/install_airflow.sh
 
 start_airflow: install_airflow
@@ -110,8 +108,15 @@ start_airflow: install_airflow
 	pre-commit install
 	touch .install_pre_commit_hooks
 
+.install_dependencies:
+	sudo apt install gettext-base default-libmysqlclient-dev virtualenv -y
+
+export PATH := /home/kumaran/.local/bin:$(PATH)
+
 install: dist install_airt .install_pre_commit_hooks start_airflow
-	pip install --force-reinstall dist/airt_service-*-py3-none-any.whl
+	pip install -e '.[dev]'
+#export PATH=$PATH:/home/kumaran/.local/bin
+#pip install --force-reinstall dist/airt_service-*-py3-none-any.whl
 
 mypy: install
 	mypy airt_service --ignore-missing-imports
@@ -136,7 +141,3 @@ build_and_check_docker_image: batch_environment.yml
 
 trivy_scan_repo:
 	./scripts/trivy_scan_repo.sh
-
-/tmp/.build_installs: build_and_test_requirements.txt
-	pip install -r build_and_test_requirements.txt
-	touch /tmp/.build_installs
