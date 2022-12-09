@@ -1,7 +1,7 @@
 SRC = $(wildcard notebooks/*.ipynb)
 
 .PHONY: all
-all: clean dist install alembic_migrate webservice.py site
+all: clean dist install .install_pre_commit_hooks alembic_migrate webservice.py site
 
 airt_service: $(SRC)
 	nbdev_export
@@ -113,7 +113,7 @@ start_airflow: install_airflow
 
 export PATH := /home/kumaran/.local/bin:$(PATH)
 
-install: dist install_airt .install_pre_commit_hooks start_airflow
+install: dist install_airt start_airflow
 	pip install -e '.[dev]'
 #export PATH=$PATH:/home/kumaran/.local/bin
 #pip install --force-reinstall dist/airt_service-*-py3-none-any.whl
