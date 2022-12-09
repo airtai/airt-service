@@ -181,3 +181,4 @@ dast-api-scan-report.html
 # nbdev_mkdocs
 mkdocs/docs/
 mkdocs/site/
+notebooks/sidebar.yml
