@@ -86,6 +86,8 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     """A subclass of UserBase class"""
 
+    __table_args__ = {"extend_existing": True}
+
     id: Optional[int] = Field(default=None, primary_key=True)
     uuid: uuid_pkg.UUID = Field(
         default_factory=uuid_pkg.uuid4, index=True, nullable=False
@@ -233,6 +235,8 @@ class APIKeyBase(SQLModel):
 class APIKey(APIKeyBase, table=True):
     """A subclass of APIKeyBase class"""
 
+    __table_args__ = {"extend_existing": True}
+
     id: Optional[int] = Field(default=None, primary_key=True)
     uuid: uuid_pkg.UUID = Field(
         default_factory=uuid_pkg.uuid4, index=True, nullable=False
@@ -285,6 +289,8 @@ class APIKeyRead(APIKeyBase):
 
 # %% ../../notebooks/DB_Models.ipynb 8
 class DataBlobTagLink(SQLModel, table=True):
+    __table_args__ = {"extend_existing": True}
+
     datablob_id: Optional[int] = Field(
         default=None, foreign_key="datablob.id", primary_key=True
     )
@@ -292,6 +298,8 @@ class DataBlobTagLink(SQLModel, table=True):
 
 # %% ../../notebooks/DB_Models.ipynb 9
 class DataSourceTagLink(SQLModel, table=True):
+    __table_args__ = {"extend_existing": True}
+
     datasource_id: Optional[int] = Field(
         default=None, foreign_key="datasource.id", primary_key=True
     )
@@ -306,6 +314,8 @@ class TagBase(SQLModel):
 
 class Tag(TagBase, table=True):
     """A subclass of TagBase class"""
+
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     uuid: uuid_pkg.UUID = Field(
@@ -374,6 +384,8 @@ class DataBlobBase(SQLModel):
 
 class DataBlob(DataBlobBase, table=True):
     """A subclass of DataBlobBase class"""
+
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     uuid: uuid_pkg.UUID = Field(
@@ -566,6 +578,8 @@ class DataSourceBase(SQLModel):
 class DataSource(DataSourceBase, table=True):
     """A subclass of DataSourceBase class"""
 
+    __table_args__ = {"extend_existing": True}
+
     id: Optional[int] = Field(default=None, primary_key=True)
     uuid: uuid_pkg.UUID = Field(
         default_factory=uuid_pkg.uuid4, index=True, nullable=False
@@ -673,6 +687,8 @@ class ModelBase(SQLModel):
 class Model(ModelBase, table=True):
     """A subclass of ModelBase class"""
 
+    __table_args__ = {"extend_existing": True}
+
     id: Optional[int] = Field(default=None, primary_key=True)
     uuid: uuid_pkg.UUID = Field(
         default_factory=uuid_pkg.uuid4, index=True, nullable=False
@@ -722,6 +738,8 @@ class PredictionBase(SQLModel):
 
 class Prediction(PredictionBase, table=True):
     """A subclass of PredictionBase class"""
+
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     uuid: uuid_pkg.UUID = Field(
@@ -851,6 +869,8 @@ class PredictionPushBase(SQLModel):
 class PredictionPush(PredictionPushBase, table=True):
     """A subclass of PredictionPushBase class"""
 
+    __table_args__ = {"extend_existing": True}
+
     id: Optional[int] = Field(default=None, primary_key=True)
     uuid: uuid_pkg.UUID = Field(
         default_factory=uuid_pkg.uuid4, index=True, nullable=False
@@ -905,6 +925,8 @@ class SSOBase(SQLModel):
 class SSO(SSOBase, table=True):
     """A subclass of SSOBase class"""
 
+    __table_args__ = {"extend_existing": True}
+
     id: Optional[int] = Field(default=None, primary_key=True)
 
     username: str = Field(default=None, foreign_key="user.username")
@@ -923,6 +945,8 @@ class SSORead(SSOBase):
 class SSOProtocol(SQLModel, table=True):
     """A base class for managing SSO protocol"""
 
+    __table_args__ = {"extend_existing": True}
+
     id: Optional[int] = Field(default=None, primary_key=True)
 
     nonce: Optional[str] = Field(default=None)
@@ -937,6 +961,8 @@ class SSOProtocol(SQLModel, table=True):
 class SMS(SQLModel, table=True):
     """A base class for managing the sms"""
 
+    __table_args__ = {"extend_existing": True}
+
     id: Optional[int] = Field(default=None, primary_key=True)
     application_id: str
     message_id: str
@@ -948,6 +974,8 @@ class SMS(SQLModel, table=True):
 
 class SMSProtocol(SQLModel, table=True):
     """A base class for managing SMS protocol"""
+
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     pin_id: str
