@@ -125,7 +125,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: settings.ini
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
-      # - run: chown -R $(id -u):$(id -g) $PWD
+      - run: chown -R $(id -u):$(id -g) $PWD
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
 
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
