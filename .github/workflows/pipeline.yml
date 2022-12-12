@@ -142,7 +142,7 @@ jobs:
         if: steps.run_test.outcome != 'success'
         run: exit 1
 
-  unit_test_new:
+  unit_test:
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -227,7 +227,7 @@ jobs:
       run:
         shell: bash
     # needs: [sast, trivy, secrets_scan, detect_secrets]
-    needs: [unit_test_old, unit_test_new]
+    needs: [unit_test]
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
     env:
