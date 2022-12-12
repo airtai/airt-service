@@ -87,7 +87,7 @@ clean:
 install_airt:
 	./scripts/install_airt.sh
 
-install_airflow: .install_dependencies
+install_airflow:
 	./scripts/install_airflow.sh
 
 start_airflow: install_airflow
@@ -107,9 +107,6 @@ start_airflow: install_airflow
 .install_pre_commit_hooks:
 	pre-commit install
 	touch .install_pre_commit_hooks
-
-.install_dependencies:
-	sudo apt install gettext-base default-libmysqlclient-dev virtualenv -y
 
 export PATH := /home/kumaran/.local/bin:$(PATH)
 
