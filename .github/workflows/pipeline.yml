@@ -68,17 +68,17 @@ jobs:
       run:
         shell: bash
     needs: [sast, trivy, secrets_scan, detect_secrets]
-    # container:
-    #   image: ghcr.io/airtai/nbdev-mkdocs:latest
+    container:
+      image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
-      DB_HOST: "localhost"
+      DB_HOST: "mysql"
       DB_PORT: 3306
       DB_DATABASE: "airt_service"
       DB_DATABASE_SERVER: "mysql"
       DOMAIN: "localhost"
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mysql+mysqldb://root:SuperSecretPassword@localhost:3306/airflow"
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mysql+mysqldb://root:SuperSecretPassword@mysql:3306/airflow"
 
       AIRT_SERVICE_SUPER_USER_PASSWORD: ${{ secrets.CI_AIRT_SERVICE_SUPER_USER_PASSWORD }}
       AIRT_TOKEN_SECRET_KEY: ${{ secrets.CI_AIRT_TOKEN_SECRET_KEY }}
@@ -126,22 +126,17 @@ jobs:
           cache-dependency-path: settings.ini
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       # - run: chown -R $(id -u):$(id -g) $PWD
-      # - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
 
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
       # - run: pip install pyOpenSSL==22.1.0 ndg-httpsclient pyasn1
       # - run: pip install pyopenssl ndg-httpsclient pyasn1 urllib3
-      - run: sudo apt update && sudo apt install -y build-essential gettext-base default-libmysqlclient-dev virtualenv git
+      # - run: sudo apt update && sudo apt install -y build-essential gettext-base default-libmysqlclient-dev virtualenv git
 
-      - run: python3 -c 'import ssl; print(ssl.OPENSSL_VERSION)'
-      - run: unset https_proxy
-      - run: sudo apt-get -y install libffi-dev
-      - run: pip install requests[security]
-
-      - run: pip install nbdev black nbdev-mkdocs twine
-      - run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      - run: pip install -e ".[dev]"
+      # - run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
       - name: Run test without failing
         id: run_test
         run: make test
@@ -158,7 +153,8 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: [sast, trivy, secrets_scan, detect_secrets]
+    # needs: [sast, trivy, secrets_scan, detect_secrets]
+    needs: [unit_test]
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
     env:
