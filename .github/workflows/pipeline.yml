@@ -140,6 +140,7 @@ jobs:
       - run: sudo apt-get -y install libffi-dev
       - run: pip install requests[security]
 
+      - run: pip install nbdev black nbdev-mkdocs twine
       - run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
       - name: Run test without failing
         id: run_test
