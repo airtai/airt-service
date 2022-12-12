@@ -68,8 +68,8 @@ jobs:
       run:
         shell: bash
     needs: [sast, trivy, secrets_scan, detect_secrets]
-    container:
-      image: ghcr.io/airtai/nbdev-mkdocs:latest
+    # container:
+    #   image: ghcr.io/airtai/nbdev-mkdocs:latest
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
@@ -119,6 +119,11 @@ jobs:
           - 3306:3306
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.version }}
+          cache: "pip"
+          cache-dependency-path: settings.ini
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
