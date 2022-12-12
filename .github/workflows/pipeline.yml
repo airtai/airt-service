@@ -73,12 +73,12 @@ jobs:
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
-      DB_HOST: "mysql"
+      DB_HOST: "localhost"
       DB_PORT: 3306
       DB_DATABASE: "airt_service"
       DB_DATABASE_SERVER: "mysql"
       DOMAIN: "localhost"
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mysql+mysqldb://root:SuperSecretPassword@mysql:3306/airflow"
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mysql+mysqldb://root:SuperSecretPassword@localhost:3306/airflow"
 
       AIRT_SERVICE_SUPER_USER_PASSWORD: ${{ secrets.CI_AIRT_SERVICE_SUPER_USER_PASSWORD }}
       AIRT_TOKEN_SECRET_KEY: ${{ secrets.CI_AIRT_TOKEN_SECRET_KEY }}
