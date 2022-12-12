@@ -69,7 +69,7 @@ jobs:
         shell: bash
     needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
-      image: ghcr.io/airtai/airt-service-dev:latest
+      image: ghcr.io/airtai/nbdev-mkdocs:latest
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
@@ -128,6 +128,7 @@ jobs:
 
       # - run: pip install pyOpenSSL==22.1.0 ndg-httpsclient pyasn1
       # - run: pip install pyopenssl ndg-httpsclient pyasn1 urllib3
+      - run: sudo apt update && sudo apt install -y build-essential default-libmysqlclient-dev git
 
       - run: python3 -c 'import ssl; print(ssl.OPENSSL_VERSION)'
       - run: unset https_proxy
