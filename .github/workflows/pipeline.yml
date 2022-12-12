@@ -199,7 +199,7 @@ jobs:
           - 3306:3306
     steps:
       - uses: actions/checkout@v3
-      # - run: chown -R $(id -u):$(id -g) $PWD
+      - run: chown -R $(id -u):$(id -g) $PWD
       - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
 
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
