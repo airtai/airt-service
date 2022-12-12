@@ -6,18 +6,7 @@ on:
   workflow_dispatch:
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    env:
-      ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - run: sudo apt update && sudo apt install default-libmysqlclient-dev -y
-      - run: ./scripts/install_airt.sh
-      - uses: airtai/workflows/nbdev-mkdocs-ghp@main
-
-  test-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
     steps:
@@ -28,7 +17,6 @@ jobs:
           cache: "pip"
           cache-dependency-path: settings.ini
       - run: sudo apt update && sudo apt install default-libmysqlclient-dev -y
-      # - run: chown -R $(id -u):$(id -g) $PWD
       - run: ./scripts/install_airt.sh
       - name: Install Dependencies
         env:
@@ -72,7 +60,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ inputs.ghtoken }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           force_orphan: true
           publish_dir: ./mkdocs/site
           # The following lines assign commit authorship to the official GH-Actions bot for deploys to `gh-pages` branch.
