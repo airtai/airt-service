@@ -129,6 +129,10 @@ jobs:
       # - run: pip install pyOpenSSL==22.1.0 ndg-httpsclient pyasn1
       # - run: pip install pyopenssl ndg-httpsclient pyasn1 urllib3
 
+      - run: python3 -c 'import ssl; print(ssl.OPENSSL_VERSION)'
+      - run: unset https_proxy
+      - run: sudo apt-get -y install libffi-dev
+      - run: pip install requests[security]
 
       - name: Run test without failing
         id: run_test
