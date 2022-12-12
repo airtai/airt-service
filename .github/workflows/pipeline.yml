@@ -62,12 +62,12 @@ jobs:
       - run: make dist
       - run: make detect_secrets
 
-  unit_test:
+  unit_test_old:
     runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
-    needs: [sast, trivy, secrets_scan, detect_secrets]
+    # needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-docker-dask-tf2:dev
     env:
@@ -142,13 +142,92 @@ jobs:
         if: steps.run_test.outcome != 'success'
         run: exit 1
 
+  unit_test_new:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    # needs: [sast, trivy, secrets_scan, detect_secrets]
+    container:
+      image: ghcr.io/airtai/airt-service-dev:latest
+    env:
+      DB_USERNAME: "root"
+      DB_PASSWORD: "SuperSecretPassword"
+      DB_HOST: "mysql"
+      DB_PORT: 3306
+      DB_DATABASE: "airt_service"
+      DB_DATABASE_SERVER: "mysql"
+      DOMAIN: "localhost"
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mysql+mysqldb://root:SuperSecretPassword@mysql:3306/airflow"
+
+      AIRT_SERVICE_SUPER_USER_PASSWORD: ${{ secrets.CI_AIRT_SERVICE_SUPER_USER_PASSWORD }}
+      AIRT_TOKEN_SECRET_KEY: ${{ secrets.CI_AIRT_TOKEN_SECRET_KEY }}
+      # STORAGE_BUCKET_PREFIX: "gitlab-airt-service-testing-"$(echo $RANDOM | md5sum | head -c 20)
+      AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
+      # AZURE_STORAGE_ACCOUNT_PREFIX: "glabairts"$(echo $RANDOM | md5sum | head -c 5)
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.CI_AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.CI_AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.CI_AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.CI_AZURE_CLIENT_SECRET }}
+      AZURE_RESOURCE_GROUP: ${{ secrets.CI_AZURE_RESOURCE_GROUP }}
+      AIRFLOW_PASSWORD: ${{ secrets.CI_AIRFLOW_PASSWORD }}
+      SHARED_KEY_CREDENTIALS: ${{ secrets.CI_SHARED_KEY_CREDENTIALS }}
+      GOOGLE_CLIENT_ID: ${{ secrets.CI_GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.CI_GOOGLE_CLIENT_SECRET }}
+      GITHUB_CLIENT_ID: ${{ secrets.CI_GITHUB_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.CI_GITHUB_CLIENT_SECRET }}
+      INFOBIP_BASE_URL: ${{ secrets.CI_INFOBIP_BASE_URL }}
+      INFOBIP_API_KEY: ${{ secrets.CI_INFOBIP_API_KEY }}
+      INFOBIP_SENDER_ID: ${{ secrets.CI_INFOBIP_SENDER_ID }}
+      CLICKHOUSE_USERNAME: ${{ secrets.CLICKHOUSE_USERNAME }}
+      CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD }}
+      CLICKHOUSE_HOST: ${{ secrets.CLICKHOUSE_HOST }}
+      CLICKHOUSE_DATABASE: ${{ secrets.CLICKHOUSE_DATABASE }}
+      CLICKHOUSE_PORT: ${{ secrets.CLICKHOUSE_PORT }}
+      CLICKHOUSE_PROTOCOL: ${{ secrets.CLICKHOUSE_PROTOCOL }}
+      CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
+    services:
+      mysql:
+        image: mysql:8.0.27
+        env:
+          MYSQL_DATABASE: "airt_service"
+          MYSQL_USER: "airt"
+          MYSQL_PASSWORD: "SuperSecretPassword"
+          MYSQL_ROOT_PASSWORD: "SuperSecretPassword"
+        ports:
+          - 3306:3306
+    steps:
+      - uses: actions/checkout@v3
+      # - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
+
+      - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
+      - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
+
+      - run: pip install pyopenssl ndg-httpsclient pyasn1
+      - run: sudo apt update && sudo apt install -y build-essential gettext-base default-libmysqlclient-dev virtualenv git
+
+      - run: python3 -c 'import os,sysconfig;print(sysconfig.get_path("scripts",f"{os.name}_user"))'
+      - run: pip install -e ".[dev]"
+      - name: Run test without failing
+        id: run_test
+        run: make test
+        continue-on-error: true
+
+      - run: make empty_bucket
+
+      - name: Raise error if make test failed earlier
+        if: steps.run_test.outcome != 'success'
+        run: exit 1
+
   test_cloud_provider_batch_executor:
     runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
     # needs: [sast, trivy, secrets_scan, detect_secrets]
-    needs: [unit_test]
+    needs: [unit_test_old, unit_test_new]
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
     env:
