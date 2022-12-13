@@ -213,10 +213,6 @@ jobs:
       - run: python3 -c 'import os,sysconfig;print(sysconfig.get_path("scripts",f"{os.name}_user"))'
       - run: pip install -e ".[dev]"
 
-      - run: make install_airflow
-      - run: ls -la $HOME
-      - run: ls -la $HOME/airflow/dags
-
       - run: make start_airflow
       - run: ls -la $HOME
       - run: ls -la $HOME/airflow/dags
@@ -227,6 +223,7 @@ jobs:
         continue-on-error: true
 
       - run: make empty_bucket
+      - run: ls -la $HOME/airflow/dags
 
       - name: Raise error if make test failed earlier
         if: steps.run_test.outcome != 'success'
