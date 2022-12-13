@@ -148,18 +148,18 @@ jobs:
       run:
         shell: bash
     # needs: [sast, trivy, secrets_scan, detect_secrets]
-    # container:
+    container:
       # image: ghcr.io/airtai/airt-service-dev:latest
-      # image: ubuntu:20.04
+      image: ubuntu:18.04
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
-      DB_HOST: "localhost"
+      DB_HOST: "mysql"
       DB_PORT: 3306
       DB_DATABASE: "airt_service"
       DB_DATABASE_SERVER: "mysql"
       DOMAIN: "localhost"
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mysql+mysqldb://root:SuperSecretPassword@localhost:3306/airflow"
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mysql+mysqldb://root:SuperSecretPassword@mysql:3306/airflow"
 
       AIRT_SERVICE_SUPER_USER_PASSWORD: ${{ secrets.CI_AIRT_SERVICE_SUPER_USER_PASSWORD }}
       AIRT_TOKEN_SECRET_KEY: ${{ secrets.CI_AIRT_TOKEN_SECRET_KEY }}
@@ -200,21 +200,16 @@ jobs:
           - 3306:3306
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ inputs.version }}
-          cache: "pip"
-          cache-dependency-path: settings.ini
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
 
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
-      - run: sudo apt update && sudo apt install -y python3-dev python3-pip build-essential gettext-base default-libmysqlclient-dev virtualenv git curl wget
+      - run: apt update && apt install -y python3-dev python3-pip build-essential gettext-base default-libmysqlclient-dev virtualenv git curl wget
       - run: pip install pyopenssl ndg-httpsclient pyasn1
 
-      - run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      - run: curl -sL https://aka.ms/InstallAzureCLIDeb | bash
       - run: python3 -c 'import os,sysconfig;print(sysconfig.get_path("scripts",f"{os.name}_user"))'
       - run: pip install -e ".[dev]"
 
