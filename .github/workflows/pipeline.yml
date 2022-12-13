@@ -149,7 +149,8 @@ jobs:
         shell: bash
     # needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
-      image: ghcr.io/airtai/airt-service-dev:latest
+      # image: ghcr.io/airtai/airt-service-dev:latest
+      image: ubuntu:22.04
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
@@ -206,7 +207,7 @@ jobs:
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
       - run: pip install pyopenssl ndg-httpsclient pyasn1
-      - run: sudo apt update && sudo apt install -y build-essential gettext-base default-libmysqlclient-dev virtualenv git
+      - run: sudo apt update && sudo apt install -y python3-dev python3-pip build-essential gettext-base default-libmysqlclient-dev virtualenv git
 
       - run: python3 -c 'import os,sysconfig;print(sysconfig.get_path("scripts",f"{os.name}_user"))'
       - run: pip install -e ".[dev]"
