@@ -19,6 +19,7 @@ if [ ! -f "${AIRFLOW_VENV}/bin/airflow" ]; then
     pip install apache-airflow-providers-microsoft-azure==4.2.0
     deactivate
     mkdir -p $HOME/airflow
+    mkdir -p $HOME/airflow/dags
     envsubst '${HOME},${SSL_CERT},${SSL_KEY}' < airflow.cfg >$HOME/airflow/airflow.cfg
 
     if [ ! -d "$HOME/airflow" ]; then
