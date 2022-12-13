@@ -33,6 +33,11 @@ if [ "$?" == "1" ]; then
     BRANCH=dev
 fi
 
+if test -z "$BRANCH"
+then
+      BRANCH=dev
+fi
+
 echo "REPO=${REPO}"
 echo "AIRT BRANCH=${BRANCH}"
 pip install git+${REPO}@${BRANCH}
