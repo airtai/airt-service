@@ -206,6 +206,10 @@ jobs:
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
+      - run: update-alternatives --set python3 /usr/bin/python3.9
+      - run: python3 --version
+      - run: pip --version
+
       - run: apt update && apt install -y build-essential gettext-base default-libmysqlclient-dev virtualenv git curl wget
       - run: pip install pyopenssl ndg-httpsclient pyasn1
 
