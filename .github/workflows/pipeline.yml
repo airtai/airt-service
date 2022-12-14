@@ -213,17 +213,12 @@ jobs:
 
       - run: apt update && apt install -y build-essential gettext-base default-libmysqlclient-dev virtualenv git curl wget
       - run: pip install pyopenssl ndg-httpsclient pyasn1
-      - run: apt install -y python3-dev python3-pip
+      # - run: apt install -y python3-dev python3-pip
 
-      - run: curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-      - run: python3 -c 'import os,sysconfig;print(sysconfig.get_path("scripts",f"{os.name}_user"))'
+      # - run: curl -sL https://aka.ms/InstallAzureCLIDeb | bash
       - run: pip install -e ".[dev]"
 
-      - run: make start_airflow
-      - run: ls -la $HOME
-      - run: ls -la $HOME/airflow/dags
-      - run: cat /github/home/airflow/airflow.cfg
-      - run: /github/home/airflow_venv/bin/airflow info
+      # - run: make start_airflow
 
       - name: Run test without failing
         id: run_test
@@ -231,18 +226,6 @@ jobs:
         continue-on-error: true
 
       - run: make empty_bucket
-
-      - run: ps -aef | grep airflow
-      - run: ls -la $HOME/airflow/dags
-      - run: ls -la $HOME/airflow/logs
-      - run: cat $HOME/airflow/dags/*.py
-      - run: /github/home/airflow_venv/bin/airflow info
-      - run: /github/home/airflow_venv/bin/airflow dags list
-      - run: cat /github/home/airflow/logs/dag_processor_manager/dag_processor_manager.log
-      - run: cat /github/home/airflow/logs/scheduler/latest/tutorial.py.log
-      - run: /github/home/airflow_venv/bin/airflow dags list-runs -d tutorial -o json
-
-
       - name: Raise error if make test failed earlier
         if: steps.run_test.outcome != 'success'
         run: exit 1
