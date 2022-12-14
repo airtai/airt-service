@@ -233,6 +233,7 @@ jobs:
       - run: ps -aef | grep airflow
       - run: ls -la $HOME/airflow/dags
       - run: cat $HOME/airflow/dags/*.py
+      - run: /github/home/airflow_venv/bin/airflow dags list
       - run: /github/home/airflow_venv/bin/airflow dags list-runs -d tutorial -o json
 
 
