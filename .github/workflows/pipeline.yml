@@ -207,6 +207,7 @@ jobs:
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
       - run: update-alternatives --set python3 /usr/bin/python3.9
+      - run: apt update && apt install -y python3.9-dev
       - run: python3 --version
       - run: pip --version
 
