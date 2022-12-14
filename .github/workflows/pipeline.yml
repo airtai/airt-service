@@ -223,6 +223,7 @@ jobs:
       - run: ls -la $HOME
       - run: ls -la $HOME/airflow/dags
       - run: cat /github/home/airflow/airflow.cfg
+      - run: /github/home/airflow_venv/bin/airflow info
 
       - name: Run test without failing
         id: run_test
@@ -233,8 +234,12 @@ jobs:
 
       - run: ps -aef | grep airflow
       - run: ls -la $HOME/airflow/dags
+      - run: ls -la $HOME/airflow/logs
       - run: cat $HOME/airflow/dags/*.py
+      - run: /github/home/airflow_venv/bin/airflow info
       - run: /github/home/airflow_venv/bin/airflow dags list
+      - run: cat /github/home/airflow/logs/dag_processor_manager/dag_processor_manager.log
+      - run: cat /github/home/airflow/logs/scheduler/latest/tutorial.py.log
       - run: /github/home/airflow_venv/bin/airflow dags list-runs -d tutorial -o json
 
 
