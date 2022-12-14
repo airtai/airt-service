@@ -230,10 +230,14 @@ def upload_to_s3_with_retry(
         with open(file_to_upload, "rb") as f:
             files = {"file": (str(file_to_upload), f)}
             response = requests.post(
-                presigned_url, data=presigned_fields, files=files, verify=False
+                presigned_url,
+                data=presigned_fields,
+                files=files,
+                verify=False,  # nosec B501
             )
             assert response.status_code == 204, response.text  # nosec B101
     except requests.exceptions.ConnectionError as e:
+        raise e
         sanitized_print("Retrying upload")
         if curr_iteration == max_retry:
             sanitized_print("Retry failed")
