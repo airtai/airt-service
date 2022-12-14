@@ -13,6 +13,8 @@ from typing import *
 
 import boto3
 import requests
+import ssl
+import httpx
 from botocore.client import Config
 from fastapi import status, HTTPException
 from mypy_boto3_s3.service_resource import Bucket
@@ -208,7 +210,7 @@ def get_queue_definition_arns(
     job_definition_arn = batch_environment_arns[task]["job_definition_arn"]
     return job_queue_arn, job_definition_arn
 
-# %% ../../notebooks/AWS_Utils.ipynb 25
+# %% ../../notebooks/AWS_Utils.ipynb 27
 def upload_to_s3_with_retry(
     file_to_upload: str,
     presigned_url: str,
@@ -229,12 +231,18 @@ def upload_to_s3_with_retry(
     try:
         with open(file_to_upload, "rb") as f:
             files = {"file": (str(file_to_upload), f)}
+
+            ssl_context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS)
+            ciphers = [cipher["name"] for cipher in ssl_context.get_ciphers()]
+            ciphers.append("AES256-GCM-SHA384")
+            ssl_context.set_ciphers(":".join(ciphers))
+
             # nosemgrep: python.requests.security.disabled-cert-validation.disabled-cert-validation
-            response = requests.post(
+            response = httpx.post(
                 presigned_url,
                 data=presigned_fields,
                 files=files,
-                verify=False,  # nosec B501
+                verify=ssl_context,  # nosec B501
             )
             assert response.status_code == 204, response.text  # nosec B101
     except requests.exceptions.ConnectionError as e:
@@ -251,7 +259,7 @@ def upload_to_s3_with_retry(
             curr_iteration + 1,
         )
 
-# %% ../../notebooks/AWS_Utils.ipynb 27
+# %% ../../notebooks/AWS_Utils.ipynb 29
 def get_s3_bucket_and_path_from_uri(uri: Union[str, Path]) -> Tuple[Bucket, str]:
     """Get bucket object and s3 path from s3 uri
 
