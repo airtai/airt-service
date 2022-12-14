@@ -222,6 +222,7 @@ jobs:
       - run: make start_airflow
       - run: ls -la $HOME
       - run: ls -la $HOME/airflow/dags
+      - run: cat /github/home/airflow/airflow.cfg
 
       - name: Run test without failing
         id: run_test
