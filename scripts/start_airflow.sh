@@ -31,8 +31,13 @@ else
     airflow users  create --role Admin --username admin --email info@airt.ai --firstname admin --lastname admin --password "${AIRFLOW_PASSWORD}"
     airflow connections add custom_azure_batch_default --conn-type azure_batch --conn-login testbatchnortheurope --conn-password ${SHARED_KEY_CREDENTIALS} --conn-extra '{"extra__azure_batch__account_url": "https://testbatchnortheurope.northeurope.batch.azure.com"}'
 
+    echo "Starting airflow kerberos"
     airflow kerberos -D
+
+    echo "Starting airflow scheduler"
     airflow scheduler -D
+
+    echo "Starting airflow webserver"
     airflow webserver -D
     deactivate
 
