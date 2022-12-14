@@ -149,8 +149,8 @@ jobs:
         shell: bash
     # needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
-      # image: ghcr.io/airtai/airt-service-dev:latest
-      image: ubuntu:22.04
+      image: ghcr.io/airtai/airt-service-dev:latest
+      # image: ubuntu:22.04
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
@@ -200,11 +200,11 @@ jobs:
           - 3306:3306
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ inputs.version }}
-          cache: "pip"
-          cache-dependency-path: settings.ini
+      # - uses: actions/setup-python@v4
+      #   with:
+      #     python-version: ${{ inputs.version }}
+      #     cache: "pip"
+      #     cache-dependency-path: settings.ini
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
 
