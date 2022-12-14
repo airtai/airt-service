@@ -230,6 +230,9 @@ jobs:
 
       - run: make empty_bucket
       - run: ls -la $HOME/airflow/dags
+      - run: cat $HOME/airflow/dags/*.py
+      - run: /github/home/airflow_venv/bin/airflow dags list-runs -d tutorial -o json
+
 
       - name: Raise error if make test failed earlier
         if: steps.run_test.outcome != 'success'
