@@ -29,12 +29,12 @@ services:
             JUPYTER_CONFIG_DIR: /root/.jupyter
             USER: $USER
             USERNAME: $USERNAME
+            PRESERVE_ENVS: $PRESERVE_ENVS
         env_file:
             - ../.env.dev.config
             - ../.env.dev.secrets
         depends_on:
             - mysql
-        command: ["/usr/bin/bash", "-c", "env && chown -R $USER /home/$USER && sudo -u $USER jt -t airtd -cellw 90% -N -T  --logo /tmp/airt-neg-trans-small.png --fav_icon_dir /tmp/airt_favicons && sudo --preserve-env=$PRESERVE_ENVS -u $USER jupyter notebook --notebook-dir=/work --ip 0.0.0.0 --no-browser --allow-root"]
 
 networks:
     airt-service-network:
