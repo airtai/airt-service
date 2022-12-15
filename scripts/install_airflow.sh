@@ -8,7 +8,7 @@ fi
 AIRFLOW_VENV="${HOME}/airflow_venv"
 if [ ! -d "$AIRFLOW_VENV" ]; then
     # echo "${AIRFLOW_VENV}"
-    virtualenv "${AIRFLOW_VENV}"
+    virtualenv "${AIRFLOW_VENV}" -p python3
 fi
 
 if [ ! -f "${AIRFLOW_VENV}/bin/airflow" ]; then

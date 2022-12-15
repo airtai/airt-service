@@ -238,7 +238,6 @@ def upload_to_s3_with_retry(
             )
             assert response.status_code == 204, response.text  # nosec B101
     except requests.exceptions.ConnectionError as e:
-        raise e
         sanitized_print("Retrying upload")
         if curr_iteration == max_retry:
             sanitized_print("Retry failed")

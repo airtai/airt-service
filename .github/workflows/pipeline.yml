@@ -224,6 +224,7 @@ jobs:
         continue-on-error: true
 
       - run: make empty_bucket
+      - run: $HOME/airflow_venv/bin/python3 --version
       - name: Raise error if make test failed earlier
         if: steps.run_test.outcome != 'success'
         run: exit 1
