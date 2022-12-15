@@ -50,8 +50,6 @@ jobs:
 
   detect_secrets:
     runs-on: ubuntu-22.04
-    # container:
-    #   image: ubuntu:22.04
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
@@ -67,10 +65,9 @@ jobs:
     defaults:
       run:
         shell: bash
-    # needs: [sast, trivy, secrets_scan, detect_secrets]
+    needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
-      # image: ubuntu:22.04
     env:
       DB_USERNAME: "root"
       DB_PASSWORD: "SuperSecretPassword"
@@ -126,16 +123,6 @@ jobs:
       - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
-      # - run: update-alternatives --set python3 /usr/bin/python3.9
-      # - run: apt update && apt install -y python3.9-dev
-      - run: python3 --version
-      - run: pip --version
-
-      # - run: apt update && apt install -y build-essential gettext-base default-libmysqlclient-dev virtualenv git curl wget
-      # - run: pip install pyopenssl ndg-httpsclient pyasn1
-
-      # - run: pip install -e ".[dev]"
-
       - name: Run test without failing
         id: run_test
         run: make test
@@ -151,8 +138,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    # needs: [sast, trivy, secrets_scan, detect_secrets]
-    needs: [unit_test]
+    needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
     env:
