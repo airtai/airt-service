@@ -11,12 +11,6 @@ ARG ACCESS_REP_TOKEN
 
 SHELL ["/bin/bash", "-c"]
 
-# Install airt-lib
-RUN if [ -n "$ACCESS_REP_TOKEN" ] ; \
-    then pip3 install git+https://oauth2:${ACCESS_REP_TOKEN}@gitlab.com/airt.ai/airt.git@${AIRT_LIB_BRANCH} ; \
-    else pip3 install git+https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/airt.ai/airt.git@${AIRT_LIB_BRANCH} ; \
-    fi
-
 COPY assets ./assets
 COPY migrations ./migrations
 COPY scripts ./scripts
@@ -30,6 +24,12 @@ RUN add-apt-repository ppa:deadsnakes/ppa && apt update --fix-missing \
 
 RUN update-alternatives --set python3 /usr/bin/python3.9
 RUN python3 -m pip install --upgrade pip
+
+# Install airt-lib
+RUN if [ -n "$ACCESS_REP_TOKEN" ] ; \
+    then pip3 install git+https://oauth2:${ACCESS_REP_TOKEN}@gitlab.com/airt.ai/airt.git@${AIRT_LIB_BRANCH} ; \
+    else pip3 install git+https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/airt.ai/airt.git@${AIRT_LIB_BRANCH} ; \
+    fi
 
 # Enable unattended-upgrades and print the configuration.
 # If the configuration output is "1" then the unattended upgrade will run every 1 day. If the number is "0" then unattended upgrades are disabled.
