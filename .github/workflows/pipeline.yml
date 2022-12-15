@@ -225,6 +225,7 @@ jobs:
 
       - run: make empty_bucket
       - run: $HOME/airflow_venv/bin/python3 --version
+      - run: $HOME/airflow_venv/bin/airflow dags list-runs -d tutorial -o json
       - name: Raise error if make test failed earlier
         if: steps.run_test.outcome != 'success'
         run: exit 1
