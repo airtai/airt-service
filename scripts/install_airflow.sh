@@ -21,9 +21,4 @@ if [ ! -f "${AIRFLOW_VENV}/bin/airflow" ]; then
     mkdir -p $HOME/airflow
     mkdir -p $HOME/airflow/dags
     envsubst '${HOME},${SSL_CERT},${SSL_KEY}' < airflow.cfg >$HOME/airflow/airflow.cfg
-
-    if [ ! -d "$HOME/airflow" ]; then
-        echo "$HOME/airflow does not exist."
-    fi
-
 fi
