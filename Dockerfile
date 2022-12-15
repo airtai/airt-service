@@ -1,6 +1,6 @@
 ARG TAG
 
-ARG BASE_IMAGE=ghcr.io/airtai/airt-docker-dask-tf2:$TAG
+ARG BASE_IMAGE=ubuntu:22.04
 
 FROM $BASE_IMAGE
 
@@ -21,11 +21,16 @@ COPY assets ./assets
 COPY migrations ./migrations
 COPY scripts ./scripts
 
-RUN apt update; apt install -y --no-install-recommends nginx python3.8-dev mysql-client
+RUN add-apt-repository ppa:deadsnakes/ppa && apt update --fix-missing \
+    && apt install -y --no-install-recommends nginx mysql-client python3.9-dev python3.9-distutils python3-pip \
+    gettext-base default-libmysqlclient-dev virtualenv unattended-upgrades \
+    && apt purge --auto-remove \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install security updates
-RUN apt update --fix-missing
-RUN apt install --assume-yes unattended-upgrades
+RUN update-alternatives --set python3 /usr/bin/python3.9
+RUN python3 -m pip install --upgrade pip
+
 # Enable unattended-upgrades and print the configuration.
 # If the configuration output is "1" then the unattended upgrade will run every 1 day. If the number is "0" then unattended upgrades are disabled.
 RUN dpkg-reconfigure --priority=low unattended-upgrades && apt-config dump APT::Periodic::Unattended-Upgrade
@@ -33,7 +38,7 @@ RUN dpkg-reconfigure --priority=low unattended-upgrades && apt-config dump APT::
 RUN unattended-upgrade -d
 
 COPY webservice.py dist/airt_service-*-py3-none-any.whl ws/* settings.ini alembic.ini errors.yml batch_environment.yml azure_batch_environment.yml Makefile airflow.cfg ./
-RUN pip install airt_service-*-py3-none-any.whl
+RUN pip install -e '.[dev]'
 
 RUN groupadd -r airt
 RUN useradd -r -g airt airt
