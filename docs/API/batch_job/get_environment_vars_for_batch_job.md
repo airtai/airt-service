@@ -1,2 +1,0 @@
-#get_environment_vars_for_batch_job
-::: airt_service.batch_job.get_environment_vars_for_batch_job

@@ -1,2 +1,0 @@
-#get_max_vcpus_memory_for_container
-::: airt_service.aws.batch_utils.get_max_vcpus_memory_for_container

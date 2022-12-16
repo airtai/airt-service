@@ -1,8 +1,0 @@
-mkdocs==1.3.0
-mkdocstrings==0.18.1
-mkdocs-material==8.2.14
-mkdocs-literate-nav==0.4.1
-mkdocs-section-index==0.3.4
-mkdocs-with-pdf==0.9.3
-bandit==1.7.4
-semgrep==0.101.1

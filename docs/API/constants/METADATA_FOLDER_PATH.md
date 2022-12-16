@@ -1,2 +1,0 @@
-#METADATA_FOLDER_PATH
-::: airt_service.constants.METADATA_FOLDER_PATH

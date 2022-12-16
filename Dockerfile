@@ -1,6 +1,6 @@
 ARG TAG
 
-ARG BASE_IMAGE=ghcr.io/airtai/airt-docker-dask-tf2:$TAG
+ARG BASE_IMAGE=ubuntu:22.04
 
 FROM $BASE_IMAGE
 
@@ -11,29 +11,37 @@ ARG ACCESS_REP_TOKEN
 
 SHELL ["/bin/bash", "-c"]
 
+COPY assets ./assets
+COPY migrations ./migrations
+COPY scripts ./scripts
+
+# needed to suppress tons of debconf messages
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt update --fix-missing && apt upgrade --yes \
+    && apt install -y software-properties-common apt-utils build-essential \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt update \
+    && apt install -y --no-install-recommends nginx mysql-client python3.9-dev python3.9-distutils python3-pip python3-apt \
+    gettext-base default-libmysqlclient-dev virtualenv unattended-upgrades git wget curl \
+    && apt purge --auto-remove \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 2
+RUN update-alternatives --set python3 /usr/bin/python3.9
+RUN python3 -m pip install --upgrade pip
+
 # Install airt-lib
 RUN if [ -n "$ACCESS_REP_TOKEN" ] ; \
     then pip3 install git+https://oauth2:${ACCESS_REP_TOKEN}@gitlab.com/airt.ai/airt.git@${AIRT_LIB_BRANCH} ; \
     else pip3 install git+https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/airt.ai/airt.git@${AIRT_LIB_BRANCH} ; \
     fi
 
-COPY assets ./assets
-COPY migrations ./migrations
-COPY scripts ./scripts
-
-RUN apt update; apt install -y --no-install-recommends nginx python3.8-dev mysql-client
-
-# Install security updates
-RUN apt update --fix-missing
-RUN apt install --assume-yes unattended-upgrades
-# Enable unattended-upgrades and print the configuration.
-# If the configuration output is "1" then the unattended upgrade will run every 1 day. If the number is "0" then unattended upgrades are disabled.
-RUN dpkg-reconfigure --priority=low unattended-upgrades && apt-config dump APT::Periodic::Unattended-Upgrade
-# The below command will check and run upgrade only once while building
-RUN unattended-upgrade -d
-
-COPY webservice.py dist/airt_service-*-py3-none-any.whl ws/* settings.ini alembic.ini errors.yml batch_environment.yml azure_batch_environment.yml Makefile airflow.cfg ./
-RUN pip install airt_service-*-py3-none-any.whl
+COPY webservice.py dist/airt_service-*-py3-none-any.whl ws/* settings.ini alembic.ini errors.yml batch_environment.yml azure_batch_environment.yml Makefile \
+    airflow.cfg setup.py README.md ./
+RUN pip install -e '.[dev]'
 
 RUN groupadd -r airt
 RUN useradd -r -g airt airt
@@ -55,4 +63,4 @@ EXPOSE 6006
 USER airt
 
 ENTRYPOINT []
-CMD [ "/usr/bin/fish", "-c", "./start_webservice.sh" ]
+CMD [ "/usr/bin/bash", "-c", "./start_webservice.sh" ]

@@ -1,11 +1,10 @@
 SRC = $(wildcard notebooks/*.ipynb)
 
 .PHONY: all
-all: clean dist install alembic_migrate webservice.py site
+all: clean dist install .install_pre_commit_hooks alembic_migrate webservice.py site
 
-airt_service: $(SRC) /tmp/.build_installs .install_git_secrets_hooks .add_allowed_git_secrets .install_pre_commit_hooks
+airt_service: $(SRC)
 	nbdev_export
-	black airt_service
 	touch airt_service
 
 dast: dast_zast
@@ -24,19 +23,20 @@ sast_semgrep: airt_service
 	semgrep --config auto --error airt_service
 	touch .sast_semgrep
 
-docs/SUMMARY.md: dist
-	airt-docs airt_service
+# docs/SUMMARY.md: dist
+# 	airt-docs airt_service
 
-docs/index.md: notebooks/index.ipynb dist
-	jupyter nbconvert --to markdown --stdout --RegexRemovePreprocessor.patterns="['\# hide', '\#hide']" notebooks/index.ipynb | sed "s/{{ get_airt_service_version }}/$$(pip show airt-service | grep Version | cut -d ":" -f 2 | xargs)/" > docs/index.md
+# docs/index.md: notebooks/index.ipynb dist
+# 	jupyter nbconvert --to markdown --stdout --RegexRemovePreprocessor.patterns="['\# hide', '\#hide']" notebooks/index.ipynb | sed "s/{{ get_airt_service_version }}/$$(pip show airt-service | grep Version | cut -d ":" -f 2 | xargs)/" > docs/index.md
 
-site: install docs/index.md docs/SUMMARY.md
-	mkdocs build
-	cp docs/index.md README.md
+#docs/index.md docs/SUMMARY.md
+# cp docs/index.md README.md
+site: install
+	nbdev_mkdocs docs
 	touch site
     
 docs_serve: site
-	mkdocs serve -a 0.0.0.0:6006
+	nbdev_mkdocs preview
 
 alembic_commit: install
 	alembic revision --autogenerate -m '$(message)'
@@ -51,7 +51,7 @@ empty_bucket:
 	az login --service-principal --username ${AZURE_CLIENT_ID} --tenant ${AZURE_TENANT_ID} --password ${AZURE_CLIENT_SECRET}
 	az storage account list --query "[*].name" -o tsv | grep "^${AZURE_STORAGE_ACCOUNT_PREFIX}" | xargs -I {} az storage account delete --yes --name {} --resource-group ${AZURE_RESOURCE_GROUP}
 
-check_secrets:
+check_secrets: .install_git_secrets_hooks .add_allowed_git_secrets
 	git secrets --scan -r
 
 check: mypy check_secrets detect_secrets sast dast trivy_scan_repo
@@ -67,18 +67,21 @@ pypi: dist
 	twine upload --repository pypi dist/*
 
 dist: airt_service
-	python setup.py sdist bdist_wheel
+	python3 setup.py sdist bdist_wheel
 	touch dist
-    
+
+.PHONY: prepare
+prepare: all check test
+	nbdev_clean
+
 clean:
 	rm -rf airt_service
 	rm -rf airt_service.egg-info
 	rm -rf build
 	rm -rf dist
 	rm -rf site
-	rm -rf docs/index.md docs/SUMMARY.md docs/API
-	rm -rf /tmp/.build_installs
-	pip uninstall -r build_and_test_requirements.txt -y
+	rm -rf mkdocs/docs/
+	rm -rf mkdocs/site/
 	pip uninstall airt-service -y
 
 install_airt:
@@ -105,8 +108,12 @@ start_airflow: install_airflow
 	pre-commit install
 	touch .install_pre_commit_hooks
 
+export PATH := $(HOME)/.local/bin:$(PATH)
+
 install: dist install_airt start_airflow
-	pip install --force-reinstall dist/airt_service-*-py3-none-any.whl
+	pip install -e '.[dev]'
+#export PATH=$PATH:/home/kumaran/.local/bin
+#pip install --force-reinstall dist/airt_service-*-py3-none-any.whl
 
 mypy: install
 	mypy airt_service --ignore-missing-imports
@@ -114,7 +121,7 @@ mypy: install
 check_git_history_for_secrets: .add_allowed_git_secrets
 	git secrets --scan-history
 
-detect_secrets: .install_pre_commit_hooks
+detect_secrets: airt_service
 	git ls-files -z | xargs -0 detect-secrets-hook --baseline .secrets.baseline
 
 webservice.py: install
@@ -131,7 +138,3 @@ build_and_check_docker_image: batch_environment.yml
 
 trivy_scan_repo:
 	./scripts/trivy_scan_repo.sh
-
-/tmp/.build_installs: build_and_test_requirements.txt
-	pip install -r build_and_test_requirements.txt
-	touch /tmp/.build_installs

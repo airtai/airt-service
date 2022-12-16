@@ -17,30 +17,22 @@ services:
         networks:
             - airt-service-network
         volumes:
-            - $AIRT_PROJECT:/tf/airt-service
-            - $AIRT_DATA:/work/data
+            - $AIRT_PROJECT:/work/airt-service
+            - $HOME/.ssh:$HOME/.ssh
+            - $HOME/.gitconfig:$HOME/.gitconfig
+            - $HOME/.aws:$HOME/.aws
             - /etc/passwd:/etc/passwd
             - /etc/group:/etc/group
             - /etc/shadow:/etc/shadow
-            - $HOME/.ssh:$HOME/.ssh
-            - $HOME/.gitconfig:/root/.gitconfig
-            - $HOME/.aws:/root/.aws
         environment:
             STORAGE_PATH: $STORAGE_PATH
             JUPYTER_CONFIG_DIR: /root/.jupyter
             USER: $USER
             USERNAME: $USERNAME
+            PRESERVE_ENVS: $PRESERVE_ENVS
         env_file:
             - ../.env.dev.config
             - ../.env.dev.secrets
-        user: $UID:$GID
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                    - driver: nvidia
-                      device_ids: ['$GPU_PARAMS']
-                      capabilities: [gpu]
         depends_on:
             - mysql
 

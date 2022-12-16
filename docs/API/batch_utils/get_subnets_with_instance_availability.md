@@ -1,2 +1,0 @@
-#get_subnets_with_instance_availability
-::: airt_service.aws.batch_utils.get_subnets_with_instance_availability

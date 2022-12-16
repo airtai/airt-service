@@ -1,2 +1,0 @@
-#prediction_to_azure_blob_storage_route
-::: airt_service.model.prediction.prediction_to_azure_blob_storage_route

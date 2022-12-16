@@ -1,2 +1,0 @@
-#partition_index_value_counts_into_chunks
-::: airt_service.data.clickhouse.partition_index_value_counts_into_chunks

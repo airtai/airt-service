@@ -8,7 +8,7 @@ fi
 AIRFLOW_VENV="${HOME}/airflow_venv"
 if [ ! -d "$AIRFLOW_VENV" ]; then
     # echo "${AIRFLOW_VENV}"
-    virtualenv "${AIRFLOW_VENV}"
+    virtualenv "${AIRFLOW_VENV}" -p python3
 fi
 
 if [ ! -f "${AIRFLOW_VENV}/bin/airflow" ]; then
@@ -18,6 +18,7 @@ if [ ! -f "${AIRFLOW_VENV}/bin/airflow" ]; then
     pip install apache-airflow-providers-amazon==5.1.0
     pip install apache-airflow-providers-microsoft-azure==4.2.0
     deactivate
-    mkdir -p $HOME/airflow/
-    envsubst '${SSL_CERT},${SSL_KEY}' < airflow.cfg >$HOME/airflow/airflow.cfg
+    mkdir -p $HOME/airflow
+    mkdir -p $HOME/airflow/dags
+    envsubst '${HOME},${SSL_CERT},${SSL_KEY}' < airflow.cfg >$HOME/airflow/airflow.cfg
 fi

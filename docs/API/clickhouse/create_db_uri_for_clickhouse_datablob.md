@@ -1,2 +1,0 @@
-#create_db_uri_for_clickhouse_datablob
-::: airt_service.data.clickhouse.create_db_uri_for_clickhouse_datablob

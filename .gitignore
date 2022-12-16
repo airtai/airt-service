@@ -176,3 +176,9 @@ dast-api-scan-report.html
 .install_git_secrets_hooks
 .add_allowed_git_secrets
 .install_pre_commit_hooks
+
+
+# nbdev_mkdocs
+mkdocs/docs/
+mkdocs/site/
+notebooks/sidebar.yml
