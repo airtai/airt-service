@@ -142,6 +142,8 @@ ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "echo $GITHUB_PASSWO
 ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker pull '$CI_REGISTRY_IMAGE':'$TAG'"
 sleep 10
 
+echo "Deleting old images"
+ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker system prune -f || echo 'No images to delete'"
+
 echo "INFO: starting docker containers using compose files"
 ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "set -a && source .env && set +a && docker-compose -p airt-service -f docker/dependencies.yml -f docker/base-server.yml -f docker/server.yml up -d --no-recreate"
-ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker system prune -f || echo 'No images to delete'"
