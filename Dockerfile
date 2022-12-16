@@ -42,16 +42,17 @@ RUN if [ -n "$ACCESS_REP_TOKEN" ] ; \
 COPY webservice.py dist/airt_service-*-py3-none-any.whl ws/* settings.ini alembic.ini errors.yml batch_environment.yml azure_batch_environment.yml Makefile \
     airflow.cfg setup.py README.md ./
 RUN pip install -e '.[dev]'
+RUN pip install airt_service-*-py3-none-any.whl
 
-RUN groupadd -r airt
-RUN useradd -r -g airt airt
+# RUN groupadd -r airt
+# RUN useradd -r -g airt airt
 RUN touch /var/run/nginx.pid && \
   mkdir -p /var/cache/nginx /var/log/nginx /etc/nginx/conf.d /var/lib/nginx/ && \
-  chown -R airt:airt /var/run/nginx.pid && \
-  chown -R airt:airt /var/cache/nginx && \
-  chown -R airt:airt /var/log/nginx && \
-  chown -R airt:airt /etc/nginx/conf.d && \
-  chown -R airt:airt /var/lib/nginx/
+  chown -R 755 /var/run/nginx.pid && \
+  chown -R 755 /var/cache/nginx && \
+  chown -R 755 /var/log/nginx && \
+  chown -R 755 /etc/nginx/conf.d && \
+  chown -R 755 /var/lib/nginx/
 
 ENV DOMAIN=""
 
@@ -60,7 +61,7 @@ EXPOSE 6006
 # run container as non-root user
 # RUN groupadd -r airt
 # RUN useradd -r -g airt non-root
-USER airt
+# USER airt
 
 ENTRYPOINT []
 CMD [ "/usr/bin/bash", "-c", "./start_webservice.sh" ]

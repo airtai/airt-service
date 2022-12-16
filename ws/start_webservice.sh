@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
-if test -n "$RUN_NGINX"
+if test -n "$RUN_NGINX";
+then
     ./make_nginx_conf.sh
     cat /etc/nginx/conf.d/default.conf
 
@@ -9,7 +10,7 @@ if test -n "$RUN_NGINX"
 
     export SSL_CERT="/letsencrypt/live/$DOMAIN/fullchain.pem"
     export SSL_KEY="/letsencrypt/live/$DOMAIN/privkey.pem"
-end
+fi
 
 # echo $DB_USERNAME $DB_PASSWORD $DB_HOST $DB_PORT $DB_DATABASE $DB_DATABASE_SERVER
 
