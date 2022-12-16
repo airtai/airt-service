@@ -108,7 +108,7 @@ start_airflow: install_airflow
 	pre-commit install
 	touch .install_pre_commit_hooks
 
-export PATH := /home/kumaran/.local/bin:$(PATH)
+export PATH := $(HOME)/.local/bin:$(PATH)
 
 install: dist install_airt start_airflow
 	pip install -e '.[dev]'
