@@ -1,4 +1,4 @@
-#!/usr/bin/fish
+#!/usr/bin/bash
 
 if test -n "$RUN_NGINX"
     ./make_nginx_conf.sh
