@@ -1,2 +1,2 @@
-# Dependency of notebook is having a vulnerability - https://avd.aquasec.com/nvd/2022/cve-2022-34749/. Ignoring it because of not being exposed to internet.
-CVE-2022-34749
+# Specify at least 1 USER command in Dockerfile with non-root user as argument
+DS002
