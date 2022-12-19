@@ -181,7 +181,7 @@ def _create_step_template(
     tag = "dev"
     if os.environ["DOMAIN"] == "api.airt.ai":
         tag = "latest"
-    batch_task_container_settings = f"""batch_task_container_settings=batchmodels.TaskContainerSettings(image_name="registry.gitlab.com/airt.ai/airt-service:{tag}", container_run_options="{azure_batch_environment_vars}")"""
+    batch_task_container_settings = f"""batch_task_container_settings=batchmodels.TaskContainerSettings(image_name="ghcr.io/airtai/airt-service:{tag}", container_run_options="{azure_batch_environment_vars}")"""
 
     task = f"""AzureBatchOperator({task_params}, {vm_details}, {auto_scale_params}, {batch_task_container_settings})"""
     return task

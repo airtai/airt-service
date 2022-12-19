@@ -1115,7 +1115,7 @@ def _create_default_batch_environment_config(
         csv_processing="r5.16xlarge",
     )
 
-    image = "registry.gitlab.com/airt.ai/airt-service:dev"
+    image = "ghcr.io/airtai/airt-service:dev"
 
     yaml_str = {}
 
