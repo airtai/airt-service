@@ -41,4 +41,4 @@ then
 fi
 
 # Initiate trivy
-sh ./ws/check_docker.sh
+./ws/check_docker.sh
