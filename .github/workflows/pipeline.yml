@@ -1,0 +1,359 @@
+name: Pipeline
+on: [push]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  PROD_CONFIG: ${{ secrets.PROD_CONFIG }}
+  STAGING_CONFIG: ${{ secrets.STAGING_CONFIG }}
+
+jobs:
+  sast:
+    runs-on: ubuntu-22.04
+    container:
+      image: ubuntu:22.04
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: apt update && apt install -y build-essential python3-dev python3-pip default-libmysqlclient-dev
+      - run: pip install -e ".[dev]"
+      - run: make dist
+      - run: make sast
+
+  trivy:
+    runs-on: ubuntu-22.04
+    container:
+      image: docker.io/aquasec/trivy:latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: apk update
+      - run: apk add make
+      - run: trivy --version
+      - run: sh ./scripts/trivy_scan_repo.sh
+
+  secrets_scan:
+    runs-on: ubuntu-22.04
+    container:
+      image: ghcr.io/airtai/airt-service-dev:latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: make check_git_history_for_secrets
+
+  detect_secrets:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: sudo apt update && sudo apt install -y build-essential python3-dev python3-pip default-libmysqlclient-dev git
+      - run: pip install -e ".[dev]"
+      - run: make dist
+      - run: make detect_secrets
+
+  unit_test:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    needs: [sast, trivy, secrets_scan, detect_secrets]
+    container:
+      image: ghcr.io/airtai/airt-service-dev:latest
+    env:
+      DB_USERNAME: "root"
+      DB_PASSWORD: "SuperSecretPassword"
+      DB_HOST: "mysql"
+      DB_PORT: 3306
+      DB_DATABASE: "airt_service"
+      DB_DATABASE_SERVER: "mysql"
+      DOMAIN: "localhost"
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mysql+mysqldb://root:SuperSecretPassword@mysql:3306/airflow"
+
+      AIRT_SERVICE_SUPER_USER_PASSWORD: ${{ secrets.CI_AIRT_SERVICE_SUPER_USER_PASSWORD }}
+      AIRT_TOKEN_SECRET_KEY: ${{ secrets.CI_AIRT_TOKEN_SECRET_KEY }}
+      # STORAGE_BUCKET_PREFIX: "github-airt-service-testing-"$(echo $RANDOM | md5sum | head -c 20)
+      AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
+      # AZURE_STORAGE_ACCOUNT_PREFIX: "ghubairts"$(echo $RANDOM | md5sum | head -c 5)
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.CI_AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.CI_AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.CI_AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.CI_AZURE_CLIENT_SECRET }}
+      AZURE_RESOURCE_GROUP: ${{ secrets.CI_AZURE_RESOURCE_GROUP }}
+      AIRFLOW_PASSWORD: ${{ secrets.CI_AIRFLOW_PASSWORD }}
+      SHARED_KEY_CREDENTIALS: ${{ secrets.CI_SHARED_KEY_CREDENTIALS }}
+      GOOGLE_CLIENT_ID: ${{ secrets.CI_GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.CI_GOOGLE_CLIENT_SECRET }}
+      GITHUB_CLIENT_ID: ${{ secrets.CI_GITHUB_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.CI_GITHUB_CLIENT_SECRET }}
+      INFOBIP_BASE_URL: ${{ secrets.CI_INFOBIP_BASE_URL }}
+      INFOBIP_API_KEY: ${{ secrets.CI_INFOBIP_API_KEY }}
+      INFOBIP_SENDER_ID: ${{ secrets.CI_INFOBIP_SENDER_ID }}
+      CLICKHOUSE_USERNAME: ${{ secrets.CLICKHOUSE_USERNAME }}
+      CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD }}
+      CLICKHOUSE_HOST: ${{ secrets.CLICKHOUSE_HOST }}
+      CLICKHOUSE_DATABASE: ${{ secrets.CLICKHOUSE_DATABASE }}
+      CLICKHOUSE_PORT: ${{ secrets.CLICKHOUSE_PORT }}
+      CLICKHOUSE_PROTOCOL: ${{ secrets.CLICKHOUSE_PROTOCOL }}
+      CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
+    services:
+      mysql:
+        image: mysql:8.0.27
+        env:
+          MYSQL_DATABASE: "airt_service"
+          MYSQL_USER: "airt"
+          MYSQL_PASSWORD: "SuperSecretPassword"
+          MYSQL_ROOT_PASSWORD: "SuperSecretPassword"
+        ports:
+          - 3306:3306
+    steps:
+      - uses: actions/checkout@v3
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
+
+      - run: echo "STORAGE_BUCKET_PREFIX=github-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
+      - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=ghubairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
+
+      - name: Run test without failing
+        id: run_test
+        run: make test
+        continue-on-error: true
+
+      - run: make empty_bucket
+      - name: Raise error if make test failed earlier
+        if: steps.run_test.outcome != 'success'
+        run: exit 1
+
+  test_cloud_provider_batch_executor:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    needs: [sast, trivy, secrets_scan, detect_secrets]
+    container:
+      image: ghcr.io/airtai/airt-service-dev:latest
+    env:
+      DB_USERNAME: "root"
+      DB_PASSWORD: "SuperSecretPassword"
+      DB_HOST: "mysql"
+      DB_PORT: 3306
+      DB_DATABASE: "airt_service"
+      DB_DATABASE_SERVER: "mysql"
+      DOMAIN: "localhost"
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mysql+mysqldb://root:SuperSecretPassword@mysql:3306/airflow"
+
+      AIRT_SERVICE_SUPER_USER_PASSWORD: ${{ secrets.CI_AIRT_SERVICE_SUPER_USER_PASSWORD }}
+      AIRT_TOKEN_SECRET_KEY: ${{ secrets.CI_AIRT_TOKEN_SECRET_KEY }}
+      # STORAGE_BUCKET_PREFIX: "github-airt-service-testing-"$(echo $RANDOM | md5sum | head -c 20)
+      AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
+      # AZURE_STORAGE_ACCOUNT_PREFIX: "ghubairts"$(echo $RANDOM | md5sum | head -c 5)
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.CI_AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.CI_AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.CI_AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.CI_AZURE_CLIENT_SECRET }}
+      AZURE_RESOURCE_GROUP: ${{ secrets.CI_AZURE_RESOURCE_GROUP }}
+      AIRFLOW_PASSWORD: ${{ secrets.CI_AIRFLOW_PASSWORD }}
+      SHARED_KEY_CREDENTIALS: ${{ secrets.CI_SHARED_KEY_CREDENTIALS }}
+      GOOGLE_CLIENT_ID: ${{ secrets.CI_GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.CI_GOOGLE_CLIENT_SECRET }}
+      GITHUB_CLIENT_ID: ${{ secrets.CI_GITHUB_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.CI_GITHUB_CLIENT_SECRET }}
+      INFOBIP_BASE_URL: ${{ secrets.CI_INFOBIP_BASE_URL }}
+      INFOBIP_API_KEY: ${{ secrets.CI_INFOBIP_API_KEY }}
+      INFOBIP_SENDER_ID: ${{ secrets.CI_INFOBIP_SENDER_ID }}
+      CLICKHOUSE_USERNAME: ${{ secrets.CLICKHOUSE_USERNAME }}
+      CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD }}
+      CLICKHOUSE_HOST: ${{ secrets.CLICKHOUSE_HOST }}
+      CLICKHOUSE_DATABASE: ${{ secrets.CLICKHOUSE_DATABASE }}
+      CLICKHOUSE_PORT: ${{ secrets.CLICKHOUSE_PORT }}
+      CLICKHOUSE_PROTOCOL: ${{ secrets.CLICKHOUSE_PROTOCOL }}
+      CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
+    services:
+      mysql:
+        image: mysql:8.0.27
+        env:
+          MYSQL_DATABASE: "airt_service"
+          MYSQL_USER: "airt"
+          MYSQL_PASSWORD: "SuperSecretPassword"
+          MYSQL_ROOT_PASSWORD: "SuperSecretPassword"
+        ports:
+          - 3306:3306
+    strategy:
+      matrix:
+        command:
+          - test_aws_batch_executor --region eu-west-3
+          - test_azure_batch_executor --region northeurope
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+
+      - run: echo "STORAGE_BUCKET_PREFIX=github-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
+      - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=ghubairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
+
+      - run: make install
+      - run: ${{ matrix.command }}
+
+  build_wheel:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    needs: [unit_test, test_cloud_provider_batch_executor]
+    container:
+      image: ghcr.io/airtai/airt-service-dev:latest
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
+      - run: sed 's/\"//g' .env >> $GITHUB_ENV
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: make webservice.py
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "CONFIG=production.yml" >> $GITHUB_ENV ; elif [[ $GITHUB_REF_NAME == "dev" ]]; then echo "CONFIG=staging.yml" >> $GITHUB_ENV ; fi;
+
+      - name: Create batch environment if branch name is main or dev
+        if: github.ref_name == 'main' || github.ref_name == 'dev'
+        run: set -a && source .env && set +a && create_batch_environment "batch_env_config/$CONFIG" ./batch_environment.yml
+
+      # If running in other branches then include config yml as output yml for building docker
+      - name: Create dummy batch environment in other branches
+        if: github.ref_name != 'main' && github.ref_name != 'dev'
+        run: cp "batch_env_config/staging.yml" ./batch_environment.yml
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: |
+            dist/
+            webservice.py
+            batch_environment.yml
+          if-no-files-found: error
+
+  docker_build_push:
+    runs-on: ubuntu-22.04
+    needs: build_wheel
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download artifacts from build_wheel job
+        uses: actions/download-artifact@v3
+
+      - run: cp -a artifact/. ./ # Copy contents of build_wheel artifacts to current directory
+      - run: wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
+      - run: sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
+      - run: docker pull ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME || docker pull ghcr.io/$GITHUB_REPOSITORY:dev || true
+      - run: sh ws/build_docker.sh
+      - name: Push only if branch name is main or dev
+        if: github.ref_name == 'main' || github.ref_name == 'dev'
+        run: docker push ghcr.io/$GITHUB_REPOSITORY --all-tags
+
+  docker_image_check:
+    runs-on: ubuntu-22.04
+    needs: docker_build_push
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: sudo apt update
+      - run: wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
+      - run: sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then docker pull ghcr.io/$GITHUB_REPOSITORY:latest ; else docker pull ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME ; fi;
+      - run: sh ws/check_docker.sh
+
+  deploy:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    needs: [docker_image_check]
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
+    container:
+      image: python:3.7-stretch
+    env:
+      GITHUB_USERNAME: ${{ github.actor }}
+      GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "TAG=latest" >> $GITHUB_ENV ; else echo "TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV ; fi;
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
+      - run: sed 's/\"//g' .env >> $GITHUB_ENV
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+      - run: eval $(ssh-agent -s)
+      - run: mkdir -p ~/.ssh
+      - run: chmod 700 ~/.ssh
+      - run: ssh-keyscan "$DOMAIN" >> ~/.ssh/known_hosts
+      - run: chmod 644 ~/.ssh/known_hosts
+      - run: echo "$SSH_KEY" | base64 --decode > key.pem
+      - run: chmod 600 key.pem
+
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "DOMAIN=api.airt.ai" >> $GITHUB_ENV ; else echo "DOMAIN=api.staging.airt.ai" >> $GITHUB_ENV ; fi;
+      - run: ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker images"
+      - run: sh ci/deploy.sh
+
+      - run: rm key.pem
+
+  test_deploy:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    needs: [deploy]
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
+    container:
+      image: ghcr.io/airtai/airt-service-dev:latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.CI_AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.CI_AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.CI_AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.CI_AZURE_CLIENT_SECRET }}
+      AZURE_RESOURCE_GROUP: ${{ secrets.CI_AZURE_RESOURCE_GROUP }}
+      PROD_AIRT_SERVICE_TOKEN: ${{ secrets.PROD_AIRT_SERVICE_TOKEN }}
+      STAGING_AIRT_SERVICE_TOKEN: ${{ secrets.STAGING_AIRT_SERVICE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+      - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "AIRT_SERVICE_TOKEN=$PROD_AIRT_SERVICE_TOKEN" >> $GITHUB_ENV ; else echo "AIRT_SERVICE_TOKEN=$STAGING_AIRT_SERVICE_TOKEN" >> $GITHUB_ENV ; fi;
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "DOMAIN=api.airt.ai" >> $GITHUB_ENV ; else echo "DOMAIN=api.staging.airt.ai" >> $GITHUB_ENV ; fi;
+      - run: make install
+      - run: run_integration_tests "$DOMAIN" 443

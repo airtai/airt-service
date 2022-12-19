@@ -1,0 +1,6 @@
+version: "3"
+services:
+    airt-service:
+        image: $AIRT_SERVER_DOCKER
+        hostname: airt-service
+        container_name: airt-service

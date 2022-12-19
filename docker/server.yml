@@ -1,0 +1,15 @@
+version: "3"
+services:
+    airt-service:
+        ports:
+            - "443:1443"
+            - "80:1080"
+            - "8080:8080"
+        volumes:
+            - /etc/letsencrypt:/letsencrypt
+            - /home/ubuntu/storage:/tf/storage
+        environment:
+            RUN_NGINX: "true"
+            STORAGE_PATH: "/tf/storage"
+        env_file:
+            - /home/ubuntu/.env

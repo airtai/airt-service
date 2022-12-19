@@ -149,3 +149,36 @@ checklink/cookies.txt
 
 # Quarto
 .quarto
+
+
+# Project specific stuff
+docs/vendor
+docs/.bundle
+
+webservice.py
+*.pem
+dask-worker-space
+.Trash*
+storage/
+rabbitmq_data/
+.env.dev.*
+
+# SAST specific stuffs
+.sast_bandit
+.sast_semgrep
+
+batch_environment.yml
+
+# dast report html file
+dast-api-scan-report.html
+
+# Empty files created by 
+.install_git_secrets_hooks
+.add_allowed_git_secrets
+.install_pre_commit_hooks
+
+
+# nbdev_mkdocs
+mkdocs/docs/
+mkdocs/site/
+notebooks/sidebar.yml
