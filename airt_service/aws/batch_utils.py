@@ -662,10 +662,10 @@ class JobDefinition(ContextDecorator):
         if len(response["jobDefinitions"]) > 1:
             raise ValueError(f"{len(response['jobDefinitions'])=}")
         elif len(response["jobDefinitions"]) == 1:
-            if response["jobDefinitions"][0]["status"] == "ACTIVE":
-                return JobDefinition(
-                    response["jobDefinitions"][0], region=compute_environment.region
-                )
+            #             if response["jobDefinitions"][0]["status"] == "ACTIVE":
+            return JobDefinition(
+                response["jobDefinitions"][0], region=compute_environment.region
+            )
 
         vcpus, memory, gpu = get_instance_info(
             instance_type=compute_environment.instance_type,
