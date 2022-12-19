@@ -105,7 +105,7 @@ class BatchPool(ContextDecorator):
         image_offer: str = "ubuntu-server-container",
         image_sku: str = "20-04-lts",
         image_version: str = "latest",
-        container_image: str = "registry.gitlab.com/airt.ai/airt-service:dev",
+        container_image: str = "ghcr.io/airtai/airt-service:dev",
         vm: str = "standard_d2s_v3",
         auto_scale_formula: Optional[str] = None,
     ) -> "BatchPool":
@@ -130,7 +130,7 @@ class BatchPool(ContextDecorator):
         #         container_registry = batchmodels.ContainerRegistry(
         #             user_name="kumaran@airt.ai",
         #             password="passowerkdfadfa@",
-        #             registry_server="registry.gitlab.com",
+        #             registry_server="ghcr.io",
         #         )
         #         container_configuration = batchmodels.ContainerConfiguration(
         #             container_image_names=[container_image],

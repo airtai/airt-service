@@ -54,7 +54,7 @@ class AzureBatchJobContext(BatchJobContext):
             tag = "latest"
 
         container_settings = batchmodels.TaskContainerSettings(
-            image_name=f"registry.gitlab.com/airt.ai/airt-service:{tag}"
+            image_name=f"ghcr.io/airtai/airt-service:{tag}"
         )
 
         airt_service.azure.batch_utils.azure_batch_create_job(
