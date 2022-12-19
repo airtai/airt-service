@@ -17,7 +17,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: settings.ini
       - run: sudo apt update && sudo apt install default-libmysqlclient-dev -y
-      - run: ./scripts/install_airt.sh
+      - run: bash ./scripts/install_airt.sh
       - name: Install Dependencies
         env:
           USE_PRE: ${{ inputs.pre }}
