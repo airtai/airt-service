@@ -33,7 +33,7 @@ jobs:
       - run: apk update
       - run: apk add make
       - run: trivy --version
-      - run: bash ./scripts/trivy_scan_repo.sh
+      - run: sh ./scripts/trivy_scan_repo.sh
 
   secrets_scan:
     runs-on: ubuntu-22.04
