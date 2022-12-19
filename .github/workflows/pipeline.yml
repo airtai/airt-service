@@ -80,10 +80,10 @@ jobs:
 
       AIRT_SERVICE_SUPER_USER_PASSWORD: ${{ secrets.CI_AIRT_SERVICE_SUPER_USER_PASSWORD }}
       AIRT_TOKEN_SECRET_KEY: ${{ secrets.CI_AIRT_TOKEN_SECRET_KEY }}
-      # STORAGE_BUCKET_PREFIX: "gitlab-airt-service-testing-"$(echo $RANDOM | md5sum | head -c 20)
+      # STORAGE_BUCKET_PREFIX: "github-airt-service-testing-"$(echo $RANDOM | md5sum | head -c 20)
       AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
-      # AZURE_STORAGE_ACCOUNT_PREFIX: "glabairts"$(echo $RANDOM | md5sum | head -c 5)
+      # AZURE_STORAGE_ACCOUNT_PREFIX: "ghubairts"$(echo $RANDOM | md5sum | head -c 5)
       AZURE_SUBSCRIPTION_ID: ${{ secrets.CI_AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ secrets.CI_AZURE_TENANT_ID }}
       AZURE_CLIENT_ID: ${{ secrets.CI_AZURE_CLIENT_ID }}
@@ -120,8 +120,8 @@ jobs:
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
 
-      - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
-      - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
+      - run: echo "STORAGE_BUCKET_PREFIX=github-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
+      - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=ghubairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
       - name: Run test without failing
         id: run_test
@@ -153,10 +153,10 @@ jobs:
 
       AIRT_SERVICE_SUPER_USER_PASSWORD: ${{ secrets.CI_AIRT_SERVICE_SUPER_USER_PASSWORD }}
       AIRT_TOKEN_SECRET_KEY: ${{ secrets.CI_AIRT_TOKEN_SECRET_KEY }}
-      # STORAGE_BUCKET_PREFIX: "gitlab-airt-service-testing-"$(echo $RANDOM | md5sum | head -c 20)
+      # STORAGE_BUCKET_PREFIX: "github-airt-service-testing-"$(echo $RANDOM | md5sum | head -c 20)
       AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
-      # AZURE_STORAGE_ACCOUNT_PREFIX: "glabairts"$(echo $RANDOM | md5sum | head -c 5)
+      # AZURE_STORAGE_ACCOUNT_PREFIX: "ghubairts"$(echo $RANDOM | md5sum | head -c 5)
       AZURE_SUBSCRIPTION_ID: ${{ secrets.CI_AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ secrets.CI_AZURE_TENANT_ID }}
       AZURE_CLIENT_ID: ${{ secrets.CI_AZURE_CLIENT_ID }}
@@ -199,8 +199,8 @@ jobs:
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
 
-      - run: echo "STORAGE_BUCKET_PREFIX=gitlab-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
-      - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=glabairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
+      - run: echo "STORAGE_BUCKET_PREFIX=github-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
+      - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=ghubairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
       - run: make install
       - run: ${{ matrix.command }}
