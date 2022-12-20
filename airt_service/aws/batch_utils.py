@@ -654,18 +654,11 @@ class JobDefinition(ContextDecorator):
 
         if name is None:
             name = f"job-definition-{get_random_string()}"
-        response = client.describe_job_definitions(
-            maxResults=1,
-            jobDefinitionName=name,
-        )
+        response = client.describe_job_definitions(jobDefinitionName=name)
 
-        if len(response["jobDefinitions"]) > 1:
-            raise ValueError(f"{len(response['jobDefinitions'])=}")
-        elif len(response["jobDefinitions"]) == 1:
-            #             if response["jobDefinitions"][0]["status"] == "ACTIVE":
-            return JobDefinition(
-                response["jobDefinitions"][0], region=compute_environment.region
-            )
+        for jd in reversed(response["jobDefinitions"]):
+            if jd["status"] == "ACTIVE":
+                return JobDefinition(jd, region=compute_environment.region)
 
         vcpus, memory, gpu = get_instance_info(
             instance_type=compute_environment.instance_type,
@@ -792,7 +785,7 @@ def create_job_definition(
         retries=retries,
     )
 
-# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 30
+# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 31
 class Job(ContextDecorator):
     """A class for creating and managing the jobs"""
 
@@ -982,7 +975,7 @@ class Job(ContextDecorator):
         self.wait(status="SUCCEEDED")
         return False
 
-# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 31
+# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 32
 @patch
 def create_job(
     self: JobQueue,
@@ -1008,7 +1001,7 @@ def create_job(
         retries=retries,
     )
 
-# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 32
+# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 33
 @patch  # type: ignore
 def create_job(
     self: JobDefinition,
@@ -1034,7 +1027,7 @@ def create_job(
         retries=retries,
     )
 
-# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 37
+# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 38
 def aws_batch_create_job(  # type: ignore
     *,
     name: Optional[str] = None,
@@ -1082,7 +1075,7 @@ def aws_batch_create_job(  # type: ignore
     logger.info(f"{job.arn=}")
     return job
 
-# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 39
+# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 40
 def _create_default_batch_environment_config(
     prefix: str, output_path: Union[str, Path], regions: Optional[List[str]] = None
 ):
@@ -1136,7 +1129,7 @@ def _create_default_batch_environment_config(
     with open(output_path, "w") as f:
         yaml.dump(yaml_str, f, default_flow_style=False)
 
-# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 40
+# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 41
 @call_parse
 def create_default_batch_environment_config(
     prefix: Param("prefix", str), output_path: Param("output_path", str), regions: Param("regions", List[str]) = None  # type: ignore
@@ -1152,7 +1145,7 @@ def create_default_batch_environment_config(
         prefix=prefix, output_path=output_path, regions=regions
     )
 
-# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 42
+# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 43
 def _create_batch_environment(input_yaml_path: str, output_yaml_path: str):
     """Create a batch environment based on the config specified and store the created environment ARN in the output YAML file
 
@@ -1189,7 +1182,7 @@ def _create_batch_environment(input_yaml_path: str, output_yaml_path: str):
     with open(output_yaml_path, "w") as f:
         yaml.dump(output, f, default_flow_style=False)
 
-# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 43
+# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 44
 @call_parse
 def create_batch_environment(
     input_yaml_path: Param("yaml_path", str), output_yaml_path: Param("yaml_path", str)  # type: ignore
@@ -1204,7 +1197,7 @@ def create_batch_environment(
         input_yaml_path=input_yaml_path, output_yaml_path=output_yaml_path
     )
 
-# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 44
+# %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 45
 @contextmanager
 def create_testing_batch_environment_ctx(input_yaml_path: str, output_yaml_path: str):
     """Create batch environment and tear it down after yield for testing
