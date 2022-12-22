@@ -985,7 +985,7 @@ def to_datasource_route(
             to_datasource_request, user, session, background_tasks
         )
     except Exception as e:
-        return Response(content=str(e), media_type="text/plain")  # type: ignore
+        return Response(content=str(e), media_type="text/plain", status_code=500)  # type: ignore
 
 # %% ../../notebooks/DataBlob_Router.ipynb 50
 @datablob_router.get(
