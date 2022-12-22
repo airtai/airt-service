@@ -23,7 +23,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query, Background
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import StaleDataError
 from sqlmodel import Session, select
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.encoders import jsonable_encoder
 
 from airt.executor.subcommand import SimpleCLICommand
@@ -985,7 +985,7 @@ def to_datasource_route(
             to_datasource_request, user, session, background_tasks
         )
     except Exception as e:
-        return JSONResponse(content=jsonable_encoder(dict(detail=str(e))))  # type: ignore
+        return Response(content=str(e), media_type="text/plain")  # type: ignore
 
 # %% ../../notebooks/DataBlob_Router.ipynb 50
 @datablob_router.get(
