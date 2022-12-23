@@ -23,8 +23,6 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query, Background
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import StaleDataError
 from sqlmodel import Session, select
-from fastapi.responses import JSONResponse, Response
-from fastapi.encoders import jsonable_encoder
 
 from airt.executor.subcommand import SimpleCLICommand
 from airt.helpers import get_s3_bucket_name_and_folder_from_uri
@@ -977,15 +975,12 @@ def to_datasource_route(
     background_tasks: BackgroundTasks,
 ) -> DataSource:
     """Pull uploaded CSV/Parquet datablob, process it and store in s3 client storage bucket as parquet"""
-    try:
-        user = session.merge(user)
-        datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
+    user = session.merge(user)
+    datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
 
-        return datablob.to_datasource(
-            to_datasource_request, user, session, background_tasks
-        )
-    except Exception as e:
-        return Response(content=str(e), media_type="text/plain", status_code=500)  # type: ignore
+    return datablob.to_datasource(
+        to_datasource_request, user, session, background_tasks
+    )
 
 # %% ../../notebooks/DataBlob_Router.ipynb 50
 @datablob_router.get(
