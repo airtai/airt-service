@@ -105,6 +105,8 @@ jobs:
       CLICKHOUSE_PORT: ${{ secrets.CLICKHOUSE_PORT }}
       CLICKHOUSE_PROTOCOL: ${{ secrets.CLICKHOUSE_PROTOCOL }}
       CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
+      KAFKA_HOSTNAME: kafka
+      KAFKA_PORT: 9092
     services:
       mysql:
         image: mysql:8.0.27
@@ -115,6 +117,22 @@ jobs:
           MYSQL_ROOT_PASSWORD: "SuperSecretPassword"
         ports:
           - 3306:3306
+      zookeeper:
+        image: wurstmeister/zookeeper
+      kafka:
+        image: wurstmeister/kafka
+        env:
+            KAFKA_ADVERTISED_HOST_NAME: "kafka"
+            HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+            KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+            KAFKA_LISTENERS: "PLAINTEXT://:9092"
+            KAFKA_CREATE_TOPICS: >-
+              training_request:${NUM_PARTITIONS:-6}:${REPLICATION_FACTOR:-3},
+              training_status:${NUM_PARTITIONS:-6}:${REPLICATION_FACTOR:-3},
+              prediction_request:${NUM_PARTITIONS:-6}:${REPLICATION_FACTOR:-3},
+              prediction_status:${NUM_PARTITIONS:-6}:${REPLICATION_FACTOR:-3}
+        ports:
+            - 9092:9092
     steps:
       - uses: actions/checkout@v3
       - run: chown -R $(id -u):$(id -g) $PWD

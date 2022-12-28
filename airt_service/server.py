@@ -11,11 +11,12 @@ from typing import *
 import yaml
 from os import environ
 
-from fastapi import FastAPI, Request
+from fastapi import Request
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fast_kafka_api.application import FastKafkaAPI
 
 import airt_service
 from .sanitizer import sanitized_print
@@ -230,14 +231,14 @@ curl -X 'POST' \
 """
 
 # %% ../notebooks/API_Web_Service.ipynb 6
-def create_ws_server(assets_path: Path = Path("./assets")) -> FastAPI:
-    """Create a FastAPI based web service
+def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
+    """Create a FastKafkaAPI based web service
 
     Args:
         assets_path: Path to assets (should include favicon.ico)
 
     Returns:
-        A FastAPI server
+        A FastKafkaAPI server
     """
     global description
     title = "airt service"
@@ -247,9 +248,17 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastAPI:
     assets_path = assets_path.resolve()
     favicon_path = assets_path / "images/favicon.ico"
 
-    app = FastAPI(
+    kafka_server_url = environ["KAFKA_HOSTNAME"]
+    kafka_server_port = environ["KAFKA_PORT"]
+    kafka_config = {
+        "bootstrap_servers": f"{kafka_server_url}:{kafka_server_port}",
+        "group_id": f"{kafka_server_url}:{kafka_server_port}_group",
+        "auto_offset_reset": "earliest",
+    }
+    app = FastKafkaAPI(
         title=title,
         description=description,
+        kafka_config=kafka_config,
         version=version,
         docs_url=None,
         redoc_url=None,
