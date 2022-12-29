@@ -80,7 +80,7 @@ def download_from_db(
             logger.info(
                 f"Writing data retrieved from the database to temporary file {fname}"
             )
-            df.to_parquet(fname)
+            df.to_parquet(fname)  # type: ignore
         logger.info(
             f"Rewriting temporary parquet files from {d} to output directory {output_path}"
         )

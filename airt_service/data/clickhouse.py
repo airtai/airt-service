@@ -318,7 +318,7 @@ def _download_from_clickhouse(
                     logger.info(
                         f"Writing data retrieved from the database to temporary file {fname}"
                     )
-                    df.to_parquet(fname, engine="pyarrow")
+                    df.to_parquet(fname, engine="pyarrow")  # type: ignore
                     i = i + 1
 
             engine = get_default_engine()

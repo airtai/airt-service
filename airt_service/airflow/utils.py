@@ -69,8 +69,8 @@ def create_dag(
         temp_file.write(dag_definition_template.format(dag_name=dag_id, **kwargs))
 
     while True:
-        df = pd.DataFrame.from_dict(list_dags())
-        if (dag_id == df["dag_id"]).sum():
+        df: pd.DataFrame = pd.DataFrame.from_dict(list_dags())
+        if (dag_id == df["dag_id"]).sum():  # type: ignore
             break
         sanitized_print(".", end="")
         sleep(1)
