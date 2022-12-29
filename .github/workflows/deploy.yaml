@@ -2,7 +2,7 @@ name: Deploy nbdev-mkdocs generated documentation to GitHub Pages
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "fix-nbdev-mkdocs" ]
   workflow_dispatch:
 jobs:
   deploy:
@@ -11,12 +11,12 @@ jobs:
       ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ inputs.version }}
-          cache: "pip"
-          cache-dependency-path: settings.ini
-      - run: sudo apt update && sudo apt install default-libmysqlclient-dev -y
+      # - uses: actions/setup-python@v4
+      #   with:
+      #     python-version: ${{ inputs.version }}
+      #     cache: "pip"
+      #     cache-dependency-path: settings.ini
+      - run: sudo apt update && sudo apt install -y default-libmysqlclient-dev python3.9-dev python3-pip
       - run: bash ./scripts/install_airt.sh
       - name: Install Dependencies
         env:
