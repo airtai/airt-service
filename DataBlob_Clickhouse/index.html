@@ -1,0 +1,4208 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Webservice to host airt models">
+      
+      
+        <meta name="author" content="airt.ai">
+      
+      
+        <link rel="canonical" href="https://airtai.github.io/airt-service/DataBlob_Clickhouse/">
+      
+      <link rel="icon" href="../overrides/images/compass-outline.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>DataBlob Clickhouse - airt_service</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../overrides/css/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  
+  
+    
+  
+  
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="airt_service - DataBlob Clickhouse" />
+  <meta property="og:description" content="Webservice to host airt models" />
+  <meta property="og:url" content="https://airtai.github.io/airt-service/DataBlob_Clickhouse/" />
+  <meta property="og:image" content="https://opengraph.githubassets.com/1672290560.539482/airtai/airt-service" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="airt_service - DataBlob Clickhouse" />
+  <meta name="twitter:description" content="Webservice to host airt models" />
+  <meta name="twitter:image" content="https://opengraph.githubassets.com/1672290560.539482/airtai/airt-service" />
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="yellow">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#datablob-clickhouse" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="airt_service" class="md-header__button md-logo" aria-label="airt_service" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m7 17 3.2-6.8L17 7l-3.2 6.8L7 17m5-5.9a.9.9 0 0 0-.9.9.9.9 0 0 0 .9.9.9.9 0 0 0 .9-.9.9.9 0 0 0-.9-.9M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8 8 8 0 0 0-8-8Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            airt_service
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DataBlob Clickhouse
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="yellow"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+            </label>
+          
+        
+          
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="red"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/airtai/airt-service" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    airt-service
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="airt_service" class="md-nav__button md-logo" aria-label="airt_service" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m7 17 3.2-6.8L17 7l-3.2 6.8L7 17m5-5.9a.9.9 0 0 0-.9.9.9.9 0 0 0 .9.9.9.9 0 0 0 .9-.9.9.9 0 0 0-.9-.9M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8 8 8 0 0 0-8-8Z"/></svg>
+
+    </a>
+    airt_service
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/airtai/airt-service" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    airt-service
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Airt Service
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_Web_Service/" class="md-nav__link">
+        REST Server
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AWS_Batch_Job_Context/" class="md-nav__link">
+        AWS Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AWS_Batch_Job_Utils/" class="md-nav__link">
+        AWS Batch Job Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AWS_Utils/" class="md-nav__link">
+        AWS Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AirflowAWSBatchExecutor/" class="md-nav__link">
+        Airflow AWS Batch Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AirflowAzureBatchExecutor/" class="md-nav__link">
+        Airflow Azure Batch Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AirflowBashExecutor/" class="md-nav__link">
+        Airflow Bash Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AirflowExecutor/" class="md-nav__link">
+        Airflow Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Airflow_Utils/" class="md-nav__link">
+        Airflow Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Auth/" class="md-nav__link">
+        Authentication Notebook
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Azure_Batch_Job_Context/" class="md-nav__link">
+        Azure Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Azure_Batch_Job_Utils/" class="md-nav__link">
+        Azure Batch Job Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Azure_Utils/" class="md-nav__link">
+        Azure Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Background_Task/" class="md-nav__link">
+        Background task in separate processes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BaseAirflowExecutor/" class="md-nav__link">
+        Base Airflow Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Base_Batch_Job_Context/" class="md-nav__link">
+        Base Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BatchJob/" class="md-nav__link">
+        BatchJob.html
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Cleanup/" class="md-nav__link">
+        Cleanup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Constants/" class="md-nav__link">
+        Constants
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DB_Models/" class="md-nav__link">
+        Database Models
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataBlob_Azure_Blob_Storage/" class="md-nav__link">
+        DataBlob Azure Blob Storage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          DataBlob Clickhouse
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        DataBlob Clickhouse
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create_db_uri_for_clickhouse_datablob" class="md-nav__link">
+    create_db_uri_for_clickhouse_datablob
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_clickhouse_connection" class="md-nav__link">
+    get_clickhouse_connection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_max_timestamp" class="md-nav__link">
+    get_max_timestamp
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#partition_index_value_counts_into_chunks" class="md-nav__link">
+    partition_index_value_counts_into_chunks
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clickhouse_pull" class="md-nav__link">
+    clickhouse_pull
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clickhouse_push" class="md-nav__link">
+    clickhouse_push
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataBlob_DB/" class="md-nav__link">
+        DataBlob DB
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataBlob_Router/" class="md-nav__link">
+        DataBlob Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataBlob_S3/" class="md-nav__link">
+        DataBlob S3
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataSource_CSV/" class="md-nav__link">
+        DataSource CSV
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataSource_Parquet/" class="md-nav__link">
+        DataSource Parquet
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataSource_Router/" class="md-nav__link">
+        DataSource Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Data_Utils/" class="md-nav__link">
+        Data Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Errors/" class="md-nav__link">
+        Errors and Exceptions
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastAPI_Batch_Job_Context/" class="md-nav__link">
+        FastAPI Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Helpers/" class="md-nav__link">
+        Helpers
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Integration_Test/" class="md-nav__link">
+        Integration test
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Model_Prediction/" class="md-nav__link">
+        Model Prediction Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Model_Train/" class="md-nav__link">
+        Model Train Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../None_Batch_Job_Context/" class="md-nav__link">
+        None Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SMS_Utils/" class="md-nav__link">
+        SMS Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SSO/" class="md-nav__link">
+        SSO
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Sanitize_Secrets/" class="md-nav__link">
+        Sanitize Secrets
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOTP/" class="md-nav__link">
+        TOTP
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Users/" class="md-nav__link">
+        User Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_43" type="checkbox" id="__nav_43" >
+      
+      
+      
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_43">
+          services
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="services" data-md-level="1">
+        <label class="md-nav__title" for="__nav_43">
+          <span class="md-nav__icon md-icon"></span>
+          services
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/webservice/" class="md-nav__link">
+        REST Server
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44" type="checkbox" id="__nav_44" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_44">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_1" type="checkbox" id="__nav_44_1" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_1">
+          airt_service.airflow
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.airflow" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_1">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.airflow
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/" class="md-nav__link">
+        Airflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/aws_batch_executor/" class="md-nav__link">
+        aws_batch_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/azure_batch_executor/" class="md-nav__link">
+        azure_batch_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/base_executor/" class="md-nav__link">
+        base_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/bash_executor/" class="md-nav__link">
+        bash_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/executor/" class="md-nav__link">
+        executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/auth/" class="md-nav__link">
+        airt_service.auth
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_3" type="checkbox" id="__nav_44_3" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_3">
+          airt_service.aws
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.aws" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_3">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.aws
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/aws/" class="md-nav__link">
+        Aws
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/aws/batch_utils/" class="md-nav__link">
+        batch_utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/aws/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_4" type="checkbox" id="__nav_44_4" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_4">
+          airt_service.azure
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.azure" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_4">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.azure
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/azure/" class="md-nav__link">
+        Azure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/azure/batch_utils/" class="md-nav__link">
+        batch_utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/azure/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/background_task/" class="md-nav__link">
+        airt_service.background_task
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job/" class="md-nav__link">
+        airt_service.batch_job
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_7" type="checkbox" id="__nav_44_7" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_7">
+          airt_service.batch_job_components
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.batch_job_components" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_7">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.batch_job_components
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/" class="md-nav__link">
+        Batch job components
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/aws/" class="md-nav__link">
+        aws
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/azure/" class="md-nav__link">
+        azure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/base/" class="md-nav__link">
+        base
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/fastapi/" class="md-nav__link">
+        fastapi
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/none/" class="md-nav__link">
+        none
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/cleanup/" class="md-nav__link">
+        airt_service.cleanup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/constants/" class="md-nav__link">
+        airt_service.constants
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_10" type="checkbox" id="__nav_44_10" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_10">
+          airt_service.data
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.data" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_10">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.data
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/" class="md-nav__link">
+        Data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/azure_blob_storage/" class="md-nav__link">
+        azure_blob_storage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/clickhouse/" class="md-nav__link">
+        clickhouse
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/csv/" class="md-nav__link">
+        csv
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/datablob/" class="md-nav__link">
+        datablob
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/datasource/" class="md-nav__link">
+        datasource
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/db/" class="md-nav__link">
+        db
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/parquet/" class="md-nav__link">
+        parquet
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/s3/" class="md-nav__link">
+        s3
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_11" type="checkbox" id="__nav_44_11" >
+      
+      
+      
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_11">
+          airt_service.db
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.db" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_11">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.db
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/db/" class="md-nav__link">
+        Db
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/db/models/" class="md-nav__link">
+        models
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/errors/" class="md-nav__link">
+        airt_service.errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/helpers/" class="md-nav__link">
+        airt_service.helpers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/integraion_tests/" class="md-nav__link">
+        airt_service.integraion_tests
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_15" type="checkbox" id="__nav_44_15" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_15">
+          airt_service.model
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.model" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_15">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.model
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/model/" class="md-nav__link">
+        Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/model/prediction/" class="md-nav__link">
+        prediction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/model/train/" class="md-nav__link">
+        train
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/sanitizer/" class="md-nav__link">
+        airt_service.sanitizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/server/" class="md-nav__link">
+        airt_service.server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/sms_utils/" class="md-nav__link">
+        airt_service.sms_utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/sso/" class="md-nav__link">
+        airt_service.sso
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/totp/" class="md-nav__link">
+        airt_service.totp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/users/" class="md-nav__link">
+        airt_service.users
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_45" type="checkbox" id="__nav_45" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_45">
+          CLI
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="CLI" data-md-level="1">
+        <label class="md-nav__title" for="__nav_45">
+          <span class="md-nav__icon md-icon"></span>
+          CLI
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/run_integration_tests/" class="md-nav__link">
+        run_integration_tests
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/check_db_is_up/" class="md-nav__link">
+        check_db_is_up
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/s3_pull/" class="md-nav__link">
+        s3_pull
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/s3_push/" class="md-nav__link">
+        s3_push
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/db_pull/" class="md-nav__link">
+        db_pull
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/db_push/" class="md-nav__link">
+        db_push
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/clickhouse_pull/" class="md-nav__link">
+        clickhouse_pull
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/clickhouse_push/" class="md-nav__link">
+        clickhouse_push
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/azure_blob_storage_pull/" class="md-nav__link">
+        azure_blob_storage_pull
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/azure_blob_storage_push/" class="md-nav__link">
+        azure_blob_storage_push
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/create_default_batch_environment_config/" class="md-nav__link">
+        create_default_batch_environment_config
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/create_batch_environment/" class="md-nav__link">
+        create_batch_environment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/process_csv/" class="md-nav__link">
+        process_csv
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/process_parquet/" class="md-nav__link">
+        process_parquet
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/predict/" class="md-nav__link">
+        predict
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/create_initial_users/" class="md-nav__link">
+        create_initial_users
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/test_aws_batch_executor/" class="md-nav__link">
+        test_aws_batch_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/test_azure_batch_executor/" class="md-nav__link">
+        test_azure_batch_executor
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog_not_found/" class="md-nav__link">
+        Releases
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create_db_uri_for_clickhouse_datablob" class="md-nav__link">
+    create_db_uri_for_clickhouse_datablob
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_clickhouse_connection" class="md-nav__link">
+    get_clickhouse_connection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get_max_timestamp" class="md-nav__link">
+    get_max_timestamp
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#partition_index_value_counts_into_chunks" class="md-nav__link">
+    partition_index_value_counts_into_chunks
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clickhouse_pull" class="md-nav__link">
+    clickhouse_pull
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clickhouse_push" class="md-nav__link">
+    clickhouse_push
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="datablob-clickhouse">DataBlob Clickhouse<a class="headerlink" href="#datablob-clickhouse" title="Permanent link">¤</a></h1>
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">airt.testing</span> <span class="kn">import</span> <span class="n">activate_by_import</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] airt.testing.activate_by_import: Testing environment activated.
+[INFO] numexpr.utils: Note: NumExpr detected 16 cores but &quot;NUMEXPR_MAX_THREADS&quot; not set, so enforcing safe limit of 8.
+[INFO] numexpr.utils: NumExpr defaulting to 8 threads.
+[INFO] airt.keras.helpers: Using a single GPU #0 with memory_limit 1024 MB
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
+
+<span class="kn">import</span> <span class="nn">dask.dataframe</span> <span class="k">as</span> <span class="nn">dd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">BackgroundTasks</span>
+
+<span class="kn">from</span> <span class="nn">airt_service.aws.utils</span> <span class="kn">import</span> <span class="n">create_s3_prediction_path</span>
+<span class="kn">from</span> <span class="nn">airt_service.data.s3</span> <span class="kn">import</span> <span class="n">copy_between_s3</span>
+<span class="kn">from</span> <span class="nn">airt_service.db.models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">create_user_for_testing</span><span class="p">,</span>
+    <span class="n">get_session</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="p">,</span>
+    <span class="n">User</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">airt_service.helpers</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">commit_or_rollback</span><span class="p">,</span>
+    <span class="n">set_env_variable_context</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">airt_service.model.train</span> <span class="kn">import</span> <span class="n">TrainRequest</span><span class="p">,</span> <span class="n">train_model</span><span class="p">,</span> <span class="n">predict_model</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">test_username</span> <span class="o">=</span> <span class="n">create_user_for_testing</span><span class="p">(</span><span class="n">subscription_type</span><span class="o">=</span><span class="s2">&quot;small&quot;</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">test_username</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>&#39;kfwkbnhghr&#39;
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">actual</span> <span class="o">=</span> <span class="n">_create_clickhouse_connection_string</span><span class="p">(</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span>
+    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">8123</span><span class="p">,</span>
+    <span class="n">database</span><span class="o">=</span><span class="s2">&quot;infobip&quot;</span><span class="p">,</span>
+    <span class="c1">#     table=&quot;events&quot;,</span>
+    <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;http&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="s2">&quot;clickhouse+http://default:123456@localhost:8123/infobip&quot;</span>
+
+<span class="n">actual</span> <span class="o">=</span> <span class="n">_create_clickhouse_connection_string</span><span class="p">(</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span>
+    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">9000</span><span class="p">,</span>
+    <span class="n">database</span><span class="o">=</span><span class="s2">&quot;infobip&quot;</span><span class="p">,</span>
+    <span class="c1">#     table=&quot;events&quot;,</span>
+    <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;native&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="s2">&quot;clickhouse+native://default:123456@localhost:9000/infobip&quot;</span>
+
+<span class="n">actual</span> <span class="o">=</span> <span class="n">_create_clickhouse_connection_string</span><span class="p">(</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;123?456@&quot;</span><span class="p">,</span>
+    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">9000</span><span class="p">,</span>
+    <span class="n">database</span><span class="o">=</span><span class="s2">&quot;infobip&quot;</span><span class="p">,</span>
+    <span class="c1">#     table=&quot;events&quot;,</span>
+    <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;native&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">assert</span> <span class="p">(</span>
+    <span class="n">actual</span> <span class="o">==</span> <span class="s2">&quot;clickhouse+native://default:123</span><span class="si">%253F</span><span class="s2">456%2540@localhost:9000/infobip&quot;</span>
+<span class="p">),</span> <span class="n">actual</span>
+</code></pre></div>
+<hr />
+<p><a
+href="https://github.com/airtai/airt-service/blob/main/airt_service/data/clickhouse.py#L65"
+target="_blank" style="float:right; font-size:smaller">source</a></p>
+<h3 id="create_db_uri_for_clickhouse_datablob">create_db_uri_for_clickhouse_datablob<a class="headerlink" href="#create_db_uri_for_clickhouse_datablob" title="Permanent link">¤</a></h3>
+<blockquote>
+<div class="highlight"><pre><span></span><code> create_db_uri_for_clickhouse_datablob (username:str, password:str,
+                                        host:str, port:int, table:str,
+                                        database:str, protocol:str)
+</code></pre></div>
+</blockquote>
+<p>Create uri for clickhouse datablob based on connection params</p>
+<p>Args: username: Username of clickhouse database password: Password of
+clickhouse database host: Host of clickhouse database port: Port of
+clickhouse database table: Table of clickhouse database database:
+Database to use protocol: Protocol to connect to clickhouse
+(native/http)</p>
+<p>Returns: An uri for the clickhouse datablob</p>
+<div class="highlight"><pre><span></span><code><span class="n">db_test_cases</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span>
+        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="mi">9000</span><span class="p">,</span>
+        <span class="n">database</span><span class="o">=</span><span class="s2">&quot;infobip&quot;</span><span class="p">,</span>
+        <span class="n">table</span><span class="o">=</span><span class="s2">&quot;events&quot;</span><span class="p">,</span>
+        <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;native&quot;</span><span class="p">,</span>
+        <span class="n">db_uri</span><span class="o">=</span><span class="s2">&quot;clickhouse+native://default:123456@localhost:9000/infobip/events&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">test_case</span> <span class="ow">in</span> <span class="n">db_test_cases</span><span class="p">:</span>
+    <span class="n">actual_db_uri</span> <span class="o">=</span> <span class="n">create_db_uri_for_clickhouse_datablob</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">],</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">],</span>
+        <span class="n">host</span><span class="o">=</span><span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">],</span>
+        <span class="n">port</span><span class="o">=</span><span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">],</span>
+        <span class="n">table</span><span class="o">=</span><span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">],</span>
+        <span class="n">database</span><span class="o">=</span><span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">],</span>
+        <span class="n">protocol</span><span class="o">=</span><span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual_db_uri</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">actual_db_uri</span> <span class="o">==</span> <span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;db_uri&quot;</span><span class="p">]</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>&quot;actual_db_uri=&#39;clickhouse+native://****************************************@localhost:9000/infobip/events&#39;&quot;
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">test_case</span> <span class="ow">in</span> <span class="n">db_test_cases</span><span class="p">:</span>
+    <span class="p">(</span>
+        <span class="n">actual_username</span><span class="p">,</span>
+        <span class="n">actual_password</span><span class="p">,</span>
+        <span class="n">actual_host</span><span class="p">,</span>
+        <span class="n">actual_port</span><span class="p">,</span>
+        <span class="n">actual_table</span><span class="p">,</span>
+        <span class="n">actual_database</span><span class="p">,</span>
+        <span class="n">actual_protocol</span><span class="p">,</span>
+        <span class="n">actual_database_server</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">_get_clickhouse_connection_params_from_db_uri</span><span class="p">(</span><span class="n">db_uri</span><span class="o">=</span><span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;db_uri&quot;</span><span class="p">])</span>
+    <span class="n">display</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual_username</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual_password</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual_host</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual_port</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual_table</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual_database</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual_protocol</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual_database_server</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">actual_username</span> <span class="o">==</span> <span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">actual_password</span> <span class="o">==</span> <span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">actual_host</span> <span class="o">==</span> <span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">actual_port</span> <span class="o">==</span> <span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">actual_table</span> <span class="o">==</span> <span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">actual_database</span> <span class="o">==</span> <span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">actual_protocol</span> <span class="o">==</span> <span class="n">test_case</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">actual_database_server</span> <span class="o">==</span> <span class="s2">&quot;clickhouse&quot;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>&quot;actual_username=&#39;default&#39;&quot;
+
+&quot;actual_password = &#39;****************************************&#39;&quot;
+
+&quot;actual_host=&#39;localhost&#39;&quot;
+
+&#39;actual_port=9000&#39;
+
+&quot;actual_table=&#39;events&#39;&quot;
+
+&quot;actual_database=&#39;infobip&#39;&quot;
+
+&quot;actual_protocol=&#39;native&#39;&quot;
+
+&quot;actual_database_server=&#39;clickhouse&#39;&quot;
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_clickhouse_params_from_env_vars</span><span class="p">():</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CLICKHOUSE_USERNAME&quot;</span><span class="p">],</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CLICKHOUSE_PASSWORD&quot;</span><span class="p">],</span>
+        <span class="n">host</span><span class="o">=</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CLICKHOUSE_HOST&quot;</span><span class="p">],</span>
+        <span class="n">database</span><span class="o">=</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CLICKHOUSE_DATABASE&quot;</span><span class="p">],</span>
+        <span class="n">port</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CLICKHOUSE_PORT&quot;</span><span class="p">]),</span>
+        <span class="n">protocol</span><span class="o">=</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CLICKHOUSE_PROTOCOL&quot;</span><span class="p">],</span>
+        <span class="n">table</span><span class="o">=</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CLICKHOUSE_EVENTS_TABLE&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+</code></pre></div>
+<hr />
+<p><a
+href="https://github.com/airtai/airt-service/blob/main/airt_service/data/clickhouse.py#L124"
+target="_blank" style="float:right; font-size:smaller">source</a></p>
+<h3 id="get_clickhouse_connection">get_clickhouse_connection<a class="headerlink" href="#get_clickhouse_connection" title="Permanent link">¤</a></h3>
+<blockquote>
+<div class="highlight"><pre><span></span><code> get_clickhouse_connection (username:str, password:str, host:str,
+                            port:int, database:str, table:str,
+                            protocol:str)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>username</td>
+<td>str</td>
+<td></td>
+</tr>
+<tr>
+<td>password</td>
+<td>str</td>
+<td></td>
+</tr>
+<tr>
+<td>host</td>
+<td>str</td>
+<td></td>
+</tr>
+<tr>
+<td>port</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>database</td>
+<td>str</td>
+<td></td>
+</tr>
+<tr>
+<td>table</td>
+<td>str</td>
+<td></td>
+</tr>
+<tr>
+<td>protocol</td>
+<td>str</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Returns</strong></td>
+<td><strong>Connection</strong></td>
+<td><strong>verbose: bool = False,</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># rename events to events_distributed</span>
+
+<span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">get_clickhouse_connection</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">db_params</span><span class="p">,</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span> <span class="o">==</span> <span class="n">Connection</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT database, name from system.tables&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="n">database</span> <span class="o">=</span> <span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">database</span> <span class="o">==</span> <span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;events&quot;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">xs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;RENAME TABLE </span><span class="si">{</span><span class="n">database</span><span class="si">}</span><span class="s2">.events TO </span><span class="si">{</span><span class="n">database</span><span class="si">}</span><span class="s2">.events_distributed&quot;</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">ys</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>database</th>
+      <th>name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>infobip</td>
+      <td>airt_training_3m</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>infobip</td>
+      <td>events_distributed</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>infobip</td>
+      <td>events_distributed_new</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>infobip</td>
+      <td>pera_analytics_events</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>infobip</td>
+      <td>pera_analytics_events_with_external</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>69</th>
+      <td>system</td>
+      <td>trace_log</td>
+    </tr>
+    <tr>
+      <th>70</th>
+      <td>system</td>
+      <td>user_directories</td>
+    </tr>
+    <tr>
+      <th>71</th>
+      <td>system</td>
+      <td>users</td>
+    </tr>
+    <tr>
+      <th>72</th>
+      <td>system</td>
+      <td>zeros</td>
+    </tr>
+    <tr>
+      <th>73</th>
+      <td>system</td>
+      <td>zeros_mt</td>
+    </tr>
+  </tbody>
+</table>
+<p>74 rows × 2 columns</p>
+</div>
+
+<hr />
+<p><a
+href="https://github.com/airtai/airt-service/blob/main/airt_service/data/clickhouse.py#L153"
+target="_blank" style="float:right; font-size:smaller">source</a></p>
+<h3 id="get_max_timestamp">get_max_timestamp<a class="headerlink" href="#get_max_timestamp" title="Permanent link">¤</a></h3>
+<blockquote>
+<div class="highlight"><pre><span></span><code> get_max_timestamp (timestamp_column:str,
+                    connection:sqlalchemy.engine.base.Connection, table,
+                    verbose:bool=False)
+</code></pre></div>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">expected</span> <span class="o">=</span> <span class="mi">1624612267272</span>
+<span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">get_clickhouse_connection</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">db_params</span><span class="p">,</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">get_max_timestamp</span><span class="p">(</span>
+        <span class="n">timestamp_column</span><span class="o">=</span><span class="s2">&quot;OccurredTimeTicks&quot;</span><span class="p">,</span>
+        <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span>
+        <span class="n">table</span><span class="o">=</span><span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">],</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">actual</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span>
+
+<span class="n">display</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+
+&#39;actual=1624612267272&#39;
+
+&#39;ok&#39;
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">test_cases</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;AccountId&quot;</span><span class="p">:</span> <span class="mi">312571</span><span class="p">},</span>
+        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="s2">&quot; AND AccountId=312571&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">case</span> <span class="ow">in</span> <span class="n">test_cases</span><span class="p">:</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">_construct_filter_query</span><span class="p">(</span><span class="n">case</span><span class="p">[</span><span class="s2">&quot;filters&quot;</span><span class="p">])</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;expected&quot;</span><span class="p">]</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>&#39; AND AccountId=312571&#39;
+
+&#39;&#39;
+
+&#39;&#39;
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">account_id</span> <span class="o">=</span> <span class="mi">312571</span>
+
+<span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">get_clickhouse_connection</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">db_params</span><span class="p">,</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+    <span class="n">max_timestamp</span> <span class="o">=</span> <span class="n">get_max_timestamp</span><span class="p">(</span>
+        <span class="n">timestamp_column</span><span class="o">=</span><span class="s2">&quot;OccurredTimeTicks&quot;</span><span class="p">,</span>
+        <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span>
+        <span class="n">table</span><span class="o">=</span><span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">],</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">index_value_counts</span> <span class="o">=</span> <span class="n">_get_value_counts_for_index_column</span><span class="p">(</span>
+        <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;PersonId&quot;</span><span class="p">,</span>
+        <span class="n">timestamp_column</span><span class="o">=</span><span class="s2">&quot;OccurredTimeTicks&quot;</span><span class="p">,</span>
+        <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;AccountId&quot;</span><span class="p">:</span> <span class="n">account_id</span><span class="p">},</span>
+        <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span>
+        <span class="n">table</span><span class="o">=</span><span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">],</span>
+        <span class="n">max_timestamp</span><span class="o">=</span><span class="n">max_timestamp</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">index_value_counts</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index_value_counts</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">index_value_counts</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="k">assert</span> <span class="s2">&quot;PersonId&quot;</span> <span class="ow">in</span> <span class="n">index_value_counts</span><span class="o">.</span><span class="n">columns</span>
+<span class="k">assert</span> <span class="s2">&quot;count&quot;</span> <span class="ow">in</span> <span class="n">index_value_counts</span><span class="o">.</span><span class="n">columns</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Querying database to get unique person_ids and its number of events - query=&#39;SELECT PersonId, COUNT(*) AS `count` FROM airt_training_3m where OccurredTimeTicks&lt;=1624612267272 AND AccountId=312571 GROUP BY PersonId ORDER BY PersonId&#39;
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>PersonId</th>
+      <th>count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>4</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>8</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>9</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>10</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>49890</th>
+      <td>99993</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>49891</th>
+      <td>99994</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>49892</th>
+      <td>99995</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>49893</th>
+      <td>99996</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>49894</th>
+      <td>100000</td>
+      <td>10</td>
+    </tr>
+  </tbody>
+</table>
+<p>49895 rows × 2 columns</p>
+</div>
+
+<hr />
+<p><a
+href="https://github.com/airtai/airt-service/blob/main/airt_service/data/clickhouse.py#L204"
+target="_blank" style="float:right; font-size:smaller">source</a></p>
+<h3 id="partition_index_value_counts_into_chunks">partition_index_value_counts_into_chunks<a class="headerlink" href="#partition_index_value_counts_into_chunks" title="Permanent link">¤</a></h3>
+<blockquote>
+<div class="highlight"><pre><span></span><code> partition_index_value_counts_into_chunks (index_column:str,
+                                           index_value_counts:pandas.core.
+                                           frame.DataFrame,
+                                           db_download_size:int)
+</code></pre></div>
+</blockquote>
+<p>Partition index value counts into chunks with size less than
+db_download_size, unless a single index has more than db_download_size
+events</p>
+<div class="highlight"><pre><span></span><code><span class="n">index_value_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;PersonId&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+        <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1_000_000</span><span class="p">,</span> <span class="mi">100_000</span><span class="p">,</span> <span class="mi">150_000</span><span class="p">,</span> <span class="mi">2_000_000</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">264</span><span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">index_value_counts</span><span class="p">)</span>
+<span class="n">expected</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;index_id_start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+        <span class="s2">&quot;index_id_end&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+        <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1_000_000</span><span class="p">,</span> <span class="mi">250_000</span><span class="p">,</span> <span class="mi">2_000_000</span><span class="p">,</span> <span class="mi">414</span><span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">actual</span> <span class="o">=</span> <span class="n">partition_index_value_counts_into_chunks</span><span class="p">(</span>
+    <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;PersonId&quot;</span><span class="p">,</span>
+    <span class="n">index_value_counts</span><span class="o">=</span><span class="n">index_value_counts</span><span class="p">,</span>
+    <span class="n">db_download_size</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_frame_equal</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>PersonId</th>
+      <th>count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>1000000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>100000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>150000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>2000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>7</td>
+      <td>150</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>9</td>
+      <td>264</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Partitioning index ids into chunks...
+[INFO] __main__: Partitioning finished
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>index_id_start</th>
+      <th>index_id_end</th>
+      <th>count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>2</td>
+      <td>1000000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>4</td>
+      <td>250000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>4</td>
+      <td>7</td>
+      <td>2000000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>7</td>
+      <td>10</td>
+      <td>414</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><code><span class="n">account_id</span> <span class="o">=</span> <span class="mi">312571</span>
+
+<span class="k">with</span> <span class="n">using_cluster</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">engine</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;test_clickhouse_download_&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+        <span class="n">_download_from_clickhouse</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">db_params</span><span class="p">,</span>
+            <span class="n">chunksize</span><span class="o">=</span><span class="mi">10_000</span><span class="p">,</span>
+            <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;PersonId&quot;</span><span class="p">,</span>
+            <span class="n">timestamp_column</span><span class="o">=</span><span class="s2">&quot;OccurredTimeTicks&quot;</span><span class="p">,</span>
+            <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;AccountId&quot;</span><span class="p">:</span> <span class="n">account_id</span><span class="p">},</span>
+            <span class="n">output_path</span><span class="o">=</span><span class="n">d</span><span class="p">,</span>
+            <span class="n">db_download_size</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">ls</span><span class="p">())</span>
+        <span class="n">display</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)))</span>
+        <span class="n">ddf</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">dd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">ddf</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+        <span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.parquet&quot;</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mi">498961</span> <span class="o">/</span> <span class="mi">10_000</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">ddf</span><span class="o">.</span><span class="n">npartitions</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">ddf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span> <span class="o">==</span> <span class="mi">498961</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] airt.dask_manager: Starting cluster...
+[INFO] airt.dask_manager: Cluster started: &lt;Client: &#39;tcp://127.0.0.1:39539&#39; processes=8 threads=8, memory=22.89 GiB&gt;
+Cluster dashboard: http://127.0.0.1:8787/status
+[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Querying database to get unique person_ids and its number of events - query=&#39;SELECT PersonId, COUNT(*) AS `count` FROM airt_training_3m where OccurredTimeTicks&lt;=1624612267272 AND AccountId=312571 GROUP BY PersonId ORDER BY PersonId&#39;
+[INFO] __main__: Partitioning index ids into chunks...
+[INFO] __main__: Partitioning finished
+[INFO] __main__: 5 chunk(s) of ~100000 rows each found
+[INFO] __main__: query=&#39;SELECT * FROM airt_training_3m FINAL WHERE OccurredTimeTicks&lt;=1624612267272 AND PersonId&gt;=2 AND PersonId&lt;19983 AND AccountId=312571 ORDER BY PersonId, OccurredTimeTicks&#39;
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000000.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000001.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000002.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000003.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000004.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000005.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000006.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000007.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000008.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000009.parquet
+[INFO] __main__: query=&#39;SELECT * FROM airt_training_3m FINAL WHERE OccurredTimeTicks&lt;=1624612267272 AND PersonId&gt;=19983 AND PersonId&lt;39991 AND AccountId=312571 ORDER BY PersonId, OccurredTimeTicks&#39;
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000010.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000011.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000012.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000013.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000014.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000015.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000016.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000017.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000018.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000019.parquet
+[INFO] __main__: query=&#39;SELECT * FROM airt_training_3m FINAL WHERE OccurredTimeTicks&lt;=1624612267272 AND PersonId&gt;=39991 AND PersonId&lt;59977 AND AccountId=312571 ORDER BY PersonId, OccurredTimeTicks&#39;
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000020.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000021.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000022.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000023.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000024.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000025.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000026.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000027.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000028.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000029.parquet
+[INFO] __main__: query=&#39;SELECT * FROM airt_training_3m FINAL WHERE OccurredTimeTicks&lt;=1624612267272 AND PersonId&gt;=59977 AND PersonId&lt;80363 AND AccountId=312571 ORDER BY PersonId, OccurredTimeTicks&#39;
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000030.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000031.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000032.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000033.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000034.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000035.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000036.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000037.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000038.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000039.parquet
+[INFO] __main__: query=&#39;SELECT * FROM airt_training_3m FINAL WHERE OccurredTimeTicks&lt;=1624612267272 AND PersonId&gt;=80363 AND PersonId&lt;100001 AND AccountId=312571 ORDER BY PersonId, OccurredTimeTicks&#39;
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000040.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000041.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000042.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000043.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000044.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000045.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000046.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000047.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000048.parquet
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmpla2yb_p3/clickhouse_data_000000049.parquet
+[INFO] __main__: Rewriting temporary parquet files from /tmp/tmpla2yb_p3/clickhouse_data_*.parquet to output directory /tmp/test_clickhouse_download_a35gza5a
+
+[Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.25.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.10.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.36.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.16.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.7.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.47.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.30.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.43.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.15.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.28.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.29.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.9.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.6.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.17.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.11.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.37.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.35.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.14.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.46.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.18.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.8.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.42.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.48.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.44.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.34.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.12.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.23.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.41.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.40.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.33.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.45.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.26.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.3.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.22.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.19.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.13.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.0.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.31.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.1.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.27.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.5.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.38.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.39.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.4.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.32.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.24.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.20.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.21.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.2.parquet&#39;),
+ Path(&#39;/tmp/test_clickhouse_download_a35gza5a/part.49.parquet&#39;)]
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>AccountId</th>
+      <th>DefinitionId</th>
+      <th>OccurredTime</th>
+      <th>OccurredTimeTicks</th>
+      <th>PersonId</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>312571</td>
+      <td>loadTests2</td>
+      <td>2019-12-31 21:30:02</td>
+      <td>1577836802678</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>312571</td>
+      <td>loadTests3</td>
+      <td>2020-01-03 23:53:22</td>
+      <td>1578104602678</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests1</td>
+      <td>2020-01-07 02:16:42</td>
+      <td>1578372402678</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>312571</td>
+      <td>loadTests2</td>
+      <td>2020-01-10 04:40:02</td>
+      <td>1578640202678</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>312571</td>
+      <td>loadTests3</td>
+      <td>2020-01-13 07:03:22</td>
+      <td>1578908002678</td>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><code>[INFO] airt.dask_manager: Starting stopping cluster...
+[INFO] airt.dask_manager: Cluster stopped
+</code></pre></div>
+<hr />
+<p><a
+href="https://github.com/airtai/airt-service/blob/main/airt_service/data/clickhouse.py#L336"
+target="_blank" style="float:right; font-size:smaller">source</a></p>
+<h3 id="clickhouse_pull">clickhouse_pull<a class="headerlink" href="#clickhouse_pull" title="Permanent link">¤</a></h3>
+<blockquote>
+<div class="highlight"><pre><span></span><code> clickhouse_pull (datablob_id:int&lt;idofdatablobindb&gt;,
+                  index_column:str&lt;columntousetopartitionrowsandtouseasind
+                  ex&gt;, timestamp_column:str&lt;timestampcolumn&gt;, filters_json
+                  :str&lt;additionalcolumnfiltersasjsonstringkey,valuepairs&gt;=
+                  &#39;{}&#39;)
+</code></pre></div>
+</blockquote>
+<p>Pull datablob from a clickhouse database and update progress in the
+internal database</p>
+<p>Args: datablob_id: Id of datablob in db index_column: Column to use to
+partition the rows and to use as the index timestamp_column: Timestamp
+column name filters_json: Additional column filters as json string</p>
+<p>Example: The following code executes a CLI command:
+<code>clickhouse_pull 1 PersonId OccurredTimeTicks {"AccountId":312571}</code></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>datablob_id</td>
+<td>int <id of datablob in db></td>
+<td></td>
+<td>type: ignore</td>
+</tr>
+<tr>
+<td>index_column</td>
+<td>str <column to use to partition rows and to use as index></td>
+<td></td>
+<td>type: ignore</td>
+</tr>
+<tr>
+<td>timestamp_column</td>
+<td>str <timestamp column></td>
+<td></td>
+<td>type: ignore</td>
+</tr>
+<tr>
+<td>filters_json</td>
+<td>str \&lt;additional column filters as json string key, value pairs></td>
+<td>{}</td>
+<td>type: ignore</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">get_session_with_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">test_username</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+
+    <span class="n">source</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;clickhouse+</span><span class="si">{</span><span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">db_params</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="n">datablob</span> <span class="o">=</span> <span class="n">DataBlob</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;db&quot;</span><span class="p">,</span>
+        <span class="n">uri</span><span class="o">=</span><span class="n">create_db_uri_for_clickhouse_datablob</span><span class="p">(</span><span class="o">**</span><span class="n">db_params</span><span class="p">),</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="n">cloud_provider</span><span class="o">=</span><span class="s2">&quot;aws&quot;</span><span class="p">,</span>
+        <span class="n">region</span><span class="o">=</span><span class="s2">&quot;eu-west-1&quot;</span><span class="p">,</span>
+        <span class="n">total_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">commit_or_rollback</span><span class="p">(</span><span class="n">session</span><span class="p">):</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">datablob</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">datablob</span><span class="o">.</span><span class="n">folder_size</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">datablob</span><span class="o">.</span><span class="n">path</span>
+
+    <span class="n">account_id</span> <span class="o">=</span> <span class="mi">312571</span>
+    <span class="n">clickhouse_pull</span><span class="p">(</span>
+        <span class="n">datablob_id</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;PersonId&quot;</span><span class="p">,</span>
+        <span class="n">timestamp_column</span><span class="o">=</span><span class="s2">&quot;OccurredTimeTicks&quot;</span><span class="p">,</span>
+        <span class="n">filters_json</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;AccountId&quot;</span><span class="p">:</span> <span class="n">account_id</span><span class="p">}),</span>
+    <span class="p">)</span>
+    <span class="n">datablob_id</span> <span class="o">=</span> <span class="n">datablob</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
+
+<span class="k">with</span> <span class="n">get_session_with_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">datablob</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">DataBlob</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">DataBlob</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">datablob_id</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">datablob</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">datablob</span><span class="o">.</span><span class="n">folder_size</span> <span class="o">==</span> <span class="mi">8896699</span><span class="p">,</span> <span class="n">datablob</span><span class="o">.</span><span class="n">folder_size</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">datablob</span><span class="o">.</span><span class="n">path</span>
+        <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;STORAGE_BUCKET_PREFIX&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">-eu-west-1/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/datablob/</span><span class="si">{</span><span class="n">datablob</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">),</span> <span class="n">datablob</span><span class="o">.</span><span class="n">path</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] botocore.credentials: Found credentials in environment variables.
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url s3://kumaran-airt-service-eu-west-1/86/datablob/19
+[INFO] airt.remote_path: S3Path._create_cache_path(): created cache path: /tmp/s3kumaran-airt-service-eu-west-186datablob19_cached_lrwbbwmj
+[INFO] airt.remote_path: S3Path.__init__(): created object for accessing s3://kumaran-airt-service-eu-west-1/86/datablob/19 locally in /tmp/s3kumaran-airt-service-eu-west-186datablob19_cached_lrwbbwmj
+[INFO] airt.dask_manager: Starting cluster...
+[INFO] airt.dask_manager: Cluster started: &lt;Client: &#39;tcp://127.0.0.1:40383&#39; processes=8 threads=8, memory=22.89 GiB&gt;
+Cluster dashboard: http://127.0.0.1:8787/status
+[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Querying database to get unique person_ids and its number of events - query=&#39;SELECT PersonId, COUNT(*) AS `count` FROM airt_training_3m where OccurredTimeTicks&lt;=1624612267272 AND AccountId=312571 GROUP BY PersonId ORDER BY PersonId&#39;
+[INFO] __main__: Partitioning index ids into chunks...
+[INFO] __main__: Partitioning finished
+[INFO] __main__: 1 chunk(s) of ~50000000 rows each found
+[INFO] __main__: query=&#39;SELECT * FROM airt_training_3m FINAL WHERE OccurredTimeTicks&lt;=1624612267272 AND PersonId&gt;=2 AND PersonId&lt;100001 AND AccountId=312571 ORDER BY PersonId, OccurredTimeTicks&#39;
+[INFO] __main__: Writing data retrieved from the database to temporary file /tmp/tmp4chu9jzj/clickhouse_data_000000000.parquet
+[INFO] __main__: Rewriting temporary parquet files from /tmp/tmp4chu9jzj/clickhouse_data_*.parquet to output directory /tmp/s3kumaran-airt-service-eu-west-186datablob19_cached_lrwbbwmj
+[INFO] airt.dask_manager: Starting stopping cluster...
+[INFO] airt.dask_manager: Cluster stopped
+[INFO] airt.remote_path: S3Path.__exit__(): pushing data from /tmp/s3kumaran-airt-service-eu-west-186datablob19_cached_lrwbbwmj to s3://kumaran-airt-service-eu-west-1/86/datablob/19
+[INFO] airt.remote_path: S3Path._clean_up(): removing local cache path /tmp/s3kumaran-airt-service-eu-west-186datablob19_cached_lrwbbwmj
+
+DataBlob(id=19, uuid=UUID(&#39;b5b5f562-6cfd-4d26-9e84-2c3cebbbe78a&#39;), type=&#39;db&#39;, uri=&#39;clickhouse+native://****************************************@3.68.112.117:9000/infobip/airt_training_3m&#39;, source=&#39;clickhouse+native://3.68.112.117:9000/infobip/airt_training_3m&#39;, total_steps=1, completed_steps=1, folder_size=8896699, cloud_provider=&lt;CloudProvider.aws: &#39;aws&#39;&gt;, region=&#39;eu-west-1&#39;, error=None, disabled=False, path=&#39;s3://kumaran-airt-service-eu-west-1/86/datablob/19&#39;, created=datetime.datetime(2022, 10, 20, 6, 43, 1), user_id=86, pulled_on=datetime.datetime(2022, 10, 20, 6, 43, 16), tags=[])
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># To use in following function&#39;s test case</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">size</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">a</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">),</span>
+        <span class="n">b</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">c</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="s2">&quot;mouse&quot;</span><span class="p">,</span> <span class="s2">&quot;horse&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">size</span> <span class="o">//</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">d</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">size</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">e</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+            <span class="n">low</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1_000_000_000</span><span class="p">,</span>
+            <span class="n">high</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()),</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>
+<span class="n">df</span>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>a</th>
+      <th>b</th>
+      <th>c</th>
+      <th>d</th>
+      <th>e</th>
+    </tr>
+    <tr>
+      <th>i</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>18</td>
+      <td>63.900453</td>
+      <td>dog</td>
+      <td>True</td>
+      <td>1992-05-28 13:11:23</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>19</td>
+      <td>0.337357</td>
+      <td>cat</td>
+      <td>False</td>
+      <td>2004-07-30 11:58:10</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>80.117166</td>
+      <td>mouse</td>
+      <td>True</td>
+      <td>2011-07-07 19:43:18</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>98</td>
+      <td>23.558829</td>
+      <td>horse</td>
+      <td>False</td>
+      <td>2010-12-21 03:04:11</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>9</td>
+      <td>38.642198</td>
+      <td>dog</td>
+      <td>True</td>
+      <td>2009-08-28 00:56:09</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>995</th>
+      <td>67</td>
+      <td>31.308715</td>
+      <td>horse</td>
+      <td>False</td>
+      <td>1998-02-21 06:37:20</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>55</td>
+      <td>14.236740</td>
+      <td>dog</td>
+      <td>True</td>
+      <td>2022-09-21 00:48:34</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>15</td>
+      <td>88.402985</td>
+      <td>cat</td>
+      <td>False</td>
+      <td>1993-09-09 16:21:07</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>89</td>
+      <td>69.314052</td>
+      <td>mouse</td>
+      <td>True</td>
+      <td>2004-08-07 14:13:55</td>
+    </tr>
+    <tr>
+      <th>999</th>
+      <td>89</td>
+      <td>6.978514</td>
+      <td>horse</td>
+      <td>False</td>
+      <td>2007-01-08 13:06:08</td>
+    </tr>
+  </tbody>
+</table>
+<p>1000 rows × 5 columns</p>
+</div>
+
+<div class="highlight"><pre><span></span><code><span class="k">assert</span> <span class="p">(</span>
+    <span class="n">_sql_types</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;i Int64, a Int64, b Float64, c String, d UInt8, e DateTime64&quot;</span>
+<span class="p">),</span> <span class="n">_sql_types</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;predictions&quot;</span>
+<span class="n">if_not_exists</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">expected</span> <span class="o">=</span> <span class="s2">&quot;CREATE TABLE IF NOT EXISTS predictions (i Int64, a Int64, b Float64, c String, d UInt8, e DateTime64) ENGINE = ReplacingMergeTree ORDER BY i;&quot;</span>
+<span class="k">assert</span> <span class="n">_insert_table_query</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">table_name</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;; DROP TABLE test ;--&quot;</span>
+
+<span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">_drop_table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="o">**</span><span class="n">db_params</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;tmp_table&quot;</span>
+
+<span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+
+<span class="n">retval</span> <span class="o">=</span> <span class="n">_insert_table</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="o">**</span><span class="n">db_params</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">retval</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span> <span class="o">==</span> <span class="p">[]</span>
+
+<span class="k">with</span> <span class="n">get_clickhouse_connection</span><span class="p">(</span><span class="o">**</span><span class="n">db_params</span><span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">engine</span>
+
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoload_with</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">select</span><span class="p">([</span><span class="n">table</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_index_equal</span><span class="p">(</span><span class="n">actual</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span>
+
+<span class="n">retval</span> <span class="o">=</span> <span class="n">_drop_table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="o">**</span><span class="n">db_params</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">retval</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span> <span class="o">==</span> <span class="p">[]</span>
+
+<span class="k">with</span> <span class="n">get_clickhouse_connection</span><span class="p">(</span><span class="o">**</span><span class="n">db_params</span><span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">engine</span>
+
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoload_with</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Inserting table with query=CREATE TABLE IF NOT EXISTS tmp_table (i Int64, a Int64, b Float64, c String, d UInt8, e DateTime64) ENGINE = ReplacingMergeTree ORDER BY i;
+[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+
+/root/.local/lib/python3.8/site-packages/clickhouse_sqlalchemy/drivers/base.py:268: SAWarning: Did not recognize type &#39;DateTime64(3)&#39; of column &#39;e&#39;
+  warn(&quot;Did not recognize type &#39;%s&#39; of column &#39;%s&#39;&quot; %
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>i</th>
+      <th>a</th>
+      <th>b</th>
+      <th>c</th>
+      <th>d</th>
+      <th>e</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Dropping table with query=DROP TABLE IF EXISTS tmp_table;
+[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;tmp_table&quot;</span>
+
+<span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+
+<span class="n">_drop_table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="o">**</span><span class="n">db_params</span><span class="p">)</span>
+
+<span class="c1"># _insert_table(df, table_name, **db_params)</span>
+
+<span class="n">_insert_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="o">**</span><span class="n">db_params</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">get_clickhouse_connection</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">db_params</span><span class="p">,</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">engine</span>
+
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoload_with</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">select</span><span class="p">([</span><span class="n">table</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">})</span>
+
+    <span class="c1"># todo: doesn&#39;t work with http driver</span>
+    <span class="c1">#     actual[&quot;e&quot;] = pd.to_datetime(actual[&quot;e&quot;])</span>
+
+    <span class="n">display</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span>
+
+    <span class="n">pd</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_frame_equal</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+
+<span class="n">_drop_table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="o">**</span><span class="n">db_params</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Dropping table with query=DROP TABLE IF EXISTS tmp_table;
+[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Inserting table with query=CREATE TABLE IF NOT EXISTS tmp_table (i Int64, a Int64, b Float64, c String, d UInt8, e DateTime64) ENGINE = ReplacingMergeTree ORDER BY i;
+[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Inserting data to table &#39;tmp_table&#39;
+[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+
+/root/.local/lib/python3.8/site-packages/clickhouse_sqlalchemy/drivers/base.py:268: SAWarning: Did not recognize type &#39;DateTime64(3)&#39; of column &#39;e&#39;
+  warn(&quot;Did not recognize type &#39;%s&#39; of column &#39;%s&#39;&quot; %
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>a</th>
+      <th>b</th>
+      <th>c</th>
+      <th>d</th>
+      <th>e</th>
+    </tr>
+    <tr>
+      <th>i</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>56</td>
+      <td>0.192607</td>
+      <td>dog</td>
+      <td>True</td>
+      <td>1997-01-03 09:39:53</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>34</td>
+      <td>18.847218</td>
+      <td>cat</td>
+      <td>False</td>
+      <td>2002-01-20 16:47:14</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>24</td>
+      <td>53.883683</td>
+      <td>mouse</td>
+      <td>True</td>
+      <td>2012-10-22 01:25:19</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>41</td>
+      <td>32.002803</td>
+      <td>horse</td>
+      <td>False</td>
+      <td>2001-07-17 08:30:51</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>40</td>
+      <td>89.485986</td>
+      <td>dog</td>
+      <td>True</td>
+      <td>2004-04-03 16:15:48</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>995</th>
+      <td>97</td>
+      <td>37.450668</td>
+      <td>horse</td>
+      <td>False</td>
+      <td>2015-05-08 08:16:50</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>46</td>
+      <td>57.562668</td>
+      <td>dog</td>
+      <td>True</td>
+      <td>2005-12-29 12:07:34</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>16</td>
+      <td>29.080247</td>
+      <td>cat</td>
+      <td>False</td>
+      <td>2016-02-20 08:19:16</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>41</td>
+      <td>60.336723</td>
+      <td>mouse</td>
+      <td>True</td>
+      <td>1998-08-26 11:15:26</td>
+    </tr>
+    <tr>
+      <th>999</th>
+      <td>81</td>
+      <td>45.697327</td>
+      <td>horse</td>
+      <td>False</td>
+      <td>2007-11-27 09:45:10</td>
+    </tr>
+  </tbody>
+</table>
+<p>1000 rows × 5 columns</p>
+</div>
+
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Dropping table with query=DROP TABLE IF EXISTS tmp_table;
+
+&lt;sqlalchemy.engine.cursor.LegacyCursorResult&gt;
+</code></pre></div>
+<hr />
+<p><a
+href="https://github.com/airtai/airt-service/blob/main/airt_service/data/clickhouse.py#L588"
+target="_blank" style="float:right; font-size:smaller">source</a></p>
+<h3 id="clickhouse_push">clickhouse_push<a class="headerlink" href="#clickhouse_push" title="Permanent link">¤</a></h3>
+<blockquote>
+<div class="highlight"><pre><span></span><code> clickhouse_push (prediction_push_id:int)
+</code></pre></div>
+</blockquote>
+<p>Push the data to a clickhouse database</p>
+<p>Args: prediction_push_id: Id of prediction_push</p>
+<p>Example: The following code executes a CLI command: <code>clickhouse_push 1</code></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>prediction_push_id</td>
+<td>int</td>
+<td>type: ignore</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">get_session_with_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">test_username</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="n">commit_or_rollback</span><span class="p">(</span><span class="n">session</span><span class="p">):</span>
+        <span class="n">datasource</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span>
+            <span class="n">datablob_id</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">cloud_provider</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">cloud_provider</span><span class="p">,</span>
+            <span class="n">region</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">region</span><span class="p">,</span>
+            <span class="n">total_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">train_request</span> <span class="o">=</span> <span class="n">TrainRequest</span><span class="p">(</span>
+        <span class="n">data_uuid</span><span class="o">=</span><span class="n">datasource</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+        <span class="n">client_column</span><span class="o">=</span><span class="s2">&quot;AccountId&quot;</span><span class="p">,</span>
+        <span class="n">target_column</span><span class="o">=</span><span class="s2">&quot;DefinitionId&quot;</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="s2">&quot;load*&quot;</span><span class="p">,</span>
+        <span class="n">predict_after</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="n">train_request</span><span class="o">=</span><span class="n">train_request</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">BackgroundTasks</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">set_env_variable_context</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s2">&quot;JOB_EXECUTOR&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;fastapi&quot;</span><span class="p">):</span>
+        <span class="n">prediction</span> <span class="o">=</span> <span class="n">predict_model</span><span class="p">(</span>
+            <span class="n">model_uuid</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">background_tasks</span><span class="o">=</span><span class="n">b</span>
+        <span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span>
+
+    <span class="n">bucket</span><span class="p">,</span> <span class="n">s3_path</span> <span class="o">=</span> <span class="n">create_s3_prediction_path</span><span class="p">(</span>
+        <span class="n">user_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">prediction_id</span><span class="o">=</span><span class="n">prediction</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">prediction</span><span class="o">.</span><span class="n">region</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">RemotePath</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span>
+        <span class="n">remote_url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">bucket</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">s3_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">pull_on_enter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">push_on_exit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">destionation_s3_path</span><span class="p">:</span>
+        <span class="n">dd</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">npartitions</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">destionation_s3_path</span><span class="o">.</span><span class="n">as_path</span><span class="p">())</span>
+
+    <span class="k">with</span> <span class="n">commit_or_rollback</span><span class="p">(</span><span class="n">session</span><span class="p">):</span>
+        <span class="n">prediction</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">bucket</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">s3_path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span>
+
+    <span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;test_clickhouse_push_prediction&quot;</span>
+    <span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+    <span class="n">prediction_push</span> <span class="o">=</span> <span class="n">PredictionPush</span><span class="p">(</span>
+        <span class="n">total_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">prediction_id</span><span class="o">=</span><span class="n">prediction</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">uri</span><span class="o">=</span><span class="n">create_db_uri_for_clickhouse_datablob</span><span class="p">(</span>
+            <span class="n">table</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+            <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">db_params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prediction_push</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="n">display</span><span class="p">(</span><span class="n">prediction_push</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">prediction_push</span><span class="o">.</span><span class="n">completed_steps</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="n">prediction_push_id</span> <span class="o">=</span> <span class="n">prediction_push</span><span class="o">.</span><span class="n">id</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] airt_service.batch_job: create_batch_job(): command=&#39;predict 11&#39;, task=&#39;csv_processing&#39;
+[INFO] airt_service.batch_job_components.base: Entering FastAPIBatchJobContext(task=csv_processing)
+[INFO] airt_service.batch_job: batch_ctx=FastAPIBatchJobContext(task=csv_processing)
+[INFO] airt_service.batch_job_components.fastapi: FastAPIBatchJobContext.create_job(self=FastAPIBatchJobContext(task=csv_processing), command=&#39;predict 11&#39;, environment_vars={&#39;AWS_ACCESS_KEY_ID&#39;: &#39;********************&#39;, &#39;AWS_SECRET_ACCESS_KEY&#39;: &#39;****************************************&#39;, &#39;AWS_DEFAULT_REGION&#39;: &#39;eu-west-1&#39;, &#39;AZURE_SUBSCRIPTION_ID&#39;: &#39;************************************&#39;, &#39;AZURE_TENANT_ID&#39;: &#39;************************************&#39;, &#39;AZURE_CLIENT_ID&#39;: &#39;************************************&#39;, &#39;AZURE_CLIENT_SECRET&#39;: &#39;****************************************&#39;, &#39;AZURE_STORAGE_ACCOUNT_PREFIX&#39;: &#39;kumsairtsdev&#39;, &#39;AZURE_RESOURCE_GROUP&#39;: &#39;kumaran-airt-service-dev&#39;, &#39;STORAGE_BUCKET_PREFIX&#39;: &#39;kumaran-airt-service&#39;, &#39;DB_USERNAME&#39;: &#39;root&#39;, &#39;DB_PASSWORD&#39;: &#39;****************************************&#39;, &#39;DB_HOST&#39;: &#39;kumaran-mysql&#39;, &#39;DB_PORT&#39;: &#39;3306&#39;, &#39;DB_DATABASE&#39;: &#39;airt_service&#39;, &#39;DB_DATABASE_SERVER&#39;: &#39;mysql&#39;})
+[INFO] airt_service.batch_job_components.base: Exiting FastAPIBatchJobContext(task=csv_processing): exc_type=None, exc=None, None
+
+Prediction(id=11, total_steps=3, error=None, path=None, model_id=10, disabled=False, cloud_provider=&lt;CloudProvider.aws: &#39;aws&#39;&gt;, uuid=UUID(&#39;6e1903c3-6970-4591-858e-a1ae05335bae&#39;), created=datetime.datetime(2022, 10, 20, 6, 43, 40), completed_steps=0, region=&#39;eu-west-1&#39;, datasource_id=7)
+
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url s3://kumaran-airt-service-eu-west-1/86/prediction/11
+[INFO] airt.remote_path: S3Path._create_cache_path(): created cache path: /tmp/s3kumaran-airt-service-eu-west-186prediction11_cached_s2dqqrv8
+[INFO] airt.remote_path: S3Path.__init__(): created object for accessing s3://kumaran-airt-service-eu-west-1/86/prediction/11 locally in /tmp/s3kumaran-airt-service-eu-west-186prediction11_cached_s2dqqrv8
+[INFO] airt.remote_path: S3Path.__exit__(): pushing data from /tmp/s3kumaran-airt-service-eu-west-186prediction11_cached_s2dqqrv8 to s3://kumaran-airt-service-eu-west-1/86/prediction/11
+[INFO] airt.remote_path: S3Path._clean_up(): removing local cache path /tmp/s3kumaran-airt-service-eu-west-186prediction11_cached_s2dqqrv8
+
+PredictionPush(id=6, uuid=UUID(&#39;cacb0d9d-b77f-4495-a127-ff854a2816da&#39;), uri=&#39;clickhouse+native://****************************************@3.68.112.117:9000/infobip/test_clickhouse_push_prediction&#39;, total_steps=1, completed_steps=0, error=None, created=datetime.datetime(2022, 10, 20, 6, 43, 43), prediction_id=11, )
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">db_params</span> <span class="o">=</span> <span class="n">get_clickhouse_params_from_env_vars</span><span class="p">()</span>
+<span class="n">_drop_table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="o">**</span><span class="n">db_params</span><span class="p">)</span>
+
+<span class="n">clickhouse_push</span><span class="p">(</span><span class="n">prediction_push_id</span><span class="o">=</span><span class="n">prediction_push_id</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">get_session_with_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">prediction_push</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span>
+        <span class="n">select</span><span class="p">(</span><span class="n">PredictionPush</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">PredictionPush</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">prediction_push_id</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">prediction_push</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">prediction_push</span><span class="o">.</span><span class="n">completed_steps</span> <span class="o">==</span> <span class="n">prediction_push</span><span class="o">.</span><span class="n">total_steps</span>
+
+    <span class="k">with</span> <span class="n">get_clickhouse_connection</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">db_params</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">engine</span>
+
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">autoload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoload_with</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">select</span><span class="p">([</span><span class="n">table</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">})</span>
+        <span class="p">)</span>
+
+        <span class="n">display</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span>
+
+    <span class="n">_drop_table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="o">**</span><span class="n">db_params</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Dropping table with query=DROP TABLE IF EXISTS test_clickhouse_push_prediction;
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url s3://kumaran-airt-service-eu-west-1/86/prediction/11
+[INFO] airt.remote_path: S3Path._create_cache_path(): created cache path: /tmp/s3kumaran-airt-service-eu-west-186prediction11_cached_dpmygy0b
+[INFO] airt.remote_path: S3Path.__init__(): created object for accessing s3://kumaran-airt-service-eu-west-1/86/prediction/11 locally in /tmp/s3kumaran-airt-service-eu-west-186prediction11_cached_dpmygy0b
+[INFO] airt.remote_path: S3Path.__enter__(): pulling data from s3://kumaran-airt-service-eu-west-1/86/prediction/11 to /tmp/s3kumaran-airt-service-eu-west-186prediction11_cached_dpmygy0b
+[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Inserting table with query=CREATE TABLE IF NOT EXISTS test_clickhouse_push_prediction (i Int64, a Int64, b Float64, c String, d UInt8, e DateTime64) ENGINE = ReplacingMergeTree ORDER BY i;
+[INFO] airt.remote_path: S3Path._clean_up(): removing local cache path /tmp/s3kumaran-airt-service-eu-west-186prediction11_cached_dpmygy0b
+
+PredictionPush(id=6, uuid=UUID(&#39;cacb0d9d-b77f-4495-a127-ff854a2816da&#39;), uri=&#39;clickhouse+native://****************************************@3.68.112.117:9000/infobip/test_clickhouse_push_prediction&#39;, total_steps=1, completed_steps=1, error=None, created=datetime.datetime(2022, 10, 20, 6, 43, 43), prediction_id=11, )
+
+[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+
+/root/.local/lib/python3.8/site-packages/clickhouse_sqlalchemy/drivers/base.py:268: SAWarning: Did not recognize type &#39;DateTime64(3)&#39; of column &#39;e&#39;
+  warn(&quot;Did not recognize type &#39;%s&#39; of column &#39;%s&#39;&quot; %
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>a</th>
+      <th>b</th>
+      <th>c</th>
+      <th>d</th>
+      <th>e</th>
+    </tr>
+    <tr>
+      <th>i</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><code>[INFO] __main__: Connected to database using Engine(clickhouse+native://****************************************@3.68.112.117:9000/infobip)
+[INFO] __main__: Dropping table with query=DROP TABLE IF EXISTS test_clickhouse_push_prediction;
+</code></pre></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../DataBlob_Azure_Blob_Storage/" class="md-footer__link md-footer__link--prev" aria-label="Previous: DataBlob Azure Blob Storage" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              DataBlob Azure Blob Storage
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../DataBlob_DB/" class="md-footer__link md-footer__link--next" aria-label="Next: DataBlob DB" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              DataBlob DB
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2022 onwards, airt.ai
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+    and 
+    <a href="https://nbdev-mkdocs.airt.ai/" target="_blank" rel="noopener">
+      Material for nbdev
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "search.share"], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../overrides/js/extra.js"></script>
+      
+        <script src="../overrides/js/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+    
+  </body>
+</html>

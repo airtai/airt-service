@@ -1,0 +1,3127 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Webservice to host airt models">
+      
+      
+        <meta name="author" content="airt.ai">
+      
+      
+        <link rel="canonical" href="https://airtai.github.io/airt-service/DataSource_Parquet/">
+      
+      <link rel="icon" href="../overrides/images/compass-outline.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>DataSource Parquet - airt_service</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../overrides/css/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  
+  
+    
+  
+  
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="airt_service - DataSource Parquet" />
+  <meta property="og:description" content="Webservice to host airt models" />
+  <meta property="og:url" content="https://airtai.github.io/airt-service/DataSource_Parquet/" />
+  <meta property="og:image" content="https://opengraph.githubassets.com/1672290560.539482/airtai/airt-service" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="airt_service - DataSource Parquet" />
+  <meta name="twitter:description" content="Webservice to host airt models" />
+  <meta name="twitter:image" content="https://opengraph.githubassets.com/1672290560.539482/airtai/airt-service" />
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="yellow">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#datasource-parquet" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="airt_service" class="md-header__button md-logo" aria-label="airt_service" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m7 17 3.2-6.8L17 7l-3.2 6.8L7 17m5-5.9a.9.9 0 0 0-.9.9.9.9 0 0 0 .9.9.9.9 0 0 0 .9-.9.9.9 0 0 0-.9-.9M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8 8 8 0 0 0-8-8Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            airt_service
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DataSource Parquet
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="yellow"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+            </label>
+          
+        
+          
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="red"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/airtai/airt-service" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    airt-service
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="airt_service" class="md-nav__button md-logo" aria-label="airt_service" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m7 17 3.2-6.8L17 7l-3.2 6.8L7 17m5-5.9a.9.9 0 0 0-.9.9.9.9 0 0 0 .9.9.9.9 0 0 0 .9-.9.9.9 0 0 0-.9-.9M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8 8 8 0 0 0-8-8Z"/></svg>
+
+    </a>
+    airt_service
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/airtai/airt-service" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    airt-service
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Airt Service
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_Web_Service/" class="md-nav__link">
+        REST Server
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AWS_Batch_Job_Context/" class="md-nav__link">
+        AWS Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AWS_Batch_Job_Utils/" class="md-nav__link">
+        AWS Batch Job Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AWS_Utils/" class="md-nav__link">
+        AWS Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AirflowAWSBatchExecutor/" class="md-nav__link">
+        Airflow AWS Batch Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AirflowAzureBatchExecutor/" class="md-nav__link">
+        Airflow Azure Batch Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AirflowBashExecutor/" class="md-nav__link">
+        Airflow Bash Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AirflowExecutor/" class="md-nav__link">
+        Airflow Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Airflow_Utils/" class="md-nav__link">
+        Airflow Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Auth/" class="md-nav__link">
+        Authentication Notebook
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Azure_Batch_Job_Context/" class="md-nav__link">
+        Azure Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Azure_Batch_Job_Utils/" class="md-nav__link">
+        Azure Batch Job Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Azure_Utils/" class="md-nav__link">
+        Azure Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Background_Task/" class="md-nav__link">
+        Background task in separate processes
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BaseAirflowExecutor/" class="md-nav__link">
+        Base Airflow Executor
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Base_Batch_Job_Context/" class="md-nav__link">
+        Base Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BatchJob/" class="md-nav__link">
+        BatchJob.html
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Cleanup/" class="md-nav__link">
+        Cleanup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Constants/" class="md-nav__link">
+        Constants
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DB_Models/" class="md-nav__link">
+        Database Models
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataBlob_Azure_Blob_Storage/" class="md-nav__link">
+        DataBlob Azure Blob Storage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataBlob_Clickhouse/" class="md-nav__link">
+        DataBlob Clickhouse
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataBlob_DB/" class="md-nav__link">
+        DataBlob DB
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataBlob_Router/" class="md-nav__link">
+        DataBlob Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataBlob_S3/" class="md-nav__link">
+        DataBlob S3
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataSource_CSV/" class="md-nav__link">
+        DataSource CSV
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          DataSource Parquet
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        DataSource Parquet
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#process_parquet" class="md-nav__link">
+    process_parquet
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DataSource_Router/" class="md-nav__link">
+        DataSource Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Data_Utils/" class="md-nav__link">
+        Data Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Errors/" class="md-nav__link">
+        Errors and Exceptions
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FastAPI_Batch_Job_Context/" class="md-nav__link">
+        FastAPI Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Helpers/" class="md-nav__link">
+        Helpers
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Integration_Test/" class="md-nav__link">
+        Integration test
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Model_Prediction/" class="md-nav__link">
+        Model Prediction Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Model_Train/" class="md-nav__link">
+        Model Train Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../None_Batch_Job_Context/" class="md-nav__link">
+        None Batch Job Context
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SMS_Utils/" class="md-nav__link">
+        SMS Utilities
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SSO/" class="md-nav__link">
+        SSO
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Sanitize_Secrets/" class="md-nav__link">
+        Sanitize Secrets
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOTP/" class="md-nav__link">
+        TOTP
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Users/" class="md-nav__link">
+        User Router
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_43" type="checkbox" id="__nav_43" >
+      
+      
+      
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_43">
+          services
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="services" data-md-level="1">
+        <label class="md-nav__title" for="__nav_43">
+          <span class="md-nav__icon md-icon"></span>
+          services
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/webservice/" class="md-nav__link">
+        REST Server
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44" type="checkbox" id="__nav_44" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_44">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_1" type="checkbox" id="__nav_44_1" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_1">
+          airt_service.airflow
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.airflow" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_1">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.airflow
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/" class="md-nav__link">
+        Airflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/aws_batch_executor/" class="md-nav__link">
+        aws_batch_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/azure_batch_executor/" class="md-nav__link">
+        azure_batch_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/base_executor/" class="md-nav__link">
+        base_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/bash_executor/" class="md-nav__link">
+        bash_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/executor/" class="md-nav__link">
+        executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/airflow/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/auth/" class="md-nav__link">
+        airt_service.auth
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_3" type="checkbox" id="__nav_44_3" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_3">
+          airt_service.aws
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.aws" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_3">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.aws
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/aws/" class="md-nav__link">
+        Aws
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/aws/batch_utils/" class="md-nav__link">
+        batch_utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/aws/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_4" type="checkbox" id="__nav_44_4" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_4">
+          airt_service.azure
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.azure" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_4">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.azure
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/azure/" class="md-nav__link">
+        Azure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/azure/batch_utils/" class="md-nav__link">
+        batch_utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/azure/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/background_task/" class="md-nav__link">
+        airt_service.background_task
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job/" class="md-nav__link">
+        airt_service.batch_job
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_7" type="checkbox" id="__nav_44_7" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_7">
+          airt_service.batch_job_components
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.batch_job_components" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_7">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.batch_job_components
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/" class="md-nav__link">
+        Batch job components
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/aws/" class="md-nav__link">
+        aws
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/azure/" class="md-nav__link">
+        azure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/base/" class="md-nav__link">
+        base
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/fastapi/" class="md-nav__link">
+        fastapi
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/batch_job_components/none/" class="md-nav__link">
+        none
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/cleanup/" class="md-nav__link">
+        airt_service.cleanup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/constants/" class="md-nav__link">
+        airt_service.constants
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_10" type="checkbox" id="__nav_44_10" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_10">
+          airt_service.data
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.data" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_10">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.data
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/" class="md-nav__link">
+        Data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/azure_blob_storage/" class="md-nav__link">
+        azure_blob_storage
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/clickhouse/" class="md-nav__link">
+        clickhouse
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/csv/" class="md-nav__link">
+        csv
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/datablob/" class="md-nav__link">
+        datablob
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/datasource/" class="md-nav__link">
+        datasource
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/db/" class="md-nav__link">
+        db
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/parquet/" class="md-nav__link">
+        parquet
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/s3/" class="md-nav__link">
+        s3
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/data/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_11" type="checkbox" id="__nav_44_11" >
+      
+      
+      
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_11">
+          airt_service.db
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.db" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_11">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.db
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/db/" class="md-nav__link">
+        Db
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/db/models/" class="md-nav__link">
+        models
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/errors/" class="md-nav__link">
+        airt_service.errors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/helpers/" class="md-nav__link">
+        airt_service.helpers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/integraion_tests/" class="md-nav__link">
+        airt_service.integraion_tests
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_44_15" type="checkbox" id="__nav_44_15" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_44_15">
+          airt_service.model
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="airt_service.model" data-md-level="2">
+        <label class="md-nav__title" for="__nav_44_15">
+          <span class="md-nav__icon md-icon"></span>
+          airt_service.model
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/model/" class="md-nav__link">
+        Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/model/prediction/" class="md-nav__link">
+        prediction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/model/train/" class="md-nav__link">
+        train
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/sanitizer/" class="md-nav__link">
+        airt_service.sanitizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/server/" class="md-nav__link">
+        airt_service.server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/sms_utils/" class="md-nav__link">
+        airt_service.sms_utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/sso/" class="md-nav__link">
+        airt_service.sso
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/totp/" class="md-nav__link">
+        airt_service.totp
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_api_docs/airt_service/users/" class="md-nav__link">
+        airt_service.users
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_45" type="checkbox" id="__nav_45" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_45">
+          CLI
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="CLI" data-md-level="1">
+        <label class="md-nav__title" for="__nav_45">
+          <span class="md-nav__icon md-icon"></span>
+          CLI
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/run_integration_tests/" class="md-nav__link">
+        run_integration_tests
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/check_db_is_up/" class="md-nav__link">
+        check_db_is_up
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/s3_pull/" class="md-nav__link">
+        s3_pull
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/s3_push/" class="md-nav__link">
+        s3_push
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/db_pull/" class="md-nav__link">
+        db_pull
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/db_push/" class="md-nav__link">
+        db_push
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/clickhouse_pull/" class="md-nav__link">
+        clickhouse_pull
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/clickhouse_push/" class="md-nav__link">
+        clickhouse_push
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/azure_blob_storage_pull/" class="md-nav__link">
+        azure_blob_storage_pull
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/azure_blob_storage_push/" class="md-nav__link">
+        azure_blob_storage_push
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/create_default_batch_environment_config/" class="md-nav__link">
+        create_default_batch_environment_config
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/create_batch_environment/" class="md-nav__link">
+        create_batch_environment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/process_csv/" class="md-nav__link">
+        process_csv
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/process_parquet/" class="md-nav__link">
+        process_parquet
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/predict/" class="md-nav__link">
+        predict
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/create_initial_users/" class="md-nav__link">
+        create_initial_users
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/test_aws_batch_executor/" class="md-nav__link">
+        test_aws_batch_executor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airt_service_cli_docs/test_azure_batch_executor/" class="md-nav__link">
+        test_azure_batch_executor
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog_not_found/" class="md-nav__link">
+        Releases
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#process_parquet" class="md-nav__link">
+    process_parquet
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="datasource-parquet">DataSource Parquet<a class="headerlink" href="#datasource-parquet" title="Permanent link">¤</a></h1>
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">airt.testing</span> <span class="kn">import</span> <span class="n">activate_by_import</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] airt.testing.activate_by_import: Testing environment activated.
+[INFO] numexpr.utils: Note: NumExpr detected 16 cores but &quot;NUMEXPR_MAX_THREADS&quot; not set, so enforcing safe limit of 8.
+[INFO] numexpr.utils: NumExpr defaulting to 8 threads.
+[INFO] airt.keras.helpers: Using a single GPU #0 with memory_limit 1024 MB
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
+
+<span class="kn">import</span> <span class="nn">dask.dataframe</span> <span class="k">as</span> <span class="nn">dd</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">azure.identity</span> <span class="kn">import</span> <span class="n">DefaultAzureCredential</span>
+<span class="kn">from</span> <span class="nn">azure.mgmt.storage</span> <span class="kn">import</span> <span class="n">StorageManagementClient</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">BackgroundTasks</span>
+
+<span class="kn">from</span> <span class="nn">airt_service.data.azure_blob_storage</span> <span class="kn">import</span> <span class="n">azure_blob_storage_pull</span>
+<span class="kn">from</span> <span class="nn">airt_service.data.datablob</span> <span class="kn">import</span> <span class="n">from_azure_blob_storage_route</span><span class="p">,</span> <span class="n">FromAzureBlobStorageRequest</span>
+<span class="kn">from</span> <span class="nn">airt_service.data.s3</span> <span class="kn">import</span> <span class="n">s3_pull</span>
+<span class="kn">from</span> <span class="nn">airt_service.data.utils</span> <span class="kn">import</span> <span class="n">create_db_uri_for_s3_datablob</span>
+<span class="kn">from</span> <span class="nn">airt_service.db.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">create_user_for_testing</span><span class="p">,</span> <span class="n">get_session</span>
+<span class="kn">from</span> <span class="nn">airt_service.helpers</span> <span class="kn">import</span> <span class="n">commit_or_rollback</span><span class="p">,</span> <span class="n">set_env_variable_context</span>
+<span class="kn">from</span> <span class="nn">airt_service.constants</span> <span class="kn">import</span> <span class="n">METADATA_FOLDER_PATH</span><span class="p">,</span> <span class="n">DS_HEAD_FILE_NAME</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] airt.executor.subcommand: Module loaded.
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">test_username</span> <span class="o">=</span> <span class="n">create_user_for_testing</span><span class="p">()</span>
+<span class="n">display</span><span class="p">(</span><span class="n">test_username</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>&#39;xityalounu&#39;
+</code></pre></div>
+<hr />
+<p><a
+href="https://github.com/airtai/airt-service/blob/main/airt_service/data/parquet.py#L34"
+target="_blank" style="float:right; font-size:smaller">source</a></p>
+<h3 id="process_parquet">process_parquet<a class="headerlink" href="#process_parquet" title="Permanent link">¤</a></h3>
+<blockquote>
+<div class="highlight"><pre><span></span><code> process_parquet (datablob_id:int&lt;datablob_id&gt;,
+                  datasource_id:int&lt;datasource_id&gt;,
+                  deduplicate_data:&lt;deduplicate_data&gt;=False,
+                  index_column:str&lt;index_column&gt;, sort_by:str&lt;sort_by&gt;,
+                  blocksize:str&lt;blocksize&gt;=&#39;256MB&#39;,
+                  kwargs_json:str&lt;kwargs_json&gt;=&#39;{}&#39;)
+</code></pre></div>
+</blockquote>
+<p>Download the user uploaded parquet file from S3, processes it and upload
+the processed parquet files to S3</p>
+<p>Args: datablob_id: Id of the datablob datasource_id: Id of the
+datasource deduplicate_data: If set to True, then duplicate rows are
+removed while uploading. index_column: Name of the column used to index
+and partition the data into partitions sort_by: Name of the column used
+to sort data within the same index value blocksize: Size of partition
+kwargs_json: Parameters as json string which are passed to the
+<strong>dask.dataframe.read_csv()</strong> function, typically params for underlining
+<strong>pd.read_csv()</strong> from Pandas.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>datablob_id</td>
+<td>int <datablob_id></td>
+<td></td>
+<td>type: ignore</td>
+</tr>
+<tr>
+<td>datasource_id</td>
+<td>int <datasource_id></td>
+<td></td>
+<td>type: ignore</td>
+</tr>
+<tr>
+<td>deduplicate_data</td>
+<td><deduplicate_data></td>
+<td>False</td>
+<td></td>
+</tr>
+<tr>
+<td>index_column</td>
+<td>str <index_column></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>sort_by</td>
+<td>str <sort_by></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>blocksize</td>
+<td>str <blocksize></td>
+<td>256MB</td>
+<td></td>
+</tr>
+<tr>
+<td>kwargs_json</td>
+<td>str <kwargs_json></td>
+<td>{}</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create a datablob and upload multiple parquet files using presigned url</span>
+<span class="k">with</span> <span class="n">get_session_with_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">test_username</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;s3://test-airt-service/account_312571_events&quot;</span>
+    <span class="n">datablob</span> <span class="o">=</span> <span class="n">DataBlob</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+        <span class="n">uri</span><span class="o">=</span><span class="n">create_db_uri_for_s3_datablob</span><span class="p">(</span>
+            <span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span>
+            <span class="n">access_key</span><span class="o">=</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;AWS_ACCESS_KEY_ID&quot;</span><span class="p">],</span>
+            <span class="n">secret_key</span><span class="o">=</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;AWS_SECRET_ACCESS_KEY&quot;</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span>
+        <span class="n">cloud_provider</span><span class="o">=</span><span class="s2">&quot;aws&quot;</span><span class="p">,</span>
+        <span class="n">region</span><span class="o">=</span><span class="s2">&quot;eu-west-1&quot;</span><span class="p">,</span>
+        <span class="n">total_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">commit_or_rollback</span><span class="p">(</span><span class="n">session</span><span class="p">):</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">datablob</span><span class="p">)</span>
+
+    <span class="n">s3_pull</span><span class="p">(</span><span class="n">datablob_id</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="n">datablob_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">DataBlob</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">DataBlob</span><span class="o">.</span><span class="n">uuid</span> <span class="o">==</span> <span class="n">datablob</span><span class="o">.</span><span class="n">uuid</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">datasource</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span>
+        <span class="n">datablob_id</span><span class="o">=</span><span class="n">datablob_id</span><span class="p">,</span>
+        <span class="n">cloud_provider</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">cloud_provider</span><span class="p">,</span>
+        <span class="n">region</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">region</span><span class="p">,</span>
+        <span class="n">total_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">datasource</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="n">datasource_id</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">datablob_id</span> <span class="o">=</span> <span class="n">datablob</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] botocore.credentials: Found credentials in environment variables.
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url s3://kumaran-airt-service-eu-west-1/131/datablob/50
+[INFO] airt.remote_path: S3Path._create_cache_path(): created cache path: /tmp/s3kumaran-airt-service-eu-west-1131datablob50_cached_j5v7or1k
+[INFO] airt.remote_path: S3Path.__init__(): created object for accessing s3://kumaran-airt-service-eu-west-1/131/datablob/50 locally in /tmp/s3kumaran-airt-service-eu-west-1131datablob50_cached_j5v7or1k
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url s3://test-airt-service/account_312571_events
+[INFO] airt.remote_path: S3Path._create_cache_path(): created cache path: /tmp/s3test-airt-serviceaccount_312571_events_cached_iir5s2mh
+[INFO] airt.remote_path: S3Path.__init__(): created object for accessing s3://test-airt-service/account_312571_events locally in /tmp/s3test-airt-serviceaccount_312571_events_cached_iir5s2mh
+[INFO] airt.remote_path: S3Path.__enter__(): pulling data from s3://test-airt-service/account_312571_events to /tmp/s3test-airt-serviceaccount_312571_events_cached_iir5s2mh
+[INFO] airt.remote_path: S3Path._clean_up(): removing local cache path /tmp/s3test-airt-serviceaccount_312571_events_cached_iir5s2mh
+[INFO] airt.remote_path: S3Path.__exit__(): pushing data from /tmp/s3kumaran-airt-service-eu-west-1131datablob50_cached_j5v7or1k to s3://kumaran-airt-service-eu-west-1/131/datablob/50
+[INFO] airt.remote_path: S3Path._clean_up(): removing local cache path /tmp/s3kumaran-airt-service-eu-west-1131datablob50_cached_j5v7or1k
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Test process_parquet</span>
+<span class="n">process_parquet</span><span class="p">(</span>
+    <span class="n">datablob_id</span><span class="o">=</span><span class="n">datablob_id</span><span class="p">,</span>
+    <span class="n">datasource_id</span><span class="o">=</span><span class="n">datasource_id</span><span class="p">,</span>
+    <span class="n">deduplicate_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;PersonId&quot;</span><span class="p">,</span>
+    <span class="n">sort_by</span><span class="o">=</span><span class="s2">&quot;OccurredTime&quot;</span><span class="p">,</span>
+    <span class="n">blocksize</span><span class="o">=</span><span class="s2">&quot;256MB&quot;</span><span class="p">,</span>
+    <span class="n">kwargs_json</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;OccurredTime&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="k">with</span> <span class="n">get_session_with_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">datasource</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span>
+        <span class="n">select</span><span class="p">(</span><span class="n">DataSource</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">DataSource</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">datasource_id</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">datasource</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">datasource</span><span class="o">.</span><span class="n">folder_size</span> <span class="o">==</span> <span class="mi">6619982</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">datasource</span><span class="si">=}</span><span class="s2">, </span><span class="si">{</span><span class="n">datasource</span><span class="o">.</span><span class="n">folder_size</span><span class="si">=}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="n">datasource</span><span class="o">.</span><span class="n">no_of_rows</span> <span class="o">==</span> <span class="mi">498961</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">datasource</span><span class="o">.</span><span class="n">path</span>
+        <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;STORAGE_BUCKET_PREFIX&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">-eu-west-1/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/datasource/</span><span class="si">{</span><span class="n">datasource</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">),</span> <span class="n">datasource</span><span class="o">.</span><span class="n">path</span>
+    <span class="k">assert</span> <span class="n">datasource</span><span class="o">.</span><span class="n">hash</span> <span class="o">==</span> <span class="s2">&quot;1dd8ee7a0f96a48110dec6e25891d18d&quot;</span><span class="p">,</span> <span class="n">datasource</span><span class="o">.</span><span class="n">hash</span>
+
+    <span class="n">destination_bucket</span><span class="p">,</span> <span class="n">parquet_s3_path</span> <span class="o">=</span> <span class="n">create_s3_datasource_path</span><span class="p">(</span>
+        <span class="n">user_id</span><span class="o">=</span><span class="n">datasource</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">datasource_id</span><span class="o">=</span><span class="n">datasource</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">region</span><span class="o">=</span><span class="n">datasource</span><span class="o">.</span><span class="n">region</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># tests for datasource head and dtypes</span>
+    <span class="k">with</span> <span class="n">RemotePath</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span>
+        <span class="n">remote_url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;s3://</span><span class="si">{</span><span class="n">destination_bucket</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">parquet_s3_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">pull_on_enter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">push_on_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">parents</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">s3_path</span><span class="p">:</span>
+        <span class="n">ddf</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">s3_path</span><span class="o">.</span><span class="n">as_path</span><span class="p">())</span>
+        <span class="n">ddf_head</span> <span class="o">=</span> <span class="n">ddf</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">ddf_head</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">RemotePath</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span>
+            <span class="n">remote_url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">datasource</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">pull_on_enter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">push_on_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">parents</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">test_s3_info_path</span><span class="p">:</span>
+            <span class="n">processed_test_s3_info_path</span> <span class="o">=</span> <span class="n">test_s3_info_path</span><span class="o">.</span><span class="n">as_path</span><span class="p">()</span>
+
+            <span class="n">head_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span>
+                <span class="n">processed_test_s3_info_path</span> <span class="o">/</span> <span class="n">METADATA_FOLDER_PATH</span> <span class="o">/</span> <span class="n">DS_HEAD_FILE_NAME</span>
+            <span class="p">)</span>
+            <span class="k">assert</span> <span class="n">head_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;PersonId&quot;</span>
+            <span class="k">assert</span> <span class="n">head_df</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+            <span class="n">dtypes_dict</span> <span class="o">=</span> <span class="n">head_df</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">dtypes_dict</span> <span class="o">==</span> <span class="p">{</span>
+                <span class="s2">&quot;AccountId&quot;</span><span class="p">:</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;DefinitionId&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;OccurredTime&quot;</span><span class="p">:</span> <span class="s2">&quot;datetime64[ns]&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;OccurredTimeTicks&quot;</span><span class="p">:</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span>
+            <span class="p">},</span> <span class="n">dtypes_dict</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] __main__: process_parquet(datablob_id=50, datasource_id=30): processing user uploaded parquet files for datablob_id=50 and uploading parquet back to S3 for datasource_id=30
+[INFO] __main__: process_parquet(datablob_id=50, datasource_id=30): step 1/4: downloading user uploaded file from bucket s3://kumaran-airt-service-eu-west-1/131/datablob/50
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url s3://kumaran-airt-service-eu-west-1/131/datablob/50
+[INFO] airt.remote_path: S3Path._create_cache_path(): created cache path: /tmp/s3kumaran-airt-service-eu-west-1131datablob50_cached_gbxl8lmn
+[INFO] airt.remote_path: S3Path.__init__(): created object for accessing s3://kumaran-airt-service-eu-west-1/131/datablob/50 locally in /tmp/s3kumaran-airt-service-eu-west-1131datablob50_cached_gbxl8lmn
+[INFO] airt.remote_path: S3Path.__enter__(): pulling data from s3://kumaran-airt-service-eu-west-1/131/datablob/50 to /tmp/s3kumaran-airt-service-eu-west-1131datablob50_cached_gbxl8lmn
+[INFO] __main__: process_parquet(datablob_id=50, datasource_id=30): step 2/4: processing parquet files
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url s3://kumaran-airt-service-eu-west-1/131/datasource/30
+[INFO] airt.remote_path: S3Path._create_cache_path(): created cache path: /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_xobg6a6r
+[INFO] airt.remote_path: S3Path.__init__(): created object for accessing s3://kumaran-airt-service-eu-west-1/131/datasource/30 locally in /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_xobg6a6r
+[INFO] airt.data.importers: import_parquet(): importing parquet file(s) from /tmp/s3kumaran-airt-service-eu-west-1131datablob50_cached_gbxl8lmn using blocksize=&#39;256MB&#39; and kwargs={&#39;usecols&#39;: [0, 1, 2, 3, 4], &#39;parse_dates&#39;: [&#39;OccurredTime&#39;]} and storing result in /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_xobg6a6r
+[INFO] airt.dask_manager: Starting cluster...
+[INFO] airt.dask_manager: Cluster started: &lt;Client: &#39;tcp://127.0.0.1:45019&#39; processes=8 threads=8, memory=22.89 GiB&gt;
+Cluster dashboard: http://127.0.0.1:8787/status
+[INFO] airt.data.importers: import_parquet(): step 1/5: importing data and storing it into partitioned Parquet files
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.dask_manager: Starting stopping cluster...
+[INFO] airt.dask_manager: Cluster stopped
+[INFO] airt.dask_manager: Starting cluster...
+[INFO] airt.dask_manager: Cluster started: &lt;Client: &#39;tcp://127.0.0.1:35771&#39; processes=4 threads=4, memory=22.89 GiB&gt;
+Cluster dashboard: http://127.0.0.1:8787/status
+[INFO] airt.data.importers: import_parquet(): step 2/5: indexing data by PersonId.
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.dask_manager: Starting stopping cluster...
+[INFO] airt.dask_manager: Cluster stopped
+[INFO] airt.dask_manager: Starting cluster...
+[INFO] airt.dask_manager: Cluster started: &lt;Client: &#39;tcp://127.0.0.1:45349&#39; processes=8 threads=8, memory=22.89 GiB&gt;
+Cluster dashboard: http://127.0.0.1:8787/status
+[INFO] airt.data.importers: import_parquet(): step 3/5: deduplicating and sorting data by PersonId and OccurredTime.
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.data.importers: import_parquet(): step 4/5: repartitioning data.
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.data.importers: import_parquet(): step 5/5: sorting data by PersonId and OccurredTime.
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.data.importers: import_parquet(): completed, the final data is stored in /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_xobg6a6r as Parquet files with:
+[INFO] airt.data.importers:  - dtypes={&#39;AccountId&#39;: dtype(&#39;int64&#39;), &#39;DefinitionId&#39;: dtype(&#39;O&#39;), &#39;OccurredTime&#39;: dtype(&#39;&lt;M8[ns]&#39;), &#39;OccurredTimeTicks&#39;: dtype(&#39;int64&#39;)}
+[INFO] airt.data.importers:  - npartitions=1
+[INFO] airt.data.importers:  - partition_sizes={0: 498961}
+[INFO] airt.dask_manager: Starting stopping cluster...
+[INFO] airt.dask_manager: Cluster stopped
+[INFO] __main__: process_parquet(datablob_id=50, datasource_id=30): step 3/4: uploading parquet files back to path S3Path(enter_count=1, remote_url=s3://kumaran-airt-service-eu-west-1/131/datasource/30, pull_on_enter=False, push_on_exit=True, cache_path=/tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_xobg6a6r, access_key=None, secret_key=None)
+[INFO] airt.remote_path: S3Path.__exit__(): pushing data from /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_xobg6a6r to s3://kumaran-airt-service-eu-west-1/131/datasource/30
+[INFO] airt.remote_path: S3Path._clean_up(): removing local cache path /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_xobg6a6r
+[INFO] airt.remote_path: S3Path._clean_up(): removing local cache path /tmp/s3kumaran-airt-service-eu-west-1131datablob50_cached_gbxl8lmn
+[INFO] __main__: process_parquet(datablob_id=50, datasource_id=30): step 4/4: calculating datasource attributes - folder_size, no_of_rows, head, hash
+[INFO] __main__: process_parquet(datablob_id=50, datasource_id=30): completed
+
+DataSource(id=30, uuid=UUID(&#39;042590ba-afaf-4aff-8750-84de221e73dc&#39;), hash=&#39;1dd8ee7a0f96a48110dec6e25891d18d&#39;, total_steps=1, completed_steps=1, folder_size=6619982, no_of_rows=498961, cloud_provider=&lt;CloudProvider.aws: &#39;aws&#39;&gt;, region=&#39;eu-west-1&#39;, error=None, disabled=False, path=&#39;s3://kumaran-airt-service-eu-west-1/131/datasource/30&#39;, created=datetime.datetime(2022, 10, 27, 8, 10, 36), user_id=131, pulled_on=datetime.datetime(2022, 10, 27, 8, 10, 46), tags=[])
+
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url s3://kumaran-airt-service-eu-west-1/131/datasource/30
+[INFO] airt.remote_path: S3Path._create_cache_path(): created cache path: /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_oa1qbq69
+[INFO] airt.remote_path: S3Path.__init__(): created object for accessing s3://kumaran-airt-service-eu-west-1/131/datasource/30 locally in /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_oa1qbq69
+[INFO] airt.remote_path: S3Path.__enter__(): pulling data from s3://kumaran-airt-service-eu-west-1/131/datasource/30 to /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_oa1qbq69
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>AccountId</th>
+      <th>DefinitionId</th>
+      <th>OccurredTime</th>
+      <th>OccurredTimeTicks</th>
+    </tr>
+    <tr>
+      <th>PersonId</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests2</td>
+      <td>2019-12-31 21:30:02</td>
+      <td>1577836802678</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests3</td>
+      <td>2020-01-03 23:53:22</td>
+      <td>1578104602678</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests1</td>
+      <td>2020-01-07 02:16:42</td>
+      <td>1578372402678</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests2</td>
+      <td>2020-01-10 04:40:02</td>
+      <td>1578640202678</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests3</td>
+      <td>2020-01-13 07:03:22</td>
+      <td>1578908002678</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests1</td>
+      <td>2020-01-16 09:26:42</td>
+      <td>1579175802678</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests2</td>
+      <td>2020-01-19 11:50:02</td>
+      <td>1579443602678</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests3</td>
+      <td>2020-01-22 14:13:22</td>
+      <td>1579711402678</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests1</td>
+      <td>2020-01-25 16:36:42</td>
+      <td>1579979202678</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>312571</td>
+      <td>loadTests2</td>
+      <td>2020-01-28 19:00:02</td>
+      <td>1580247002678</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><code>[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url s3://kumaran-airt-service-eu-west-1/131/datasource/30
+[INFO] airt.remote_path: S3Path._create_cache_path(): created cache path: /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_om_fvjrc
+[INFO] airt.remote_path: S3Path.__init__(): created object for accessing s3://kumaran-airt-service-eu-west-1/131/datasource/30 locally in /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_om_fvjrc
+[INFO] airt.remote_path: S3Path.__enter__(): pulling data from s3://kumaran-airt-service-eu-west-1/131/datasource/30 to /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_om_fvjrc
+[INFO] airt.remote_path: S3Path._clean_up(): removing local cache path /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_om_fvjrc
+[INFO] airt.remote_path: S3Path._clean_up(): removing local cache path /tmp/s3kumaran-airt-service-eu-west-1131datasource30_cached_oa1qbq69
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create azure datablob and datasource from it</span>
+
+<span class="k">with</span> <span class="n">get_session_with_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">test_username</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;https://testairtservice.blob.core.windows.net/test-container/account_312571_events&quot;</span>
+
+    <span class="n">storage_client</span> <span class="o">=</span> <span class="n">StorageManagementClient</span><span class="p">(</span>
+        <span class="n">DefaultAzureCredential</span><span class="p">(),</span> <span class="n">environ</span><span class="p">[</span><span class="s2">&quot;AZURE_SUBSCRIPTION_ID&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">storage_client</span><span class="o">.</span><span class="n">storage_accounts</span><span class="o">.</span><span class="n">list_keys</span><span class="p">(</span>
+        <span class="s2">&quot;test-airt-service&quot;</span><span class="p">,</span> <span class="s2">&quot;testairtservice&quot;</span>
+    <span class="p">)</span>
+    <span class="n">credential</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="n">from_azure_blob_storage_request</span> <span class="o">=</span> <span class="n">FromAzureBlobStorageRequest</span><span class="p">(</span>
+        <span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span>
+        <span class="n">credential</span><span class="o">=</span><span class="n">credential</span><span class="p">,</span>
+        <span class="n">region</span><span class="o">=</span><span class="s2">&quot;westeurope&quot;</span><span class="p">,</span>
+        <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;my_azure_blob_storage_datablob_tag&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">BackgroundTasks</span><span class="p">()</span>
+
+    <span class="c1"># Test using FastAPIBatchJobContext with set_env_variable_context</span>
+    <span class="k">with</span> <span class="n">set_env_variable_context</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s2">&quot;JOB_EXECUTOR&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;fastapi&quot;</span><span class="p">):</span>
+        <span class="n">datablob</span> <span class="o">=</span> <span class="n">from_azure_blob_storage_route</span><span class="p">(</span>
+            <span class="n">from_azure_blob_storage_request</span><span class="o">=</span><span class="n">from_azure_blob_storage_request</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+            <span class="n">background_tasks</span><span class="o">=</span><span class="n">b</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">datablob</span><span class="p">)</span>
+
+    <span class="n">azure_blob_storage_pull</span><span class="p">(</span><span class="n">datablob_id</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="n">datablob_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">DataBlob</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">DataBlob</span><span class="o">.</span><span class="n">uuid</span> <span class="o">==</span> <span class="n">datablob</span><span class="o">.</span><span class="n">uuid</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">datasource</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span>
+        <span class="n">datablob_id</span><span class="o">=</span><span class="n">datablob_id</span><span class="p">,</span>
+        <span class="n">cloud_provider</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">cloud_provider</span><span class="p">,</span>
+        <span class="n">region</span><span class="o">=</span><span class="n">datablob</span><span class="o">.</span><span class="n">region</span><span class="p">,</span>
+        <span class="n">total_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">datasource</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="n">datasource_id</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">datablob_id</span> <span class="o">=</span> <span class="n">datablob</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] airt_service.batch_job: create_batch_job(): command=&#39;azure_blob_storage_pull 52&#39;, task=&#39;csv_processing&#39;
+[INFO] airt_service.batch_job_components.base: Entering FastAPIBatchJobContext(task=csv_processing)
+[INFO] airt_service.batch_job: batch_ctx=FastAPIBatchJobContext(task=csv_processing)
+[INFO] airt_service.batch_job_components.fastapi: FastAPIBatchJobContext.create_job(self=FastAPIBatchJobContext(task=csv_processing), command=&#39;azure_blob_storage_pull 52&#39;, environment_vars={&#39;AWS_ACCESS_KEY_ID&#39;: &#39;********************&#39;, &#39;AWS_SECRET_ACCESS_KEY&#39;: &#39;****************************************&#39;, &#39;AWS_DEFAULT_REGION&#39;: &#39;eu-west-1&#39;, &#39;AZURE_SUBSCRIPTION_ID&#39;: &#39;************************************&#39;, &#39;AZURE_TENANT_ID&#39;: &#39;************************************&#39;, &#39;AZURE_CLIENT_ID&#39;: &#39;************************************&#39;, &#39;AZURE_CLIENT_SECRET&#39;: &#39;****************************************&#39;, &#39;AZURE_STORAGE_ACCOUNT_PREFIX&#39;: &#39;kumsairtsdev&#39;, &#39;AZURE_RESOURCE_GROUP&#39;: &#39;kumaran-airt-service-dev&#39;, &#39;STORAGE_BUCKET_PREFIX&#39;: &#39;kumaran-airt-service&#39;, &#39;DB_USERNAME&#39;: &#39;root&#39;, &#39;DB_PASSWORD&#39;: &#39;****************************************&#39;, &#39;DB_HOST&#39;: &#39;kumaran-mysql&#39;, &#39;DB_PORT&#39;: &#39;3306&#39;, &#39;DB_DATABASE&#39;: &#39;airt_service&#39;, &#39;DB_DATABASE_SERVER&#39;: &#39;mysql&#39;})
+[INFO] airt_service.batch_job_components.base: Exiting FastAPIBatchJobContext(task=csv_processing): exc_type=None, exc=None, None
+
+DataBlob(id=52, uuid=UUID(&#39;be427bf1-11c5-47c1-b725-99ac8456fe60&#39;), type=&#39;azure_blob_storage&#39;, uri=&#39;https://****************************************@testairtservice.blob.core.windows.net/test-container/account_312571_events&#39;, source=&#39;https://testairtservice.blob.core.windows.net/test-container/account_312571_events&#39;, total_steps=1, completed_steps=0, folder_size=None, cloud_provider=&lt;CloudProvider.azure: &#39;azure&#39;&gt;, region=&#39;westeurope&#39;, error=None, disabled=False, path=None, created=datetime.datetime(2022, 10, 27, 8, 11, 46), user_id=131, pulled_on=None, tags=[Tag(uuid=UUID(&#39;29dc9d93-1484-46f6-85dd-e5e8b9e57319&#39;), name=&#39;latest&#39;, id=2, created=datetime.datetime(2022, 10, 27, 7, 59, 7)), Tag(uuid=UUID(&#39;3bd8829c-d4e4-4e27-af72-13a75e4df15f&#39;), name=&#39;my_azure_blob_storage_datablob_tag&#39;, id=6, created=datetime.datetime(2022, 10, 27, 8, 0, 49))])
+
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.default: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datablob/52
+[INFO] airt.remote_path: AzureBlobPath._create_cache_path(): created cache path: /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datablob52_cached_ms1bfay0
+[INFO] airt.remote_path: AzureBlobPath.__init__(): created object for accessing https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datablob/52 locally in /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datablob52_cached_ms1bfay0
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url https://testairtservice.blob.core.windows.net/test-container/account_312571_events
+[INFO] airt.remote_path: AzureBlobPath._create_cache_path(): created cache path: /tmp/httpstestairtserviceblobcorewindowsnettest-containeraccount_312571_events_cached_pjjrvncg
+[INFO] airt.remote_path: AzureBlobPath.__init__(): created object for accessing https://testairtservice.blob.core.windows.net/test-container/account_312571_events locally in /tmp/httpstestairtserviceblobcorewindowsnettest-containeraccount_312571_events_cached_pjjrvncg
+[INFO] airt.remote_path: AzureBlobPath.__enter__(): pulling data from https://testairtservice.blob.core.windows.net/test-container/account_312571_events to /tmp/httpstestairtserviceblobcorewindowsnettest-containeraccount_312571_events_cached_pjjrvncg
+[INFO] airt.remote_path: AzureBlobPath._clean_up(): removing local cache path /tmp/httpstestairtserviceblobcorewindowsnettest-containeraccount_312571_events_cached_pjjrvncg
+[INFO] airt.remote_path: AzureBlobPath.__exit__(): pushing data from /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datablob52_cached_ms1bfay0 to https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datablob/52
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.default: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.default: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] airt.remote_path: AzureBlobPath._clean_up(): removing local cache path /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datablob52_cached_ms1bfay0
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.default: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Test process_parquet for azure datablob&#39;s datasource</span>
+<span class="n">process_parquet</span><span class="p">(</span>
+    <span class="n">datablob_id</span><span class="o">=</span><span class="n">datablob_id</span><span class="p">,</span>
+    <span class="n">datasource_id</span><span class="o">=</span><span class="n">datasource_id</span><span class="p">,</span>
+    <span class="n">deduplicate_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">index_column</span><span class="o">=</span><span class="s2">&quot;PersonId&quot;</span><span class="p">,</span>
+    <span class="n">sort_by</span><span class="o">=</span><span class="s2">&quot;OccurredTime&quot;</span><span class="p">,</span>
+    <span class="n">blocksize</span><span class="o">=</span><span class="s2">&quot;256MB&quot;</span><span class="p">,</span>
+    <span class="n">kwargs_json</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;OccurredTime&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="k">with</span> <span class="n">get_session_with_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="n">datasource</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">exec</span><span class="p">(</span>
+        <span class="n">select</span><span class="p">(</span><span class="n">DataSource</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">DataSource</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">datasource_id</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">datasource</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[INFO] __main__: process_parquet(datablob_id=52, datasource_id=31): processing user uploaded parquet files for datablob_id=52 and uploading parquet back to S3 for datasource_id=31
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.default: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.default: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] __main__: process_parquet(datablob_id=52, datasource_id=31): step 1/4: downloading user uploaded file from bucket https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datablob/52
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datablob/52
+[INFO] airt.remote_path: AzureBlobPath._create_cache_path(): created cache path: /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datablob52_cached_7scgll4r
+[INFO] airt.remote_path: AzureBlobPath.__init__(): created object for accessing https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datablob/52 locally in /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datablob52_cached_7scgll4r
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] airt.remote_path: AzureBlobPath.__enter__(): pulling data from https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datablob/52 to /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datablob52_cached_7scgll4r
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] __main__: process_parquet(datablob_id=52, datasource_id=31): step 2/4: processing parquet files
+[INFO] airt.remote_path: RemotePath.from_url(): creating remote path with the following url https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datasource/31
+[INFO] airt.remote_path: AzureBlobPath._create_cache_path(): created cache path: /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datasource31_cached_s5yo9ygx
+[INFO] airt.remote_path: AzureBlobPath.__init__(): created object for accessing https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datasource/31 locally in /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datasource31_cached_s5yo9ygx
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] airt.data.importers: import_parquet(): importing parquet file(s) from /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datablob52_cached_7scgll4r using blocksize=&#39;256MB&#39; and kwargs={&#39;usecols&#39;: [0, 1, 2, 3, 4], &#39;parse_dates&#39;: [&#39;OccurredTime&#39;]} and storing result in /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datasource31_cached_s5yo9ygx
+[INFO] airt.dask_manager: Starting cluster...
+[INFO] airt.dask_manager: Cluster started: &lt;Client: &#39;tcp://127.0.0.1:37443&#39; processes=8 threads=8, memory=22.89 GiB&gt;
+Cluster dashboard: http://127.0.0.1:8787/status
+[INFO] airt.data.importers: import_parquet(): step 1/5: importing data and storing it into partitioned Parquet files
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.dask_manager: Starting stopping cluster...
+[INFO] airt.dask_manager: Cluster stopped
+[INFO] airt.dask_manager: Starting cluster...
+[INFO] airt.dask_manager: Cluster started: &lt;Client: &#39;tcp://127.0.0.1:35425&#39; processes=4 threads=4, memory=22.89 GiB&gt;
+Cluster dashboard: http://127.0.0.1:8787/status
+[INFO] airt.data.importers: import_parquet(): step 2/5: indexing data by PersonId.
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.dask_manager: Starting stopping cluster...
+[INFO] airt.dask_manager: Cluster stopped
+[INFO] airt.dask_manager: Starting cluster...
+[INFO] airt.dask_manager: Cluster started: &lt;Client: &#39;tcp://127.0.0.1:37937&#39; processes=8 threads=8, memory=22.89 GiB&gt;
+Cluster dashboard: http://127.0.0.1:8787/status
+[INFO] airt.data.importers: import_parquet(): step 3/5: deduplicating and sorting data by PersonId and OccurredTime.
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.data.importers: import_parquet(): step 4/5: repartitioning data.
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.data.importers: import_parquet(): step 5/5: sorting data by PersonId and OccurredTime.
+[INFO] airt.data.importers:  - number of rows: 498,961
+[INFO] airt.data.importers: import_parquet(): completed, the final data is stored in /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datasource31_cached_s5yo9ygx as Parquet files with:
+[INFO] airt.data.importers:  - dtypes={&#39;AccountId&#39;: dtype(&#39;int64&#39;), &#39;DefinitionId&#39;: dtype(&#39;O&#39;), &#39;OccurredTime&#39;: dtype(&#39;&lt;M8[ns]&#39;), &#39;OccurredTimeTicks&#39;: dtype(&#39;int64&#39;)}
+[INFO] airt.data.importers:  - npartitions=1
+[INFO] airt.data.importers:  - partition_sizes={0: 498961}
+[INFO] airt.dask_manager: Starting stopping cluster...
+[INFO] airt.dask_manager: Cluster stopped
+[INFO] __main__: process_parquet(datablob_id=52, datasource_id=31): step 3/4: uploading parquet files back to path AzureBlobPath(enter_count=1, remote_url=https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datasource/31, pull_on_enter=False, push_on_exit=True, cache_path=/tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datasource31_cached_s5yo9ygx, credential=&lt;azure.identity._credentials.default.DefaultAzureCredential object&gt;)
+[INFO] airt.remote_path: AzureBlobPath.__exit__(): pushing data from /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datasource31_cached_s5yo9ygx to https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datasource/31
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.default: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.default: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] airt.remote_path: AzureBlobPath._clean_up(): removing local cache path /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datasource31_cached_s5yo9ygx
+[INFO] airt.remote_path: AzureBlobPath._clean_up(): removing local cache path /tmp/httpskumsairtsdevwesteuropeblobcorewindowsnetkumsairtsdevwesteurope131datablob52_cached_7scgll4r
+[INFO] __main__: process_parquet(datablob_id=52, datasource_id=31): step 4/4: calculating datasource attributes - folder_size, no_of_rows, head, hash
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.default: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] azure.identity._credentials.environment: Environment is configured for ClientSecretCredential
+[INFO] azure.identity._credentials.managed_identity: ManagedIdentityCredential will use IMDS
+[INFO] azure.identity._credentials.chained: DefaultAzureCredential acquired a token from EnvironmentCredential
+[INFO] __main__: process_parquet(datablob_id=52, datasource_id=31): completed
+
+DataSource(id=31, uuid=UUID(&#39;5634e432-0102-4fd8-94fe-d5996b62fd86&#39;), hash=&#39;1dd8ee7a0f96a48110dec6e25891d18d&#39;, total_steps=1, completed_steps=1, folder_size=6619982, no_of_rows=498961, cloud_provider=&lt;CloudProvider.azure: &#39;azure&#39;&gt;, region=&#39;westeurope&#39;, error=None, disabled=False, path=&#39;https://kumsairtsdevwesteurope.blob.core.windows.net/kumsairtsdevwesteurope/131/datasource/31&#39;, created=datetime.datetime(2022, 10, 27, 8, 12, 17), user_id=131, pulled_on=datetime.datetime(2022, 10, 27, 8, 12, 32), tags=[])
+</code></pre></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../DataSource_CSV/" class="md-footer__link md-footer__link--prev" aria-label="Previous: DataSource CSV" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              DataSource CSV
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../DataSource_Router/" class="md-footer__link md-footer__link--next" aria-label="Next: DataSource Router" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              DataSource Router
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2022 onwards, airt.ai
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+    and 
+    <a href="https://nbdev-mkdocs.airt.ai/" target="_blank" rel="noopener">
+      Material for nbdev
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "search.share"], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../overrides/js/extra.js"></script>
+      
+        <script src="../overrides/js/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+    
+  </body>
+</html>
