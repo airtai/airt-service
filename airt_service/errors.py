@@ -27,6 +27,8 @@ if Path("../errors.yml").is_file():
     errors_path = Path("../errors.yml")
 elif Path("./errors.yml").is_file():
     errors_path = Path("./errors.yml")
+elif Path("/errors.yml").is_file():
+    errors_path = Path("/errors.yml")
 elif Path("/tf/errors.yml").is_file():
     errors_path = Path("/tf/errors.yml")
 else:
