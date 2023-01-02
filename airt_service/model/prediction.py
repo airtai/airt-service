@@ -201,7 +201,7 @@ def prediction_pandas(
             ],
         }
     )
-    return df.to_dict("list")
+    return df.to_dict("list")  # type: ignore
 
 # %% ../../notebooks/Model_Prediction.ipynb 20
 @patch
