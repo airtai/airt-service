@@ -168,6 +168,7 @@ rabbitmq_data/
 .sast_semgrep
 
 batch_environment.yml
+notebooks/asyncapi/
 
 # dast report html file
 dast-api-scan-report.html
