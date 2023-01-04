@@ -10,6 +10,24 @@ env:
   STAGING_CONFIG: ${{ secrets.STAGING_CONFIG }}
 
 jobs:
+  debug:
+    name: Debug
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up secret file
+      # env:
+      #   DEBUG_PASSWORD: ${{ secrets.DEBUG_PASSWORD }}
+      #   DEBUG_SECRET_KEY: ${{ secrets.DEBUG_SECRET_KEY }}
+      run: |
+        echo $STAGING_CONFIG >> secrets.txt
+
+    - name: Run tmate
+      uses: mxschmitt/action-tmate@v2
+
   sast:
     runs-on: ubuntu-22.04
     container:
@@ -122,15 +140,10 @@ jobs:
       kafka:
         image: wurstmeister/kafka
         env:
-            KAFKA_ADVERTISED_HOST_NAME: "kafka"
-            HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
-            KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-            KAFKA_LISTENERS: "PLAINTEXT://:9092"
-            KAFKA_CREATE_TOPICS: >-
-              training_request:${NUM_PARTITIONS:-6}:${REPLICATION_FACTOR:-3},
-              training_status:${NUM_PARTITIONS:-6}:${REPLICATION_FACTOR:-3},
-              prediction_request:${NUM_PARTITIONS:-6}:${REPLICATION_FACTOR:-3},
-              prediction_status:${NUM_PARTITIONS:-6}:${REPLICATION_FACTOR:-3}
+          KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+          KAFKA_LISTENERS: "PLAINTEXT://:9092"
+          KAFKA_CREATE_TOPICS: "training_request:1:1,training_status:1:1,prediction_request:1:1,prediction_status:1:1"
+          KAFKA_ADVERTISED_HOST_NAME: "kafka"
         ports:
             - 9092:9092
     steps:
