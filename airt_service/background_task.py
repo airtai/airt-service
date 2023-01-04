@@ -65,7 +65,8 @@ async def execute_cli(
 
     try:
         curr_env = os.environ.copy()
-        curr_env["PATH"] = f"/home/{curr_env['USER']}/.local/bin:" + curr_env["PATH"]
+        if "HOME" in curr_env:
+            curr_env["PATH"] = f"{curr_env['HOME']}/.local/bin:" + curr_env["PATH"]
         # start process
         # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
         proc = Popen(  # nosec B603
@@ -75,6 +76,7 @@ async def execute_cli(
         logger.info(
             f"Background task thrown exception for command: '{command}' with exception {str(e)}"
         )
+        raise e
     logger.info(f"Background task started for command: '{command}'")
 
     i = 0
