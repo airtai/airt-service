@@ -474,7 +474,7 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
                 "sasl_password": environ["KAFKA_API_SECRET"],
             },
         }
-
+    logger.info(f"kafka_config={kafka_config}")
     app = FastKafkaAPI(
         title=title,
         description=description,
