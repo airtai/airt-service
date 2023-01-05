@@ -28,6 +28,10 @@ RUN apt update --fix-missing && apt upgrade --yes \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Install node and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs \
+    && apt purge --auto-remove && apt clean && rm -rf /var/lib/apt/lists/*
+
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 2
 RUN update-alternatives --set python3 /usr/bin/python3.9
