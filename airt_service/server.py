@@ -458,11 +458,23 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
 
     kafka_server_url = environ["KAFKA_HOSTNAME"]
     kafka_server_port = environ["KAFKA_PORT"]
+
     kafka_config = {
         "bootstrap_servers": f"{kafka_server_url}:{kafka_server_port}",
         "group_id": f"{kafka_server_url}:{kafka_server_port}_group",
         "auto_offset_reset": "earliest",
     }
+    if "KAFKA_API_KEY" in environ:
+        kafka_config = {
+            **kafka_config,
+            **{
+                "security_protocol": "SASL_SSL",
+                "sasl_mechanisms": "PLAIN",
+                "sasl_username": environ["KAFKA_API_KEY"],
+                "sasl_password": environ["KAFKA_API_SECRET"],
+            },
+        }
+
     app = FastKafkaAPI(
         title=title,
         description=description,
