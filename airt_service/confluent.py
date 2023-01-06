@@ -74,7 +74,7 @@ def create_topics_for_user(username: str):
     admin_client = AdminClient(confluent_kafka_config)
 
     num_partitions = 6
-    replication_factor = 2 if "KAFKA_API_KEY" in environ else 1
+    replication_factor = 3 if "KAFKA_API_KEY" in environ else 1
 
     existing_topics = admin_client.list_topics().topics
 
