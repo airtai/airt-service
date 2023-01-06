@@ -32,6 +32,9 @@ RUN apt update --fix-missing && apt upgrade --yes \
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs \
     && apt purge --auto-remove && apt clean && rm -rf /var/lib/apt/lists/*
 
+# Install confluent CLI
+RUN curl -sL --http1.1 https://cnfl.io/cli | sh -s -- -b /usr/local/bin v2.37.0
+
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 2
 RUN update-alternatives --set python3 /usr/bin/python3.9
