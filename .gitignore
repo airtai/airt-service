@@ -169,6 +169,7 @@ rabbitmq_data/
 
 batch_environment.yml
 notebooks/asyncapi/
+asyncapi/
 
 # dast report html file
 dast-api-scan-report.html

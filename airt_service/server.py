@@ -14,6 +14,7 @@ from datetime import datetime
 from enum import Enum
 from os import environ
 
+from aiokafka.helpers import create_ssl_context
 from fastapi import Request
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
@@ -551,7 +552,15 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
 
     app.openapi = custom_openapi  # type: ignore
 
-    @app.consumes()  # type: ignore
+    aiokafka_kwargs = dict()
+    if "KAFKA_API_KEY" in environ:
+        aiokafka_kwargs["security_protocol"] = aio_kafka_config["security_protocol"]
+        aiokafka_kwargs["sasl_mechanism"] = aio_kafka_config["sasl_mechanisms"]
+        aiokafka_kwargs["sasl_plain_username"] = aio_kafka_config["sasl_username"]
+        aiokafka_kwargs["sasl_plain_password"] = aio_kafka_config["sasl_password"]
+        aiokafka_kwargs["ssl_context"] = create_ssl_context()
+
+    @app.consumes(**aiokafka_kwargs)  # type: ignore
     async def on_training_data(msg: EventData):
         # ToDo: this is not showing up in logs
         logger.debug(f"msg={msg}")
@@ -567,26 +576,26 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
             )
             app.produce("training_data_status", training_data_status)
 
-    @app.consumes()  # type: ignore
+    @app.consumes(**aiokafka_kwargs)  # type: ignore
     async def on_realitime_data(msg: RealtimeData):
         pass
 
-    @app.produces()  # type: ignore
+    @app.produces(**aiokafka_kwargs)  # type: ignore
     def to_training_data_status(msg: TrainingDataStatus) -> TrainingDataStatus:
         logger.debug(f"on_training_data_status(msg={msg})")
         return msg
 
-    @app.produces()  # type: ignore
+    @app.produces(**aiokafka_kwargs)  # type: ignore
     def to_training_model_status(msg: str) -> TrainingModelStatus:
         logger.debug(f"on_training_model_status(msg={msg})")
         return TrainingModelStatus()
 
-    @app.produces()  # type: ignore
+    @app.produces(**aiokafka_kwargs)  # type: ignore
     def to_model_metrics(msg: ModelMetrics) -> ModelMetrics:
         logger.debug(f"on_training_model_status(msg={msg})")
         return msg
 
-    @app.produces()  # type: ignore
+    @app.produces(**aiokafka_kwargs)  # type: ignore
     def to_prediction(msg: Prediction) -> Prediction:
         logger.debug(f"on_realtime_data_status(msg={msg})")
         return msg

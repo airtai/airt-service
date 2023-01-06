@@ -51,7 +51,15 @@ def get_topic_names_to_create(username: str) -> List[str]:
     Returns:
         A list of topic names unique to the username
     """
-    return [f"airt_service_{username}_training_data"]
+    topic_names = [
+        "airt_service_{username}_training_data",
+        "airt_service_{username}_realitime_data",
+        "airt_service_{username}_training_data_status",
+        "airt_service_{username}_training_model_status",
+        "airt_service_{username}_model_metrics",
+        "airt_service_{username}_prediction",
+    ]
+    return [topic_name.format(username=username) for topic_name in topic_names]
 
 # %% ../notebooks/Confluent.ipynb 13
 def create_topics_for_user(username: str):
