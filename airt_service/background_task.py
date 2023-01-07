@@ -4,6 +4,7 @@
 __all__ = ['execute_cli']
 
 # %% ../notebooks/Background_Task.ipynb 3
+import os
 import yaml
 from pathlib import Path
 from time import sleep
@@ -62,11 +63,20 @@ async def execute_cli(
     cmd = shlex.split(command)
     logger.info(f"Background task command broken into: {cmd}")
 
-    # start process
-    # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
-    proc = Popen(  # nosec B603
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-    )
+    try:
+        curr_env = os.environ.copy()
+        if "HOME" in curr_env:
+            curr_env["PATH"] = f"{curr_env['HOME']}/.local/bin:" + curr_env["PATH"]
+        # start process
+        # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
+        proc = Popen(  # nosec B603
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=curr_env
+        )
+    except Exception as e:
+        logger.info(
+            f"Background task thrown exception for command: '{command}' with exception {str(e)}"
+        )
+        raise e
     logger.info(f"Background task started for command: '{command}'")
 
     i = 0

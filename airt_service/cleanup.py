@@ -11,6 +11,7 @@ from sqlmodel import Session, select
 import airt_service.sanitizer
 from airt.logger import get_logger
 from .auth import delete_apikey
+from .confluent import delete_topics_for_user
 from .data.datasource import delete_datasource
 from .data.datablob import delete_datablob
 from airt_service.db.models import (
@@ -125,6 +126,8 @@ def cleanup_user(user_to_cleanup: User, session: Session):
     )
     logger.info(f"Deleting user files in s3://{bucket.name}/{s3_path}")
     bucket.objects.filter(Prefix=s3_path + "/").delete()
+
+    delete_topics_for_user(username=user_to_cleanup.username)
 
     logger.info("deleting user")
     session.delete(user_to_cleanup)

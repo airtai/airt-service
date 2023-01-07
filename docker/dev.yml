@@ -3,6 +3,12 @@ services:
     mysql:
         networks:
             - airt-service-network
+    zookeeper:
+        networks:
+            - airt-service-network
+    kafka:
+        networks:
+            - airt-service-network
 
     airt-service-devel:
         image: $AIRT_SERVER_DOCKER
