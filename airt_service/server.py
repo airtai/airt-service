@@ -561,7 +561,7 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
         aiokafka_kwargs["ssl_context"] = create_ssl_context()
 
     @app.consumes(**aiokafka_kwargs)  # type: ignore
-    async def on_training_data(msg: EventData):
+    async def on_infobip_training_data(msg: EventData):
         # ToDo: this is not showing up in logs
         logger.debug(f"msg={msg}")
         global _total_no_of_records
@@ -574,30 +574,30 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
                 no_of_records=_no_of_records_received,
                 total_no_of_records=_total_no_of_records,
             )
-            app.produce("training_data_status", training_data_status)
+            app.produce("infobip_training_data_status", training_data_status)
 
     @app.consumes(**aiokafka_kwargs)  # type: ignore
-    async def on_realitime_data(msg: RealtimeData):
+    async def on_infobip_realtime_data(msg: RealtimeData):
         pass
 
     @app.produces(**aiokafka_kwargs)  # type: ignore
-    def to_training_data_status(msg: TrainingDataStatus) -> TrainingDataStatus:
-        logger.debug(f"on_training_data_status(msg={msg})")
+    def to_infobip_training_data_status(msg: TrainingDataStatus) -> TrainingDataStatus:
+        logger.debug(f"on_infobip_training_data_status(msg={msg})")
         return msg
 
     @app.produces(**aiokafka_kwargs)  # type: ignore
-    def to_training_model_status(msg: str) -> TrainingModelStatus:
-        logger.debug(f"on_training_model_status(msg={msg})")
+    def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
+        logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return TrainingModelStatus()
 
     @app.produces(**aiokafka_kwargs)  # type: ignore
-    def to_model_metrics(msg: ModelMetrics) -> ModelMetrics:
-        logger.debug(f"on_training_model_status(msg={msg})")
+    def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
+        logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return msg
 
     @app.produces(**aiokafka_kwargs)  # type: ignore
-    def to_prediction(msg: Prediction) -> Prediction:
-        logger.debug(f"on_realtime_data_status(msg={msg})")
+    def to_infobip_prediction(msg: Prediction) -> Prediction:
+        logger.debug(f"on_infobip_realtime_data_status(msg={msg})")
         return msg
 
     return app
