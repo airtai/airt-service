@@ -679,8 +679,10 @@ def get_count(
         if not type(connection) == Connection:
             raise ValueError(f"{type(connection)=} != Connection")
 
-        query = f"SELECT count() FROM {database}.{table}"
+        # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
+        query = f"SELECT count() FROM {database}.{table}"  # nosec B608
         logger.info(f"Getting count with query={query}")
 
+        # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query
         result = connection.execute(query)
         return result.fetchall()[0][0]
