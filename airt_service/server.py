@@ -415,7 +415,7 @@ class Prediction(BaseModel):
     )
 
 # %% ../notebooks/API_Web_Service.ipynb 8
-_total_no_of_records = 0
+_total_no_of_records = 1000000
 _no_of_records_received = 0
 
 # %% ../notebooks/API_Web_Service.ipynb 9
@@ -560,6 +560,14 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
         aiokafka_kwargs["sasl_plain_password"] = aio_kafka_config["sasl_password"]
         aiokafka_kwargs["ssl_context"] = create_ssl_context()
 
+    #     @app.consumes(**aiokafka_kwargs)  # type: ignore
+    #     async def on_infobip_training_data_start(msg: ModelTrainingRequest):
+    #         global _total_no_of_records
+    #         global _no_of_records_received
+
+    #         _total_no_of_records = msg.total_no_of_records
+    #         _no_of_records_received = 0
+
     @app.consumes(**aiokafka_kwargs)  # type: ignore
     async def on_infobip_training_data(msg: EventData):
         # ToDo: this is not showing up in logs
@@ -570,33 +578,39 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
 
         if _no_of_records_received % 100 == 0:
             training_data_status = TrainingDataStatus(
-                AccountId=EventData.AccountId,
+                AccountId=msg.AccountId,
                 no_of_records=_no_of_records_received,
                 total_no_of_records=_total_no_of_records,
             )
-            app.produce("infobip_training_data_status", training_data_status)
+            p = Producer(confluent_kafka_config)
+            p.produce("infobip_training_data_status", msg.json().encode("utf-8"))
+            p.flush()
+
+    #             await to_infobip_training_data_status(msg=training_data_status)
 
     @app.consumes(**aiokafka_kwargs)  # type: ignore
     async def on_infobip_realtime_data(msg: RealtimeData):
         pass
 
     @app.produces(**aiokafka_kwargs)  # type: ignore
-    def to_infobip_training_data_status(msg: TrainingDataStatus) -> TrainingDataStatus:
+    async def to_infobip_training_data_status(
+        msg: TrainingDataStatus,
+    ) -> TrainingDataStatus:
         logger.debug(f"on_infobip_training_data_status(msg={msg})")
         return msg
 
     @app.produces(**aiokafka_kwargs)  # type: ignore
-    def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
+    async def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return TrainingModelStatus()
 
     @app.produces(**aiokafka_kwargs)  # type: ignore
-    def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
+    async def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return msg
 
     @app.produces(**aiokafka_kwargs)  # type: ignore
-    def to_infobip_prediction(msg: Prediction) -> Prediction:
+    async def to_infobip_prediction(msg: Prediction) -> Prediction:
         logger.debug(f"on_infobip_realtime_data_status(msg={msg})")
         return msg
 
