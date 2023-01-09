@@ -582,11 +582,7 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
                 no_of_records=_no_of_records_received,
                 total_no_of_records=_total_no_of_records,
             )
-            p = Producer(confluent_kafka_config)
-            p.produce("infobip_training_data_status", msg.json().encode("utf-8"))
-            p.flush()
-
-    #             await to_infobip_training_data_status(msg=training_data_status)
+            await to_infobip_training_data_status(msg=training_data_status)
 
     @app.consumes(**aiokafka_kwargs)  # type: ignore
     async def on_infobip_realtime_data(msg: RealtimeData):

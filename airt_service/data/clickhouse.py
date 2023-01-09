@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['create_db_uri_for_clickhouse_datablob', 'get_clickhouse_connection', 'get_max_timestamp',
-           'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push']
+           'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push', 'get_count']
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 3
 import json
@@ -641,3 +641,46 @@ def clickhouse_push(prediction_push_id: int):  # type: ignore
 
         session.add(prediction_push)
         session.commit()
+
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 42
+def get_count(
+    username: str,
+    password: str,
+    host: str,
+    port: int,
+    database: str,
+    table: str,
+    protocol: str,
+) -> int:
+    """
+    Function to get count of all rows from given table
+
+    Args:
+        username: Username of clickhouse database
+        password: Password of clickhouse database
+        host: Host of clickhouse database
+        port: Port of clickhouse database
+        table: Table of clickhouse database
+        database: Database to use
+        protocol: Protocol to connect to clickhouse (native/http)
+
+    Returns:
+        Count of all rows for given table
+    """
+    with get_clickhouse_connection(  # type: ignore
+        username=username,
+        password=password,
+        host=host,
+        port=port,
+        database=database,
+        table=table,
+        protocol=protocol,
+    ) as connection:
+        if not type(connection) == Connection:
+            raise ValueError(f"{type(connection)=} != Connection")
+
+        query = f"SELECT count() FROM {database}.{table}"
+        logger.info(f"Getting count with query={query}")
+
+        result = connection.execute(query)
+        return result.fetchall()[0][0]
