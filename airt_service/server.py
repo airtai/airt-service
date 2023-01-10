@@ -15,7 +15,7 @@ from enum import Enum
 from os import environ
 
 from aiokafka.helpers import create_ssl_context
-from fastapi import Request
+from fastapi import Request, FastAPI
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse, RedirectResponse
@@ -419,7 +419,9 @@ _total_no_of_records = 1000000
 _no_of_records_received = 0
 
 # %% ../notebooks/API_Web_Service.ipynb 9
-def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
+def create_ws_server(
+    assets_path: Path = Path("./assets"),
+) -> Tuple[FastAPI, FastKafkaAPI]:
     """Create a FastKafkaAPI based web service
 
     Args:
@@ -431,39 +433,15 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
     global description
     title = "airt service"
     version = airt_service.__version__
+    contact = dict(name="airt.ai", url="https://airt.ai", email="info@airt.ai")
     openapi_url = "/openapi.json"
     favicon_url = "/assets/images/favicon.ico"
     assets_path = assets_path.resolve()
     favicon_path = assets_path / "images/favicon.ico"
 
-    kafka_brokers = {
-        "localhost": {
-            "url": "kafka",
-            "description": "local development kafka",
-            "port": 9092,
-        },
-        "staging": {
-            "url": "kafka.staging.airt.ai",
-            "description": "staging kafka",
-            "port": 9092,
-            "protocol": "kafka-secure",
-            "security": {"type": "plain"},
-        },
-        "production": {
-            "url": "kafka.airt.ai",
-            "description": "production kafka",
-            "port": 9092,
-            "protocol": "kafka-secure",
-            "security": {"type": "plain"},
-        },
-    }
-
-    logger.info(f"kafka_config={aio_kafka_config}")
-    app = FastKafkaAPI(
+    app = FastAPI(
         title=title,
         description=description,
-        kafka_brokers=kafka_brokers,
-        kafka_config=aio_kafka_config,
         version=version,
         docs_url=None,
         redoc_url=None,
@@ -552,15 +530,41 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
 
     app.openapi = custom_openapi  # type: ignore
 
-    aiokafka_kwargs = dict()
-    if "KAFKA_API_KEY" in environ:
-        aiokafka_kwargs["security_protocol"] = aio_kafka_config["security_protocol"]
-        aiokafka_kwargs["sasl_mechanism"] = aio_kafka_config["sasl_mechanisms"]
-        aiokafka_kwargs["sasl_plain_username"] = aio_kafka_config["sasl_username"]
-        aiokafka_kwargs["sasl_plain_password"] = aio_kafka_config["sasl_password"]
-        aiokafka_kwargs["ssl_context"] = create_ssl_context()
+    kafka_brokers = {
+        "localhost": {
+            "url": "kafka",
+            "description": "local development kafka",
+            "port": 9092,
+        },
+        "staging": {
+            "url": "kafka.staging.airt.ai",
+            "description": "staging kafka",
+            "port": 9092,
+            "protocol": "kafka-secure",
+            "security": {"type": "plain"},
+        },
+        "production": {
+            "url": "kafka.airt.ai",
+            "description": "production kafka",
+            "port": 9092,
+            "protocol": "kafka-secure",
+            "security": {"type": "plain"},
+        },
+    }
 
-    #     @app.consumes(**aiokafka_kwargs)  # type: ignore
+    logger.info(f"kafka_config={aio_kafka_config}")
+
+    fast_kafka_api_app = FastKafkaAPI(
+        fast_api_app=app,
+        title="airt service kafka api",
+        description="kafka api for airt service",
+        kafka_brokers=kafka_brokers,
+        version=version,
+        contact=contact,
+        **aio_kafka_config,
+    )
+
+    #     @app.consumes()  # type: ignore
     #     async def on_infobip_training_data_start(msg: ModelTrainingRequest):
     #         global _total_no_of_records
     #         global _no_of_records_received
@@ -568,7 +572,7 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
     #         _total_no_of_records = msg.total_no_of_records
     #         _no_of_records_received = 0
 
-    @app.consumes(**aiokafka_kwargs)  # type: ignore
+    @fast_kafka_api_app.consumes()  # type: ignore
     async def on_infobip_training_data(msg: EventData):
         # ToDo: this is not showing up in logs
         logger.debug(f"msg={msg}")
@@ -584,30 +588,30 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
             )
             await to_infobip_training_data_status(msg=training_data_status)
 
-    @app.consumes(**aiokafka_kwargs)  # type: ignore
+    @fast_kafka_api_app.consumes()  # type: ignore
     async def on_infobip_realtime_data(msg: RealtimeData):
         pass
 
-    @app.produces(**aiokafka_kwargs)  # type: ignore
+    @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_training_data_status(
         msg: TrainingDataStatus,
     ) -> TrainingDataStatus:
         logger.debug(f"on_infobip_training_data_status(msg={msg})")
         return msg
 
-    @app.produces(**aiokafka_kwargs)  # type: ignore
+    @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return TrainingModelStatus()
 
-    @app.produces(**aiokafka_kwargs)  # type: ignore
+    @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return msg
 
-    @app.produces(**aiokafka_kwargs)  # type: ignore
+    @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_prediction(msg: Prediction) -> Prediction:
         logger.debug(f"on_infobip_realtime_data_status(msg={msg})")
         return msg
 
-    return app
+    return app, fast_kafka_api_app
