@@ -419,7 +419,9 @@ _total_no_of_records = 1000000
 _no_of_records_received = 0
 
 # %% ../notebooks/API_Web_Service.ipynb 9
-def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
+def create_ws_server(
+    assets_path: Path = Path("./assets"),
+) -> Tuple[FastAPI, FastKafkaAPI]:
     """Create a FastKafkaAPI based web service
 
     Args:
@@ -552,14 +554,6 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
 
     logger.info(f"kafka_config={aio_kafka_config}")
 
-    #     aiokafka_kwargs = dict()
-    #     if "KAFKA_API_KEY" in environ:
-    #         aiokafka_kwargs["security_protocol"] = aio_kafka_config["security_protocol"]
-    #         aiokafka_kwargs["sasl_mechanism"] = aio_kafka_config["sasl_mechanisms"]
-    #         aiokafka_kwargs["sasl_plain_username"] = aio_kafka_config["sasl_username"]
-    #         aiokafka_kwargs["sasl_plain_password"] = aio_kafka_config["sasl_password"]
-    #         aiokafka_kwargs["ssl_context"] = create_ssl_context()
-
     fast_kafka_api_app = FastKafkaAPI(
         fast_api_app=app,
         title="airt service kafka api",
@@ -578,11 +572,10 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
     #         _total_no_of_records = msg.total_no_of_records
     #         _no_of_records_received = 0
 
-    @fast_kafka_api_app.consumes(**aio_kafka_config)  # type: ignore
+    @fast_kafka_api_app.consumes()  # type: ignore
     async def on_infobip_training_data(msg: EventData):
         # ToDo: this is not showing up in logs
         logger.debug(f"msg={msg}")
-        logger.info(f"msg={msg}")
         global _total_no_of_records
         global _no_of_records_received
         _no_of_records_received = _no_of_records_received + 1
@@ -595,30 +588,30 @@ def create_ws_server(assets_path: Path = Path("./assets")) -> FastKafkaAPI:
             )
             await to_infobip_training_data_status(msg=training_data_status)
 
-    @fast_kafka_api_app.consumes(**aio_kafka_config)  # type: ignore
+    @fast_kafka_api_app.consumes()  # type: ignore
     async def on_infobip_realtime_data(msg: RealtimeData):
         pass
 
-    @fast_kafka_api_app.produces(**aio_kafka_config)  # type: ignore
+    @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_training_data_status(
         msg: TrainingDataStatus,
     ) -> TrainingDataStatus:
         logger.debug(f"on_infobip_training_data_status(msg={msg})")
         return msg
 
-    @fast_kafka_api_app.produces(**aio_kafka_config)  # type: ignore
+    @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return TrainingModelStatus()
 
-    @fast_kafka_api_app.produces(**aio_kafka_config)  # type: ignore
+    @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return msg
 
-    @fast_kafka_api_app.produces(**aio_kafka_config)  # type: ignore
+    @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_prediction(msg: Prediction) -> Prediction:
         logger.debug(f"on_infobip_realtime_data_status(msg={msg})")
         return msg
 
-    return fast_kafka_api_app
+    return app, fast_kafka_api_app
