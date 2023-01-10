@@ -45,10 +45,10 @@ confluent_kafka_config = {
     for key in ["bootstrap_servers", "group_id", "auto_offset_reset"]
 }
 if "KAFKA_API_KEY" in environ:
-    confluent_kafka_config["security_protocol"] = aio_kafka_config["security_protocol"]
-    confluent_kafka_config["sasl_mechanisms"] = aio_kafka_config["sasl_mechanism"]
-    confluent_kafka_config["sasl_username"] = aio_kafka_config["sasl_plain_username"]
-    confluent_kafka_config["sasl_password"] = aio_kafka_config["sasl_plain_password"]
+    confluent_kafka_config["security.protocol"] = aio_kafka_config["security_protocol"]
+    confluent_kafka_config["sasl.mechanisms"] = aio_kafka_config["sasl_mechanism"]
+    confluent_kafka_config["sasl.username"] = aio_kafka_config["sasl_plain_username"]
+    confluent_kafka_config["sasl.password"] = aio_kafka_config["sasl_plain_password"]
 
 # %% ../notebooks/Confluent.ipynb 11
 def get_topic_names_to_create(username: str) -> List[str]:
