@@ -96,6 +96,7 @@ def test_create_user(base_url: str) -> Tuple[Dict[str, Any], str]:
             otp=None,
         ),
         headers=headers,
+        timeout=30,
     )
     assert not r.is_error, r.text  # nosec B101
     user = r.json()
