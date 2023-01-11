@@ -245,12 +245,19 @@ class TrainingStreamStatus(SQLModel, table=True):
     uuid: uuid_pkg.UUID = Field(
         default_factory=uuid_pkg.uuid4, index=True, nullable=False
     )
+    account_id: int
     event: TrainingEvent = Field(sa_column=Column(Enum(TrainingEvent)), nullable=False)
     count: int
     created: datetime = Field(sa_column_kwargs={"default": datetime.utcnow})
 
     user_id: int = Field(default=None, foreign_key="user.id", nullable=False)
     user: User = Relationship(back_populates="training_stream_statuses")
+
+    @classmethod
+    def _create(
+        cls, *, event: str, count: int, user: User, session: Session
+    ) -> "TrainingStreamStatus":
+        raise NotImplementedError()
 
 # %% ../../notebooks/DB_Models.ipynb 8
 class APIKeyBase(SQLModel):
