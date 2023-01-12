@@ -61,6 +61,7 @@ def get_topic_names_to_create(username: str) -> List[str]:
         A list of topic names unique to the username
     """
     topic_names = [
+        "start_training_data",
         "training_data",
         "realitime_data",
         "training_data_status",

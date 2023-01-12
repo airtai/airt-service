@@ -644,6 +644,7 @@ def clickhouse_push(prediction_push_id: int):  # type: ignore
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 42
 def get_count(
+    account_id: int,
     username: str,
     password: str,
     host: str,
@@ -656,6 +657,7 @@ def get_count(
     Function to get count of all rows from given table
 
     Args:
+        account_id: AccountId for which to get count
         username: Username of clickhouse database
         password: Password of clickhouse database
         host: Host of clickhouse database

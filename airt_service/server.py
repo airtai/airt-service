@@ -22,6 +22,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fast_kafka_api.application import FastKafkaAPI
 from pydantic import validator, BaseModel, Field, HttpUrl, EmailStr, NonNegativeInt
+from sqlmodel import select
 
 import airt_service
 from .sanitizer import sanitized_print
@@ -29,8 +30,10 @@ from .auth import auth_router
 from .confluent import aio_kafka_config
 from .data.datablob import datablob_router
 from .data.datasource import datasource_router
+from .db.models import get_session_with_context, User, TrainingStreamStatus
 from .model.train import model_train_router
 from .model.prediction import model_prediction_router
+from .training_status_process import process_training_status
 from .users import user_router
 from airt.logger import get_logger
 
@@ -250,7 +253,6 @@ class ModelTrainingRequest(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    ModelName: ModelType = Field(..., example="churn", description="ID of an account")
     total_no_of_records: NonNegativeInt = Field(
         ...,
         example=1_000_000,
@@ -418,9 +420,13 @@ class Prediction(BaseModel):
 _total_no_of_records = 1000000
 _no_of_records_received = 0
 
+
+_to_infobip_training_data_status = None
+
 # %% ../notebooks/API_Web_Service.ipynb 9
 def create_ws_server(
     assets_path: Path = Path("./assets"),
+    start_process_for_username: Optional[str] = "infobip",
 ) -> Tuple[FastAPI, FastKafkaAPI]:
     """Create a FastKafkaAPI based web service
 
@@ -564,29 +570,38 @@ def create_ws_server(
         **aio_kafka_config,
     )
 
-    #     @app.consumes()  # type: ignore
-    #     async def on_infobip_training_data_start(msg: ModelTrainingRequest):
-    #         global _total_no_of_records
-    #         global _no_of_records_received
-
-    #         _total_no_of_records = msg.total_no_of_records
-    #         _no_of_records_received = 0
+    @fast_kafka_api_app.consumes()  # type: ignore
+    async def on_infobip_start_training_data(msg: ModelTrainingRequest):
+        with get_session_with_context() as session:
+            user = session.exec(
+                select(User).where(User.username == start_process_for_username)
+            ).one()
+            start_event = TrainingStreamStatus(
+                event="start",
+                account_id=msg.AccountId,
+                count=0,
+                total=msg.total_no_of_records,
+                user=user,
+            )
+            session.add(start_event)
+            session.commit()
 
     @fast_kafka_api_app.consumes()  # type: ignore
     async def on_infobip_training_data(msg: EventData):
         # ToDo: this is not showing up in logs
         logger.debug(f"msg={msg}")
-        global _total_no_of_records
-        global _no_of_records_received
-        _no_of_records_received = _no_of_records_received + 1
 
-        if _no_of_records_received % 100 == 0:
-            training_data_status = TrainingDataStatus(
-                AccountId=msg.AccountId,
-                no_of_records=_no_of_records_received,
-                total_no_of_records=_total_no_of_records,
-            )
-            await to_infobip_training_data_status(msg=training_data_status)
+    #         global _total_no_of_records
+    #         global _no_of_records_received
+    #         _no_of_records_received = _no_of_records_received + 1
+
+    #         if _no_of_records_received % 100 == 0:
+    #             training_data_status = TrainingDataStatus(
+    #                 AccountId=msg.AccountId,
+    #                 no_of_records=_no_of_records_received,
+    #                 total_no_of_records=_total_no_of_records,
+    #             )
+    #             await to_infobip_training_data_status(msg=training_data_status)
 
     @fast_kafka_api_app.consumes()  # type: ignore
     async def on_infobip_realtime_data(msg: RealtimeData):
@@ -594,9 +609,18 @@ def create_ws_server(
 
     @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_training_data_status(
-        msg: TrainingDataStatus,
+        account_id: int,
+        no_of_records: int,
+        total_no_of_records: int,
     ) -> TrainingDataStatus:
-        logger.debug(f"on_infobip_training_data_status(msg={msg})")
+        logger.debug(
+            f"on_infobip_training_data_status({account_id=}, {no_of_records=}, {total_no_of_records=})"
+        )
+        msg = TrainingDataStatus(
+            AccountId=account_id,
+            no_of_records=no_of_records,
+            total_no_of_records=total_no_of_records,
+        )
         return msg
 
     @fast_kafka_api_app.produces()  # type: ignore
@@ -613,5 +637,17 @@ def create_ws_server(
     async def to_infobip_prediction(msg: Prediction) -> Prediction:
         logger.debug(f"on_infobip_realtime_data_status(msg={msg})")
         return msg
+
+    fast_kafka_api_app.to_infobip_training_data_status = to_infobip_training_data_status
+    if start_process_for_username is not None:
+
+        @fast_kafka_api_app.run_in_background()
+        async def startup_event():
+            #             _to_infobip_training_data_status = to_infobip_training_data_status
+            #             nonlocal to_infobip_training_data_status
+            await process_training_status(
+                username=start_process_for_username,
+                fast_kafka_api_app=fast_kafka_api_app,
+            )
 
     return app, fast_kafka_api_app
