@@ -248,6 +248,7 @@ class TrainingStreamStatus(SQLModel, table=True):
     account_id: int
     event: TrainingEvent = Field(sa_column=Column(Enum(TrainingEvent)), nullable=False)
     count: int
+    total: int
     created: datetime = Field(sa_column_kwargs={"default": datetime.utcnow})
 
     user_id: int = Field(default=None, foreign_key="user.id", nullable=False)
@@ -1148,7 +1149,9 @@ def get_session_with_context():
     next(iter_session, "close session")
 
 # %% ../../notebooks/DB_Models.ipynb 33
-def create_user_for_testing(subscription_type: str = "test") -> str:
+def create_user_for_testing(
+    username: Optional[str] = None, subscription_type: str = "test"
+) -> str:
     """Create users for testing purposes
 
     Args:
@@ -1157,21 +1160,25 @@ def create_user_for_testing(subscription_type: str = "test") -> str:
     Returns:
         The username of created user
     """
-    username = "".join(
-        random.choice(string.ascii_lowercase) for _ in range(10)  # nosec B311
-    )
+    if username is None:
+        username = "".join(
+            random.choice(string.ascii_lowercase) for _ in range(10)  # nosec B311
+        )
 
     with get_session_with_context() as session:
-        user = User(
-            username=username,
-            password=get_password_hash(environ["AIRT_SERVICE_SUPER_USER_PASSWORD"]),
-            first_name="unittest",
-            last_name="user",
-            email=f"{username}@email.com",
-            subscription_type=subscription_type,
-        )
-        session.add(user)
-        session.commit()
+        try:
+            user = User(
+                username=username,
+                password=get_password_hash(environ["AIRT_SERVICE_SUPER_USER_PASSWORD"]),
+                first_name="unittest",
+                last_name="user",
+                email=f"{username}@email.com",
+                subscription_type=subscription_type,
+            )
+            session.add(user)
+            session.commit()
+        except IntegrityError:
+            pass
     return username
 
 # %% ../../notebooks/DB_Models.ipynb 35

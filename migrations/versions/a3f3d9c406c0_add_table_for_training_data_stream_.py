@@ -25,6 +25,7 @@ def upgrade():
     sa.Column('uuid', sqlmodel.sql.sqltypes.GUID(), nullable=False),
     sa.Column('account_id', sa.Integer(), nullable=False),
     sa.Column('count', sa.Integer(), nullable=False),
+    sa.Column('total', sa.Integer(), nullable=False),
     sa.Column('created', sa.DateTime(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
