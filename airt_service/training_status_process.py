@@ -199,4 +199,4 @@ async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAP
                 await process_recent_event(
                     recent_event, session=session, fast_kafka_api_app=fast_kafka_api_app
                 )
-        await asyncio.sleep(random.randint(1, 4))
+        await asyncio.sleep(random.randint(1, 4))  # nosec B311
