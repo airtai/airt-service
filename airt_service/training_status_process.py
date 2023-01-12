@@ -13,7 +13,7 @@ from typing import *
 import asyncio
 from asyncer import asyncify
 from sqlalchemy.exc import NoResultFound
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 
 import airt_service
 from .data.clickhouse import get_count
@@ -24,7 +24,7 @@ from airt.patching import patch
 # %% ../notebooks/Training_Status_Process.ipynb 5
 logger = get_logger(__name__)
 
-# %% ../notebooks/Training_Status_Process.ipynb 6
+# %% ../notebooks/Training_Status_Process.ipynb 12
 def get_recent_event_for_user(username: str) -> Optional[TrainingStreamStatus]:
     with get_session_with_context() as session:
         user = session.exec(select(User).where(User.username == username)).one()
@@ -40,7 +40,7 @@ def get_recent_event_for_user(username: str) -> Optional[TrainingStreamStatus]:
             return None
     return event
 
-# %% ../notebooks/Training_Status_Process.ipynb 8
+# %% ../notebooks/Training_Status_Process.ipynb 14
 def get_count_from_training_data_ch_table() -> int:
     return airt_service.data.clickhouse.get_count(
         username=environ["KAFKA_CH_USERNAME"],
@@ -52,7 +52,7 @@ def get_count_from_training_data_ch_table() -> int:
         protocol=environ["KAFKA_CH_PROTOCOL"],
     )
 
-# %% ../notebooks/Training_Status_Process.ipynb 10
+# %% ../notebooks/Training_Status_Process.ipynb 16
 @patch(cls_method=True)
 def _create(
     cls: TrainingStreamStatus, *, event: str, count: int, user: User, session: Session
@@ -62,7 +62,7 @@ def _create(
     session.commit()
     return training_event
 
-# %% ../notebooks/Training_Status_Process.ipynb 11
+# %% ../notebooks/Training_Status_Process.ipynb 17
 async def process_training_status(username: str):
     # Get recent event for username
     prev_count = 0
