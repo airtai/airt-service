@@ -682,7 +682,7 @@ def get_count(
             raise ValueError(f"{type(connection)=} != Connection")
 
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
-        query = f"SELECT count() FROM {database}.{table}"  # nosec B608
+        query = f"SELECT count() FROM {database}.{table} where AccountId={account_id}"  # nosec B608
         logger.info(f"Getting count with query={query}")
 
         # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query
