@@ -2,7 +2,8 @@
 
 # %% auto 0
 __all__ = ['create_db_uri_for_clickhouse_datablob', 'get_clickhouse_connection', 'get_max_timestamp',
-           'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push', 'get_count']
+           'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push', 'get_count',
+           'get_count_for_account_ids']
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 3
 import json
@@ -688,3 +689,51 @@ def get_count(
         # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query
         result = connection.execute(query)
         return result.fetchall()[0][0]
+
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 44
+def get_count_for_account_ids(
+    account_ids: List[Union[int, str]],
+    username: str,
+    password: str,
+    host: str,
+    port: int,
+    database: str,
+    table: str,
+    protocol: str,
+) -> pd.DataFrame:
+    """
+    Function to get count for the given account ids from given table
+
+    Args:
+        account_ids: List of account ids
+        username: Username of clickhouse database
+        password: Password of clickhouse database
+        host: Host of clickhouse database
+        port: Port of clickhouse database
+        table: Table of clickhouse database
+        database: Database to use
+        protocol: Protocol to connect to clickhouse (native/http)
+
+    Returns:
+        A pandas dataframe which contains all account ids and their counts
+    """
+    with get_clickhouse_connection(  # type: ignore
+        username=username,
+        password=password,
+        host=host,
+        port=port,
+        database=database,
+        table=table,
+        protocol=protocol,
+    ) as connection:
+        if not type(connection) == Connection:
+            raise ValueError(f"{type(connection)=} != Connection")
+
+        account_ids_query = ", ".join([str(a_id) for a_id in account_ids])
+
+        # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
+        query = f"SELECT AccountId, count() AS count FROM {database}.{table} WHERE AccountId IN ({account_ids_query}) GROUP BY AccountId ORDER BY AccountId ASC"  # nosec B608
+        logger.info(f"Getting count with query={query}")
+
+        df = pd.read_sql(sql=query, con=connection)
+    return df.set_index("AccountId")
