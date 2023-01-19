@@ -58,8 +58,7 @@ check: mypy check_secrets detect_secrets sast dast trivy_scan_repo
 
 test: install mypy alembic_migrate empty_bucket
 	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
-	nbdev_test --timing --do_print --path notebooks/Integration_Test.ipynb
-	nbdev_test --timing --do_print --pause 1 --skip_file_glob "DB_Models.ipynb" --skip_file_re "^Integration_Test.*"
+	nbdev_test --timing --do_print --pause 1 --skip_file_glob "DB_Models.ipynb"
 
 release: pypi
 	nbdev_bump_version
