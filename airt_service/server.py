@@ -420,9 +420,6 @@ class Prediction(BaseModel):
 _total_no_of_records = 1000000
 _no_of_records_received = 0
 
-
-_to_infobip_training_data_status = None
-
 # %% ../notebooks/API_Web_Service.ipynb 9
 def create_ws_server(
     assets_path: Path = Path("./assets"),
@@ -643,8 +640,6 @@ def create_ws_server(
 
         @fast_kafka_api_app.run_in_background()
         async def startup_event():
-            #             _to_infobip_training_data_status = to_infobip_training_data_status
-            #             nonlocal to_infobip_training_data_status
             await process_training_status(
                 username=start_process_for_username,
                 fast_kafka_api_app=fast_kafka_api_app,

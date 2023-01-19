@@ -732,7 +732,7 @@ def get_count_for_account_ids(
         account_ids_query = ", ".join([str(a_id) for a_id in account_ids])
 
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
-        query = f"SELECT AccountId, count() AS count FROM {database}.{table} WHERE AccountId IN ({account_ids_query}) GROUP BY AccountId ORDER BY AccountId ASC"  # nosec B608
+        query = f"SELECT AccountId, count() AS curr_count, now() AS curr_check_on FROM {database}.{table} WHERE AccountId IN ({account_ids_query}) GROUP BY AccountId ORDER BY AccountId ASC"  # nosec B608
         logger.info(f"Getting count with query={query}")
 
         df = pd.read_sql(sql=query, con=connection)
