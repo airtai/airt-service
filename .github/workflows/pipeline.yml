@@ -62,10 +62,11 @@ jobs:
 
   unit_test:
     runs-on: ubuntu-22.04
+    timeout-minutes: 60
     defaults:
       run:
         shell: bash
-    needs: [sast, trivy, secrets_scan, detect_secrets]
+    # needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
     env:
@@ -151,7 +152,8 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: [sast, trivy, secrets_scan, detect_secrets]
+    needs: [sast, trivy, secrets_scan, detect_secrets, unit_test]
+    # needs: [sast, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
     env:
