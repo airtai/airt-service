@@ -954,5 +954,5 @@ d = { 'settings': { 'branch': 'main',
                                     'airt_service.users.update_user': ('users.html#update_user', 'airt_service/users.py'),
                                     'airt_service.users.validate_phone_number': ( 'users.html#validate_phone_number',
                                                                                   'airt_service/users.py')},
-            'airt_service.uvicorn_helpers': { 'airt_service.uvicorn_helpers.run_uvicorn': ( 'uvicorn_helpers.html#run_uvicorn',
+            'airt_service.uvicorn_helpers': { 'airt_service.uvicorn_helpers.run_uvicorn': ( 'kafka_uvicorn_helpers.html#run_uvicorn',
                                                                                             'airt_service/uvicorn_helpers.py')}}}

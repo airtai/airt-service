@@ -61,6 +61,7 @@ test: install mypy alembic_migrate empty_bucket
 	nbdev_test --timing --do_print --path notebooks/Kafka_API_Web_Service.ipynb
 	nbdev_test --timing --do_print --path notebooks/Kafka_Training_Status_Process.ipynb
 	nbdev_test --timing --do_print --path notebooks/Kafka_Integration_Test.ipynb
+	nbdev_test --timing --do_print --path notebooks/Kafka_Uvicorn_Helpers.ipynb
 # nbdev_test --timing --do_print --file_glob "Kafka_*.ipynb"
 	nbdev_test --timing --do_print --pause 1 --skip_file_glob "DB_Models.ipynb" --skip_file_re "^Kafka_*.*"
 
