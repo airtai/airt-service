@@ -28,7 +28,7 @@ from .aws.utils import upload_to_s3_with_retry
 from airt.remote_path import RemotePath
 
 # %% ../notebooks/Kafka_Integration_Test.ipynb 5
-def integration_scenario_docs(base_url: str = "http://0.0.0.0:6006"):
+def integration_scenario_docs(base_url: str = "http://127.0.0.1:6006"):
     """Test fastapi docs
 
     Args:
@@ -496,7 +496,7 @@ def delete_test_user(base_url: str, test_username: str):
     assert not r.is_error, r.text  # nosec B101
 
 # %% ../notebooks/Kafka_Integration_Test.ipynb 21
-def integration_tests(base_url: str = "http://0.0.0.0:6006"):
+def integration_tests(base_url: str = "http://127.0.0.1:6006"):
     """Integration tests
 
     Args:
