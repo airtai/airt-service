@@ -26,6 +26,7 @@ from .data.clickhouse import get_count_for_account_ids
 from airt_service.db.models import (
     create_connection_string,
     get_db_params_from_env_vars,
+    get_engine,
     get_session_with_context,
     User,
     TrainingStreamStatus,
@@ -231,22 +232,25 @@ async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAP
     while True:
         #         logger.info(f"Starting the process loop")
         try:
-            with get_session_with_context() as session:
-                user = await async_get_user(username, session)
-                recent_events_df = await async_get_recent_event_for_user(
-                    username, session
+            engine = get_engine(**get_db_params_from_env_vars())  # type: ignore
+            session = Session(engine)
+
+            user = await async_get_user(username, session)
+            recent_events_df = await async_get_recent_event_for_user(username, session)
+            if not recent_events_df.empty:
+                ch_df = await async_get_count_from_training_data_ch_table(
+                    account_ids=recent_events_df.index.tolist()
                 )
-                if not recent_events_df.empty:
-                    ch_df = await async_get_count_from_training_data_ch_table(
-                        account_ids=recent_events_df.index.tolist()
-                    )
-                    await process_dataframes(
-                        recent_events_df=recent_events_df,
-                        ch_df=ch_df,
-                        user=user,  # type: ignore
-                        session=session,
-                        fast_kafka_api_app=fast_kafka_api_app,
-                    )
+                await process_dataframes(
+                    recent_events_df=recent_events_df,
+                    ch_df=ch_df,
+                    user=user,  # type: ignore
+                    session=session,
+                    fast_kafka_api_app=fast_kafka_api_app,
+                )
+
+            session.close()
+            engine.dispose()
         except Exception as e:
             logger.info(f"Error in process_training_status - {e}")
 
