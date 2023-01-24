@@ -15,6 +15,7 @@ from enum import Enum
 from os import environ
 
 from aiokafka.helpers import create_ssl_context
+from asyncer import asyncify
 from fastapi import Request, FastAPI
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
@@ -30,10 +31,13 @@ from .auth import auth_router
 from .confluent import aio_kafka_config
 from .data.datablob import datablob_router
 from .data.datasource import datasource_router
-from .db.models import get_session_with_context, User, TrainingStreamStatus
+from .db.models import get_session_with_context, User
 from .model.train import model_train_router
 from .model.prediction import model_prediction_router
-from .training_status_process import process_training_status
+from airt_service.training_status_process import (
+    process_training_status,
+    TrainingStreamStatus,
+)
 from .users import user_router
 from airt.logger import get_logger
 
@@ -254,7 +258,7 @@ class ModelTrainingRequest(BaseModel):
         ..., example=202020, description="ID of an account"
     )
     ApplicationId: Optional[str] = Field(
-        default=None, example=202020, description="ID of application"
+        default=None, example="TestApplicationId", description="ID of application"
     )
     total_no_of_records: NonNegativeInt = Field(
         ...,
@@ -572,19 +576,18 @@ def create_ws_server(
 
     @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_start_training_data")  # type: ignore
     async def on_infobip_start_training_data(msg: ModelTrainingRequest):
+        logger.info(f"start training msg={msg}")
         with get_session_with_context() as session:
             user = session.exec(
                 select(User).where(User.username == start_process_for_username)
             ).one()
-            start_event = TrainingStreamStatus(
+            await asyncify(TrainingStreamStatus._create)(  # type: ignore
                 event="start",
                 account_id=msg.AccountId,
                 count=0,
                 total=msg.total_no_of_records,
                 user=user,
             )
-            session.add(start_event)
-            session.commit()
 
     @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_training_data")  # type: ignore
     async def on_infobip_training_data(msg: EventData):

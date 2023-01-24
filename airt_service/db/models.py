@@ -1099,7 +1099,7 @@ def get_engine(
         database=database,
         database_server=database_server,
     )
-    engine = create_engine(conn_str, echo=echo)
+    engine = create_engine(conn_str, echo=echo, pool_size=0)
     return engine
 
 # %% ../../notebooks/DB_Models.ipynb 27
