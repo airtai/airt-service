@@ -1099,7 +1099,7 @@ def get_engine(
         database=database,
         database_server=database_server,
     )
-    engine = create_engine(conn_str, echo=echo, pool_size=0)
+    engine = create_engine(conn_str, echo=echo)
     return engine
 
 # %% ../../notebooks/DB_Models.ipynb 27
@@ -1133,7 +1133,7 @@ def get_session():
     engine = get_engine(**get_db_params_from_env_vars())
     with Session(engine) as session:
         yield session
-    engine.dispose()
+        engine.dispose()
 
 # %% ../../notebooks/DB_Models.ipynb 31
 @contextmanager

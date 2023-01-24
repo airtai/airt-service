@@ -250,4 +250,4 @@ async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAP
         except Exception as e:
             logger.info(f"Error in process_training_status - {e}")
 
-        await asyncio.sleep(random.randint(1, 4))  # nosec B311
+        await asyncio.sleep(random.randint(5, 20))  # nosec B311
