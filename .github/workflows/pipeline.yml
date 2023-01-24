@@ -62,6 +62,7 @@ jobs:
 
   unit_test:
     runs-on: ubuntu-22.04
+    timeout-minutes: 60
     defaults:
       run:
         shell: bash
@@ -109,7 +110,7 @@ jobs:
       KAFKA_PORT: 9092
     services:
       mysql:
-        image: mysql:8.0.27
+        image: mysql:8.0.31
         env:
           MYSQL_DATABASE: "airt_service"
           MYSQL_USER: "airt"
@@ -193,7 +194,7 @@ jobs:
       CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
     services:
       mysql:
-        image: mysql:8.0.27
+        image: mysql:8.0.31
         env:
           MYSQL_DATABASE: "airt_service"
           MYSQL_USER: "airt"
