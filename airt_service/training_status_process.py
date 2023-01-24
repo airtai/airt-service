@@ -233,15 +233,16 @@ async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAP
         with get_session_with_context() as session:
             user = await async_get_user(username, session)
             recent_events_df = await async_get_recent_event_for_user(username, session)
-            ch_df = await async_get_count_from_training_data_ch_table(
-                account_ids=recent_events_df.index.tolist()
-            )
-            await process_dataframes(
-                recent_events_df=recent_events_df,
-                ch_df=ch_df,
-                user=user,  # type: ignore
-                session=session,
-                fast_kafka_api_app=fast_kafka_api_app,
-            )
+            if not recent_events_df.empty:
+                ch_df = await async_get_count_from_training_data_ch_table(
+                    account_ids=recent_events_df.index.tolist()
+                )
+                await process_dataframes(
+                    recent_events_df=recent_events_df,
+                    ch_df=ch_df,
+                    user=user,  # type: ignore
+                    session=session,
+                    fast_kafka_api_app=fast_kafka_api_app,
+                )
 
         await asyncio.sleep(random.randint(1, 4))  # nosec B311
