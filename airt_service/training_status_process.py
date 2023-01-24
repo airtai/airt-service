@@ -18,6 +18,7 @@ from asyncer import asyncify
 from fastapi import FastAPI
 from fast_kafka_api.application import FastKafkaAPI
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy import create_engine as sqlalchemy_create_engine
 from sqlmodel import Session, select, func
 
 import airt_service
@@ -85,9 +86,12 @@ def get_recent_event_for_user(username: str, session: Session) -> pd.DataFrame:
     user = session.exec(select(User).where(User.username == username)).one()
 
     conn_str = create_connection_string(**get_db_params_from_env_vars())  # type: ignore
+    sqlalchemy_engine = sqlalchemy_create_engine(conn_str)
 
     # Get all rows from table
-    df = pd.read_sql_table(table_name="trainingstreamstatus", con=conn_str)
+    df = pd.read_sql_table(table_name="trainingstreamstatus", con=sqlalchemy_engine)
+
+    sqlalchemy_engine.dispose()
 
     # Filter events for given user and group by account_id
     events_for_user = (
