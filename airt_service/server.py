@@ -581,13 +581,15 @@ def create_ws_server(
             user = session.exec(
                 select(User).where(User.username == start_process_for_username)
             ).one()
-            await asyncify(TrainingStreamStatus._create)(  # type: ignore
+            start_event = TrainingStreamStatus(
                 event="start",
                 account_id=msg.AccountId,
                 count=0,
                 total=msg.total_no_of_records,
                 user=user,
             )
+            session.add(start_event)
+            session.commit()
 
     @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_training_data")  # type: ignore
     async def on_infobip_training_data(msg: EventData):
