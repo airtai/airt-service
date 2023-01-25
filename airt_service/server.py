@@ -253,6 +253,9 @@ class ModelTrainingRequest(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
+    ApplicationId: Optional[str] = Field(
+        default=None, example="TestApplicationId", description="ID of application"
+    )
     total_no_of_records: NonNegativeInt = Field(
         ...,
         example=1_000_000,
