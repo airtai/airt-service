@@ -9,6 +9,7 @@ from os import environ
 from pathlib import Path
 from typing import *
 
+from aiokafka.helpers import create_ssl_context
 from confluent_kafka.admin import AdminClient, NewTopic
 
 from airt.logger import get_logger
@@ -30,16 +31,24 @@ if "KAFKA_API_KEY" in environ:
         **aio_kafka_config,
         **{
             "security_protocol": "SASL_SSL",
-            "sasl_mechanisms": "PLAIN",
-            "sasl_username": environ["KAFKA_API_KEY"],
-            "sasl_password": environ["KAFKA_API_SECRET"],
+            "sasl_mechanism": "PLAIN",
+            "sasl_plain_username": environ["KAFKA_API_KEY"],
+            "sasl_plain_password": environ["KAFKA_API_SECRET"],
+            "ssl_context": create_ssl_context(),
         },
     }
 
 # %% ../notebooks/Confluent.ipynb 9
+# confluent_kafka_config = {key.replace("_", "."):value for key, value in aio_kafka_config.items()}
 confluent_kafka_config = {
-    key.replace("_", "."): value for key, value in aio_kafka_config.items()
+    key.replace("_", "."): aio_kafka_config[key]
+    for key in ["bootstrap_servers", "group_id", "auto_offset_reset"]
 }
+if "KAFKA_API_KEY" in environ:
+    confluent_kafka_config["security.protocol"] = aio_kafka_config["security_protocol"]
+    confluent_kafka_config["sasl.mechanisms"] = aio_kafka_config["sasl_mechanism"]
+    confluent_kafka_config["sasl.username"] = aio_kafka_config["sasl_plain_username"]
+    confluent_kafka_config["sasl.password"] = aio_kafka_config["sasl_plain_password"]
 
 # %% ../notebooks/Confluent.ipynb 11
 def get_topic_names_to_create(username: str) -> List[str]:
@@ -52,8 +61,9 @@ def get_topic_names_to_create(username: str) -> List[str]:
         A list of topic names unique to the username
     """
     topic_names = [
+        "start_training_data",
         "training_data",
-        "realitime_data",
+        "realtime_data",
         "training_data_status",
         "training_model_status",
         "model_metrics",
