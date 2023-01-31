@@ -325,8 +325,8 @@ jobs:
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "TAG=latest" >> $GITHUB_ENV ; else echo "TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV ; fi;
-      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "SSH_KEY=$PROD_SSH_KEY" >> $GITHUB_ENV ; else echo "SSH_KEY=$STAGING_SSH_KEY" >> $GITHUB_ENV ; fi;
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
       - run: sed 's/\"//g' .env >> $GITHUB_ENV
       - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
       - run: 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
