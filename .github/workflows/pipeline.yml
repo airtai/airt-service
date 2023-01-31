@@ -338,7 +338,7 @@ jobs:
       - run: chmod 600 key.pem
 
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "DOMAIN=api.airt.ai" >> $GITHUB_ENV ; else echo "DOMAIN=api.staging.airt.ai" >> $GITHUB_ENV ; fi;
-      - run: ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@"$DOMAIN" "docker images"
+      - run: ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "docker images"
       - run: sh ci/deploy.sh
 
       - run: rm key.pem
