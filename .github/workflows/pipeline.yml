@@ -325,7 +325,6 @@ jobs:
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       - run: chown -R $(id -u):$(id -g) $PWD
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "TAG=latest" >> $GITHUB_ENV ; else echo "TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV ; fi;
-      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "SSH_KEY=$PROD_SSH_KEY" >> $GITHUB_ENV ; else echo "SSH_KEY=$STAGING_SSH_KEY" >> $GITHUB_ENV ; fi;
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then printenv PROD_CONFIG > "$(pwd)/.env" ; else printenv STAGING_CONFIG > "$(pwd)/.env" ; fi;
       - run: sed 's/\"//g' .env >> $GITHUB_ENV
       - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
@@ -335,7 +334,7 @@ jobs:
       - run: chmod 700 ~/.ssh
       - run: ssh-keyscan "$DOMAIN" >> ~/.ssh/known_hosts
       - run: chmod 644 ~/.ssh/known_hosts
-      - run: echo "$SSH_KEY" | base64 --decode > key.pem
+      - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "$PROD_SSH_KEY" | base64 --decode > key.pem ; else echo "$STAGING_SSH_KEY" | base64 --decode > key.pem ; fi;
       - run: chmod 600 key.pem
 
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "DOMAIN=api.airt.ai" >> $GITHUB_ENV ; else echo "DOMAIN=api.staging.airt.ai" >> $GITHUB_ENV ; fi;
