@@ -127,15 +127,15 @@ ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "set -a && source
 ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "docker container prune -f || echo 'No stopped containers to delete'"
 
 echo "INFO: copying docker compose files to server"
-ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "rm -rf /home/ubuntu/docker"
-scp -o StrictHostKeyChecking=no -i key.pem -r ./docker azureuser@"$DOMAIN":/home/ubuntu/docker
+ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "rm -rf /home/azureuser/docker"
+scp -o StrictHostKeyChecking=no -i key.pem -r ./docker azureuser@"$DOMAIN":/home/azureuser/docker
 
 echo "INFO: copying .env file to server"
-ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "rm -rf /home/ubuntu/.env"
-scp -o StrictHostKeyChecking=no -i key.pem .env azureuser@"$DOMAIN":/home/ubuntu/.env
+ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "rm -rf /home/azureuser/.env"
+scp -o StrictHostKeyChecking=no -i key.pem .env azureuser@"$DOMAIN":/home/azureuser/.env
 
 echo "INFO: Creating storage directory if it doesn't exists"
-ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "mkdir -p /home/ubuntu/storage"
+ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "mkdir -p /home/azureuser/storage"
 
 echo "INFO: pulling docker images"
 ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "echo $GITHUB_PASSWORD | docker login -u '$GITHUB_USERNAME' --password-stdin '$CI_REGISTRY'"
