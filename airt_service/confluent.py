@@ -63,7 +63,7 @@ def get_topic_names_to_create(username: str) -> List[str]:
     topic_names = [
         "start_training_data",
         "training_data",
-        "realtime_data",
+        "realitime_data",
         "training_data_status",
         "training_model_status",
         "model_metrics",

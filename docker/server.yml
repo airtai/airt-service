@@ -7,9 +7,9 @@ services:
             - "8080:8080"
         volumes:
             - /etc/letsencrypt:/letsencrypt
-            - /home/azureuser/storage:/tf/storage
+            - /home/ubuntu/storage:/tf/storage
         environment:
             RUN_NGINX: "true"
             STORAGE_PATH: "/tf/storage"
         env_file:
-            - /home/azureuser/.env
+            - /home/ubuntu/.env
