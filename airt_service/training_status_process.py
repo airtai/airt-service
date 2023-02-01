@@ -6,6 +6,7 @@ __all__ = ['get_recent_event_for_user', 'get_count_from_training_data_ch_table',
 
 # %% ../notebooks/Training_Status_Process.ipynb 2
 import random
+import traceback
 from datetime import datetime, timedelta
 from os import environ
 from time import sleep
@@ -203,7 +204,8 @@ async def process_dataframes(
     """
     df = pd.merge(recent_events_df, ch_df, on="AccountId")
     xs = np.where(  # type: ignore
-        df["curr_check_on"] - df["created"] > pd.Timedelta(seconds=end_timedelta),
+        df["curr_check_on"].subtract(df["created"])
+        > pd.Timedelta(seconds=end_timedelta),
         "end",
         None,
     )
@@ -256,6 +258,8 @@ async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAP
             session.close()
             engine.dispose()
         except Exception as e:
-            logger.info(f"Error in process_training_status - {e}")
+            logger.info(
+                f"Error in process_training_status - {e}, {traceback.format_exc()}"
+            )
 
         await asyncio.sleep(random.randint(5, 20))  # nosec B311
