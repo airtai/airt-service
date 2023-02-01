@@ -12,7 +12,7 @@ then
 fi
 
 
-if [[ $CI_COMMIT_REF_NAME == "main" ]]; then TAG=latest ; else TAG=$CI_COMMIT_REF_NAME ; fi;
+if [[ $CI_COMMIT_REF_NAME == "main" ]]; then TAG=latest ; else TAG=dev ; fi;
 
 # this one is for the full report
 # --timeout is increased to 10m because scanning images consistently results in timeout failure
