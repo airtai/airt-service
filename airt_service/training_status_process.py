@@ -35,6 +35,7 @@ def _create(
     account_id: int,
     application_id: Optional[str] = None,
     model_id: str,
+    model_type: str,
     event: str,
     count: int,
     total: int,
@@ -48,6 +49,7 @@ def _create(
         account_id: account id
         application_id: Id of the application in case there is more than one for the AccountId
         model_id: User supplied ID of the model trained
+        model_type: Model type
         event: one of start, upload, end
         count: current count of rows in clickhouse db
         total: total no. of rows sent by user
@@ -61,6 +63,7 @@ def _create(
         account_id=account_id,
         application_id=application_id,
         model_id=model_id,
+        model_type=model_type,
         event=event,
         count=count,
         total=total,
@@ -177,6 +180,7 @@ async def process_recent_event(
             account_id=recent_event.account_id,
             application_id=recent_event.application_id,
             model_id=recent_event.model_id,
+            model_type=recent_event.model_type,
             event=to_update_event,
             count=curr_count,
             total=recent_event.total,

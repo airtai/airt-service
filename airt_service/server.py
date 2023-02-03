@@ -622,6 +622,7 @@ def create_ws_server(
                 account_id=msg.AccountId,
                 application_id=msg.ApplicationId,
                 model_id=msg.ModelId,
+                model_type=msg.model_type,
                 count=0,
                 total=msg.total_no_of_records,
                 user=user,
