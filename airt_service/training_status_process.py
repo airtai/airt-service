@@ -183,6 +183,9 @@ async def process_row(
 
     upload_event = await async_training_stream_status_create(  # type: ignore
         account_id=account_id,
+        application_id=row["application_id"],
+        model_id=row["model_id"],
+        model_type=row["model_type"],
         event=row["action"],
         count=row["curr_count"],
         total=row["total"],
@@ -191,6 +194,8 @@ async def process_row(
     )
     await fast_kafka_api_app.to_infobip_training_data_status(
         account_id=account_id,
+        application_id=row["application_id"],
+        model_id=row["model_id"],
         no_of_records=row["curr_count"],
         total_no_of_records=row["total"],
     )
