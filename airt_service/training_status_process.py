@@ -52,7 +52,6 @@ def _create(
     count: int,
     total: int,
     user: User,
-    session: Session
 ) -> TrainingStreamStatus:
     """
     Method to create event
@@ -71,6 +70,9 @@ def _create(
     Returns:
         created object of type TrainingStreamStatus
     """
+    engine = get_engine(**get_db_params_from_env_vars())  # type: ignore
+    session = Session(engine)
+
     training_event = TrainingStreamStatus(
         account_id=account_id,
         application_id=application_id,
@@ -79,26 +81,28 @@ def _create(
         event=event,
         count=count,
         total=total,
-        user=user,
+        user_id=user.id,
     )
     session.add(training_event)
     session.commit()
+    session.refresh(training_event)
+
+    session.close()
+    engine.dispose()
+
     return training_event
 
 # %% ../notebooks/Training_Status_Process.ipynb 9
-def get_recent_event_for_user(username: str, session: Session) -> pd.DataFrame:
+def get_recent_event_for_user(user: User) -> pd.DataFrame:
     """
     Get recent event for user
 
     Args:
-        username: username of user to get recent events
-        session: session object
+        user: user object to get recent events
 
     Returns:
         A list of recent events for given user
     """
-    user = session.exec(select(User).where(User.username == username)).one()
-
     conn_str = create_connection_string(**get_db_params_from_env_vars())  # type: ignore
     sqlalchemy_engine = sqlalchemy_create_engine(conn_str)
 
@@ -147,7 +151,7 @@ def get_count_from_training_data_ch_table(
     )
 
 # %% ../notebooks/Training_Status_Process.ipynb 13
-def get_user(username: str, session: Session) -> Optional[User]:
+def get_user(username: str) -> Optional[User]:
     """Get the user object for the given username
 
     Args:
@@ -156,14 +160,20 @@ def get_user(username: str, session: Session) -> Optional[User]:
     Returns:
         The user object if username is valid else None
     """
+    engine = get_engine(**get_db_params_from_env_vars())  # type: ignore
+    session = Session(engine)
 
-    return session.exec(select(User).where(User.username == username)).one()
+    user = session.exec(select(User).where(User.username == username)).one()
+
+    session.close()
+    engine.dispose()
+
+    return user
 
 # %% ../notebooks/Training_Status_Process.ipynb 15
 async def process_row(
     row: pd.Series,
     user: User,
-    session: Session,
     fast_kafka_api_app: FastKafkaAPI,
 ):
     """
@@ -172,7 +182,6 @@ async def process_row(
     Args:
         row: pandas row
         user: user object
-        session: session object
     """
     if not row["action"]:
         return
@@ -190,7 +199,6 @@ async def process_row(
         count=row["curr_count"],
         total=row["total"],
         user=user,
-        session=session,
     )
     await fast_kafka_api_app.to_infobip_training_data_status(
         account_id=account_id,
@@ -206,7 +214,6 @@ async def process_dataframes(
     ch_df: pd.DataFrame,
     *,
     user: User,
-    session: Session,
     end_timedelta: int = 30,
     fast_kafka_api_app: FastKafkaAPI,
 ):
@@ -217,7 +224,6 @@ async def process_dataframes(
         recent_events_df: recent events as pandas dataframe from mysql db
         ch_df: count from clickhouse table as dataframe
         user: user object
-        session: session object
         end_timedelta: timedelta in seconds to use to determine whether upload is over or not
     """
     df = pd.merge(recent_events_df, ch_df, on="AccountId")
@@ -235,9 +241,7 @@ async def process_dataframes(
 
     for account_id, row in df.iterrows():
 
-        await process_row(
-            row, user=user, session=session, fast_kafka_api_app=fast_kafka_api_app
-        )
+        await process_row(row, user=user, fast_kafka_api_app=fast_kafka_api_app)
 
 # %% ../notebooks/Training_Status_Process.ipynb 20
 async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAPI):
@@ -256,11 +260,8 @@ async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAP
     while True:
         #         logger.info(f"Starting the process loop")
         try:
-            engine = get_engine(**get_db_params_from_env_vars())  # type: ignore
-            session = Session(engine)
-
-            user = await async_get_user(username, session)
-            recent_events_df = await async_get_recent_event_for_user(username, session)
+            user = await async_get_user(username)
+            recent_events_df = await async_get_recent_event_for_user(user=user)
             if not recent_events_df.empty:
                 ch_df = await async_get_count_from_training_data_ch_table(
                     account_ids=recent_events_df.index.tolist()
@@ -269,12 +270,8 @@ async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAP
                     recent_events_df=recent_events_df,
                     ch_df=ch_df,
                     user=user,  # type: ignore
-                    session=session,
                     fast_kafka_api_app=fast_kafka_api_app,
                 )
-
-            session.close()
-            engine.dispose()
         except Exception as e:
             logger.info(
                 f"Error in process_training_status - {e}, {traceback.format_exc()}"
