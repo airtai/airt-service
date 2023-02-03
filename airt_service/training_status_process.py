@@ -33,6 +33,9 @@ def _create(
     cls: TrainingStreamStatus,
     *,
     account_id: int,
+    application_id: Optional[str] = None,
+    model_id: str,
+    model_type: str,
     event: str,
     count: int,
     total: int,
@@ -44,6 +47,9 @@ def _create(
 
     Args:
         account_id: account id
+        application_id: Id of the application in case there is more than one for the AccountId
+        model_id: User supplied ID of the model trained
+        model_type: Model type
         event: one of start, upload, end
         count: current count of rows in clickhouse db
         total: total no. of rows sent by user
@@ -54,7 +60,14 @@ def _create(
         created object of type TrainingStreamStatus
     """
     training_event = TrainingStreamStatus(
-        account_id=account_id, event=event, count=count, total=total, user=user
+        account_id=account_id,
+        application_id=application_id,
+        model_id=model_id,
+        model_type=model_type,
+        event=event,
+        count=count,
+        total=total,
+        user=user,
     )
     session.add(training_event)
     session.commit()
@@ -165,6 +178,9 @@ async def process_recent_event(
             return
         upload_event = await asyncify(TrainingStreamStatus._create)(  # type: ignore
             account_id=recent_event.account_id,
+            application_id=recent_event.application_id,
+            model_id=recent_event.model_id,
+            model_type=recent_event.model_type,
             event=to_update_event,
             count=curr_count,
             total=recent_event.total,
@@ -179,6 +195,8 @@ async def process_recent_event(
         #         )
         await fast_kafka_api_app.to_infobip_training_data_status(
             account_id=recent_event.account_id,
+            application_id=recent_event.application_id,
+            model_id=recent_event.model_id,
             no_of_records=curr_count,
             total_no_of_records=recent_event.total,
         )
