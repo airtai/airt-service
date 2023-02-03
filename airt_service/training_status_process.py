@@ -115,11 +115,17 @@ def get_recent_event_for_user(user: User) -> pd.DataFrame:
     events_for_user = (
         df.loc[df["user_id"] == user.id]
         .sort_values(["created", "id"], ascending=[False, False])
-        .groupby("account_id")
+        .groupby(
+            by=["account_id", "application_id", "model_id"],
+            as_index=False,
+            dropna=False,
+        )
         .first()
     )
-    events_for_user.index.names = ["AccountId"]
-    events_for_user.rename(columns={"count": "prev_count"}, inplace=True)
+    events_for_user.rename(
+        columns={"count": "prev_count", "account_id": "AccountId"}, inplace=True
+    )
+    events_for_user.set_index("AccountId", inplace=True)
 
     # Leave 'end' events
     return events_for_user.loc[events_for_user["event"] != "end"].sort_values(
@@ -151,14 +157,14 @@ def get_count_from_training_data_ch_table(
     )
 
 # %% ../notebooks/Training_Status_Process.ipynb 13
-def get_user(username: str) -> Optional[User]:
+def get_user(username: str) -> User:
     """Get the user object for the given username
 
     Args:
         username: Username as a string
 
     Returns:
-        The user object if username is valid else None
+        The user object
     """
     engine = get_engine(**get_db_params_from_env_vars())  # type: ignore
     session = Session(engine)
@@ -189,10 +195,11 @@ async def process_row(
     async_training_stream_status_create = asyncify(TrainingStreamStatus._create)
 
     account_id = row.name
+    application_id = None if np.isnan(row["application_id"]) else row["application_id"]
 
     upload_event = await async_training_stream_status_create(  # type: ignore
         account_id=account_id,
-        application_id=row["application_id"],
+        application_id=application_id,
         model_id=row["model_id"],
         model_type=row["model_type"],
         event=row["action"],
@@ -202,7 +209,7 @@ async def process_row(
     )
     await fast_kafka_api_app.to_infobip_training_data_status(
         account_id=account_id,
-        application_id=row["application_id"],
+        application_id=application_id,
         model_id=row["model_id"],
         no_of_records=row["curr_count"],
         total_no_of_records=row["total"],
