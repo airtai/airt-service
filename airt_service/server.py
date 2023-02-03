@@ -8,7 +8,6 @@ __all__ = ['description', 'ModelType', 'ModelTrainingRequest', 'EventData', 'Rea
 from pathlib import Path
 from typing import *
 
-# %% ../notebooks/API_Web_Service.ipynb 3
 import yaml
 from datetime import datetime
 from enum import Enum
@@ -41,10 +40,10 @@ from airt_service.training_status_process import (
 from .users import user_router
 from airt.logger import get_logger
 
-# %% ../notebooks/API_Web_Service.ipynb 5
+# %% ../notebooks/API_Web_Service.ipynb 4
 logger = get_logger(__name__)
 
-# %% ../notebooks/API_Web_Service.ipynb 6
+# %% ../notebooks/API_Web_Service.ipynb 5
 description = """
 # airt service to import, train and predict events data
 
@@ -247,7 +246,7 @@ curl -X 'POST' \
 
 """
 
-# %% ../notebooks/API_Web_Service.ipynb 7
+# %% ../notebooks/API_Web_Service.ipynb 6
 class ModelType(str, Enum):
     churn = "churn"
     propensity_to_buy = "propensity_to_buy"
@@ -258,12 +257,22 @@ class ModelTrainingRequest(BaseModel):
         ..., example=202020, description="ID of an account"
     )
     ApplicationId: Optional[str] = Field(
-        default=None, example="TestApplicationId", description="ID of application"
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+    model_type: ModelType = Field(
+        ..., description="Model type, only 'churn' is supported right now"
     )
     total_no_of_records: NonNegativeInt = Field(
         ...,
         example=1_000_000,
-        description="total number of records (rows) to be ingested",
+        description="approximate total number of records (rows) to be ingested",
     )
 
 
@@ -275,11 +284,17 @@ class EventData(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    Application: Optional[str] = Field(
-        None,
-        example="DriverApp",
-        description="Name of the application in case there is more than one for the AccountId",
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
     )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     DefinitionId: str = Field(
         ...,
         example="appLaunch",
@@ -301,19 +316,7 @@ class EventData(BaseModel):
     )
 
 
-class RealtimeData(BaseModel):
-    event_data: EventData = Field(
-        ...,
-        example=dict(
-            AccountId=202020,
-            Application="DriverApp",
-            DefinitionId="appLaunch",
-            OccurredTime="2021-03-28T00:34:08",
-            OccurredTimeTicks=1616891648496,
-            PersonId=12345678,
-        ),
-        description="realtime event data",
-    )
+class RealtimeData(EventData):
     make_prediction: bool = Field(
         ..., example=True, description="trigger prediction message in prediction topic"
     )
@@ -323,6 +326,17 @@ class TrainingDataStatus(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     no_of_records: NonNegativeInt = Field(
         ...,
         example=12_345,
@@ -339,6 +353,17 @@ class TrainingModelStatus(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     current_step: NonNegativeInt = Field(
         ...,
         example=0,
@@ -367,11 +392,17 @@ class ModelMetrics(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    Application: Optional[str] = Field(
-        None,
-        example="DriverApp",
-        description="Name of the application in case there is more than one for the AccountId",
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
     )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     timestamp: datetime = Field(
         ...,
         example="2021-03-28T00:34:08",
@@ -382,6 +413,7 @@ class ModelMetrics(BaseModel):
         example="churn",
         description="Name of the model used (churn, propensity to buy)",
     )
+
     auc: float = Field(
         ..., example=0.91, description="Area under ROC curve", ge=0.0, le=1.0
     )
@@ -397,11 +429,17 @@ class Prediction(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    Application: Optional[str] = Field(
-        None,
-        example="DriverApp",
-        description="Name of the application in case there is more than one for the AccountId",
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
     )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     PersonId: NonNegativeInt = Field(
         ..., example=12345678, description="ID of a person"
     )
@@ -423,11 +461,11 @@ class Prediction(BaseModel):
         le=1.0,
     )
 
-# %% ../notebooks/API_Web_Service.ipynb 8
+# %% ../notebooks/API_Web_Service.ipynb 7
 _total_no_of_records = 1000000
 _no_of_records_received = 0
 
-# %% ../notebooks/API_Web_Service.ipynb 9
+# %% ../notebooks/API_Web_Service.ipynb 8
 def create_ws_server(
     assets_path: Path = Path("./assets"),
     start_process_for_username: Optional[str] = "infobip",
@@ -547,15 +585,15 @@ def create_ws_server(
             "port": 9092,
         },
         "staging": {
-            "url": "kafka.staging.airt.ai",
-            "description": "staging kafka",
+            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
+            "description": "Staging Kafka broker",
             "port": 9092,
             "protocol": "kafka-secure",
             "security": {"type": "plain"},
         },
         "production": {
-            "url": "kafka.airt.ai",
-            "description": "production kafka",
+            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
+            "description": "Production Kafka broker",
             "port": 9092,
             "protocol": "kafka-secure",
             "security": {"type": "plain"},
@@ -584,6 +622,9 @@ def create_ws_server(
             start_event = TrainingStreamStatus(
                 event="start",
                 account_id=msg.AccountId,
+                application_id=msg.ApplicationId,
+                model_id=msg.ModelId,
+                model_type=msg.model_type,
                 count=0,
                 total=msg.total_no_of_records,
                 user=user,
@@ -615,6 +656,9 @@ def create_ws_server(
     @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_training_data_status")  # type: ignore
     async def to_infobip_training_data_status(
         account_id: int,
+        *,
+        application_id: Optional[str] = None,
+        model_id: str,
         no_of_records: int,
         total_no_of_records: int,
     ) -> TrainingDataStatus:
@@ -623,6 +667,8 @@ def create_ws_server(
         )
         msg = TrainingDataStatus(
             AccountId=account_id,
+            ApplicationId=application_id,
+            ModelId=model_id,
             no_of_records=no_of_records,
             total_no_of_records=total_no_of_records,
         )

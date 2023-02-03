@@ -246,6 +246,9 @@ class TrainingStreamStatus(SQLModel, table=True):
         default_factory=uuid_pkg.uuid4, index=True, nullable=False
     )
     account_id: int
+    application_id: Optional[str] = Field(default=None, nullable=True)
+    model_id: str
+    model_type: str
     event: TrainingEvent = Field(sa_column=Column(Enum(TrainingEvent)), nullable=False)
     count: int
     total: int
