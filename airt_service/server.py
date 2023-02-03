@@ -4,7 +4,7 @@
 __all__ = ['description', 'ModelType', 'ModelTrainingRequest', 'EventData', 'RealtimeData', 'TrainingDataStatus',
            'TrainingModelStatus', 'ModelMetrics', 'Prediction', 'create_ws_server']
 
-# %% ../notebooks/API_Web_Service.ipynb 4
+# %% ../notebooks/API_Web_Service.ipynb 2
 from pathlib import Path
 from typing import *
 
@@ -36,10 +36,10 @@ from .training_status_process import process_training_status
 from .users import user_router
 from airt.logger import get_logger
 
-# %% ../notebooks/API_Web_Service.ipynb 6
+# %% ../notebooks/API_Web_Service.ipynb 4
 logger = get_logger(__name__)
 
-# %% ../notebooks/API_Web_Service.ipynb 7
+# %% ../notebooks/API_Web_Service.ipynb 5
 description = """
 # airt service to import, train and predict events data
 
@@ -242,7 +242,7 @@ curl -X 'POST' \
 
 """
 
-# %% ../notebooks/API_Web_Service.ipynb 8
+# %% ../notebooks/API_Web_Service.ipynb 6
 class ModelType(str, Enum):
     churn = "churn"
     propensity_to_buy = "propensity_to_buy"
@@ -313,18 +313,6 @@ class EventData(BaseModel):
 
 
 class RealtimeData(EventData):
-    #     event_data: EventData = Field(
-    #         ...,
-    #         example=dict(
-    #             AccountId=202020,
-    #             Application="DriverApp",
-    #             DefinitionId="appLaunch",
-    #             OccurredTime="2021-03-28T00:34:08",
-    #             OccurredTimeTicks=1616891648496,
-    #             PersonId=12345678,
-    #         ),
-    #         description="realtime event data",
-    #     )
     make_prediction: bool = Field(
         ..., example=True, description="trigger prediction message in prediction topic"
     )
@@ -469,14 +457,14 @@ class Prediction(BaseModel):
         le=1.0,
     )
 
-# %% ../notebooks/API_Web_Service.ipynb 9
+# %% ../notebooks/API_Web_Service.ipynb 7
 _total_no_of_records = 1000000
 _no_of_records_received = 0
 
 
 _to_infobip_training_data_status = None
 
-# %% ../notebooks/API_Web_Service.ipynb 10
+# %% ../notebooks/API_Web_Service.ipynb 8
 def create_ws_server(
     assets_path: Path = Path("./assets"),
     start_process_for_username: Optional[str] = "infobip",
@@ -632,6 +620,8 @@ def create_ws_server(
             start_event = TrainingStreamStatus(
                 event="start",
                 account_id=msg.AccountId,
+                application_id=msg.ApplicationId,
+                model_id=msg.ModelId,
                 count=0,
                 total=msg.total_no_of_records,
                 user=user,
@@ -663,6 +653,9 @@ def create_ws_server(
     @fast_kafka_api_app.produces()  # type: ignore
     async def to_infobip_training_data_status(
         account_id: int,
+        *,
+        application_id: Optional[str] = None,
+        model_id: str,
         no_of_records: int,
         total_no_of_records: int,
     ) -> TrainingDataStatus:
@@ -671,6 +664,8 @@ def create_ws_server(
         )
         msg = TrainingDataStatus(
             AccountId=account_id,
+            ApplicationId=application_id,
+            ModelId=model_id,
             no_of_records=no_of_records,
             total_no_of_records=total_no_of_records,
         )
