@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
+      KAFKA_HOSTNAME: kafka
+      KAFKA_PORT: 9092
     steps:
       - uses: actions/checkout@v3
       - run: sudo apt update && sudo apt install -y default-libmysqlclient-dev python3-dev python3-pip
