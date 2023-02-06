@@ -5,20 +5,24 @@ __all__ = ['get_valid_sso_providers', 'SSOAuthURL', 'initiate_sso_flow', 'get_ss
 
 # %% ../notebooks/SSO.ipynb 2
 import os
-import requests
-from typing import *
 from datetime import datetime, timedelta
-
-from requests_oauthlib import OAuth2Session
-from pydantic import BaseModel
-from sqlalchemy.exc import NoResultFound
-from sqlmodel import select
-from fastapi import status, Request, HTTPException
+from typing import *
 
 import airt_service.sanitizer
-from .db.models import SSOProvider, SSO, SSOProtocol, User
-from .db.models import get_session_with_context
+import requests
+from airt_service.db.models import (
+    SSO,
+    SSOProtocol,
+    SSOProvider,
+    User,
+    get_session_with_context,
+)
 from .errors import ERRORS
+from fastapi import HTTPException, Request, status
+from pydantic import BaseModel
+from requests_oauthlib import OAuth2Session
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import select
 
 # %% ../notebooks/SSO.ipynb 4
 # Google APi discovery URL

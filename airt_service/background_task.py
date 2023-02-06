@@ -4,21 +4,18 @@
 __all__ = ['execute_cli']
 
 # %% ../notebooks/Background_Task.ipynb 3
+import asyncio
 import os
-import yaml
+import shlex
+import subprocess  # nosec B404
 from pathlib import Path
+from subprocess import Popen  # nosec B404
 from time import sleep
 from typing import *
 
-import shlex
-import subprocess  # nosec B404
-from subprocess import Popen  # nosec B404
-
-import asyncio
-
-
 import airt_service
 import airt_service.sanitizer
+import yaml
 from airt.logger import get_logger
 
 # %% ../notebooks/Background_Task.ipynb 5

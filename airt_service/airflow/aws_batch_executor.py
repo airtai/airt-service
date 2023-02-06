@@ -4,16 +4,13 @@
 __all__ = ['DEFAULT_EXEC_ENVIRONMENT', 'AirflowAWSBatchExecutor', 'test_aws_batch_executor']
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 2
-import tempfile
 import shlex
-import yaml
+import tempfile
 from pathlib import Path
 from typing import *
 
-from fastcore.script import call_parse, Param
-
-from ..sanitizer import sanitized_print
-from airt.executor.subcommand import CLICommandBase, ClassCLICommand
+import yaml
+from airt.executor.subcommand import ClassCLICommand, CLICommandBase
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
@@ -26,6 +23,8 @@ from airt_service.aws.batch_utils import (
 from ..aws.utils import get_batch_environment_arns, get_queue_definition_arns
 from ..batch_job import get_environment_vars_for_batch_job
 from ..helpers import generate_random_string
+from ..sanitizer import sanitized_print
+from fastcore.script import Param, call_parse
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 5
 logger = get_logger(__name__)
@@ -213,7 +212,7 @@ def execute(
     tags: Union[str, List[str]],
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[Path, str]:
     """Create DAG and execute steps in airflow
 
@@ -233,7 +232,7 @@ def execute(
         tags=tags,
         on_step_start=on_step_start,
         on_step_end=on_step_end,
-        **kwargs
+        **kwargs,
     )
 
     run_id = trigger_dag(dag_id=dag_id, conf={})

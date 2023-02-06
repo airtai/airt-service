@@ -4,11 +4,11 @@
 __all__ = ['HTTPError']
 
 # %% ../notebooks/Errors.ipynb 3
-import yaml
-from typing import *
 from pathlib import Path
+from typing import *
 
 import airt_service.sanitizer
+import yaml
 from pydantic import BaseModel
 
 # %% ../notebooks/Errors.ipynb 5

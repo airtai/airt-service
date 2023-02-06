@@ -11,21 +11,20 @@ __all__ = ['get_random_string', 'get_instance_info', 'get_availability_zones_and
 import random
 import shlex
 import string
-import yaml
-from contextlib import contextmanager, ContextDecorator
+from contextlib import ContextDecorator, contextmanager
 from os import environ
 from pathlib import Path
 from time import sleep
 from typing import *
 
 import boto3
-from fastcore.script import call_parse, Param
-from fastcore.utils import patch
-
-from airt_service.sanitizer import sanitized_print
+import yaml
 from airt.helpers import ensure
 from airt.logger import get_logger
 from airt_service.aws.utils import get_available_aws_regions
+from airt_service.sanitizer import sanitized_print
+from fastcore.script import Param, call_parse
+from fastcore.utils import patch
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 5
 logger = get_logger(__name__)

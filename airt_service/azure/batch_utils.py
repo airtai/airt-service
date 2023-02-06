@@ -9,19 +9,18 @@ import logging
 import os
 import random
 import string
-from contextlib import contextmanager, ContextDecorator
+from contextlib import ContextDecorator, contextmanager
 from time import sleep
 from typing import *
 
+import airt_service.sanitizer
 import azure.batch.models as batchmodels
+from airt.logger import get_logger
 from azure.batch import BatchServiceClient
 from azure.batch.batch_auth import SharedKeyCredentials
 from azure.batch.models import BatchErrorException
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.batch import BatchManagementClient
-
-import airt_service.sanitizer
-from airt.logger import get_logger
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 5
 logger = get_logger(__name__)

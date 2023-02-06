@@ -6,15 +6,9 @@ __all__ = ['model_train_router', 'get_model_responses', 'TrainRequest', 'train_m
 
 # %% ../../notebooks/Model_Train.ipynb 3
 import shutil
+import uuid
 from datetime import timedelta
 from typing import *
-import uuid
-
-from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
-from fastcore.script import call_parse, Param
-from pydantic import BaseModel
-from sqlalchemy.exc import NoResultFound
-from sqlmodel import Session, select
 
 import airt_service.sanitizer
 from airt.logger import get_logger
@@ -26,18 +20,23 @@ from ..batch_job import create_batch_job
 from ..constants import METADATA_FOLDER_PATH
 from ..data.datasource import get_datasource_responses
 from airt_service.db.models import (
-    get_session,
-    get_session_with_context,
-    User,
     DataSource,
     DataSourceSelect,
     Model,
     ModelRead,
     Prediction,
     PredictionRead,
+    User,
+    get_session,
+    get_session_with_context,
 )
-from ..errors import HTTPError, ERRORS
+from ..errors import ERRORS, HTTPError
 from ..helpers import truncate
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+from fastcore.script import Param, call_parse
+from pydantic import BaseModel
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session, select
 
 # %% ../../notebooks/Model_Train.ipynb 5
 logger = get_logger(__name__)

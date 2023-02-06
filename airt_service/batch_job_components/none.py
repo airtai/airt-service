@@ -8,7 +8,6 @@ from typing import *
 
 import airt_service.sanitizer
 from airt.logger import get_logger
-
 from .base import BatchJobContext
 
 # %% ../../notebooks/None_Batch_Job_Context.ipynb 5

@@ -14,18 +14,9 @@ from datetime import datetime
 from typing import *
 from urllib.parse import unquote_plus as urlunquote
 
-import dask.dataframe as dd
-from mypy_boto3_s3.service_resource import Bucket
-
 import airt_service.sanitizer
+import dask.dataframe as dd
 from airt.logger import get_logger
-from airt_service.db.models import (
-    create_connection_string,
-    DataSource,
-    DataBlob,
-    Model,
-    Prediction,
-)
 from airt_service.aws.utils import (
     create_s3_datablob_path,
     create_s3_datasource_path,
@@ -38,6 +29,14 @@ from airt_service.azure.utils import (
     get_azure_blob_storage_container,
 )
 from ..constants import METADATA_FOLDER_PATH
+from airt_service.db.models import (
+    DataBlob,
+    DataSource,
+    Model,
+    Prediction,
+    create_connection_string,
+)
+from mypy_boto3_s3.service_resource import Bucket
 
 # %% ../../notebooks/Data_Utils.ipynb 6
 logger = get_logger(__name__)

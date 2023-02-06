@@ -4,6 +4,8 @@ SRC = $(wildcard notebooks/*.ipynb)
 all: clean dist install .install_pre_commit_hooks alembic_migrate webservice.py site
 
 airt_service: $(SRC)
+	nbqa isort notebooks/*.ipynb
+	nbqa black notebooks/*.ipynb
 	nbdev_export
 	touch airt_service
 

@@ -5,6 +5,7 @@ __all__ = ['get_recent_event_for_user', 'get_count_from_training_data_ch_table',
            'process_training_status']
 
 # %% ../notebooks/Training_Status_Process.ipynb 2
+import asyncio
 import random
 import traceback
 from datetime import datetime, timedelta
@@ -12,29 +13,27 @@ from os import environ
 from time import sleep
 from typing import *
 
-import asyncio
+import airt_service
 import numpy as np
 import pandas as pd
-from asyncer import asyncify, create_task_group
-from fastapi import FastAPI
-from fast_kafka_api.application import FastKafkaAPI
-from sqlalchemy.exc import NoResultFound
-from sqlalchemy import create_engine as sqlalchemy_create_engine
-from sqlmodel import Session, select, func
-
-import airt_service
-from .users import User
+from airt.logger import get_logger
+from airt.patching import patch
 from .data.clickhouse import get_count_for_account_ids
 from airt_service.db.models import (
+    TrainingStreamStatus,
+    User,
     create_connection_string,
     get_db_params_from_env_vars,
     get_engine,
     get_session_with_context,
-    User,
-    TrainingStreamStatus,
 )
-from airt.logger import get_logger
-from airt.patching import patch
+from .users import User
+from asyncer import asyncify, create_task_group
+from fast_kafka_api.application import FastKafkaAPI
+from fastapi import FastAPI
+from sqlalchemy import create_engine as sqlalchemy_create_engine
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session, func, select
 
 # %% ../notebooks/Training_Status_Process.ipynb 5
 logger = get_logger(__name__)

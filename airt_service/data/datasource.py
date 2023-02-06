@@ -8,33 +8,32 @@ __all__ = ['datasource_router', 'get_details_of_datasource', 'delete_datasource'
 from pathlib import Path
 from typing import *
 
+import airt_service.sanitizer
 import dask.dataframe as dd
 import pandas as pd
-from checksumdir import dirhash
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.exc import NoResultFound
-from sqlmodel import Session, select
-
-import airt_service.sanitizer
 from airt.logger import get_logger
-from airt.remote_path import RemotePath
 from airt.patching import patch
+from airt.remote_path import RemotePath
 
 # import airt_service
 from ..auth import get_current_active_user
+from ..constants import DS_HEAD_FILE_NAME, METADATA_FOLDER_PATH
 from .utils import delete_data_object_files_in_cloud
 from airt_service.db.models import (
-    get_session,
     DataBlob,
     DataSource,
     DataSourceRead,
     Tag,
     TagCreate,
     User,
+    get_session,
 )
-from ..errors import HTTPError, ERRORS
+from ..errors import ERRORS, HTTPError
 from ..helpers import commit_or_rollback, df_to_dict
-from ..constants import METADATA_FOLDER_PATH, DS_HEAD_FILE_NAME
+from checksumdir import dirhash
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session, select
 
 # %% ../../notebooks/DataSource_Router.ipynb 6
 logger = get_logger(__name__)
@@ -369,7 +368,7 @@ def _create(
     datablob: DataBlob,
     total_steps: int = 1,
     user: User,
-    session: Session
+    session: Session,
 ) -> DataSource:
     """Create new datasource based on given params
 

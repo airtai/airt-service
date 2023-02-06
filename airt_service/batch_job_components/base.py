@@ -4,8 +4,8 @@
 __all__ = ['BatchJobContext']
 
 # %% ../../notebooks/Base_Batch_Job_Context.ipynb 3
-from typing import *
 from os import environ
+from typing import *
 
 import airt_service.sanitizer
 from airt.logger import get_logger

@@ -6,25 +6,17 @@ __all__ = ['cleanup_predictions', 'cleanup_models', 'cleanup_datasources', 'clea
 # %% ../notebooks/Cleanup.ipynb 3
 from typing import *
 
-from sqlmodel import Session, select
-
 import airt_service.sanitizer
 from airt.logger import get_logger
 from .auth import delete_apikey
-from .confluent import delete_topics_for_user
-from .data.datasource import delete_datasource
-from .data.datablob import delete_datablob
-from airt_service.db.models import (
-    User,
-    Prediction,
-    Model,
-    DataSource,
-    DataBlob,
-    APIKey,
-)
 from .aws.utils import get_s3_storage_bucket
+from .confluent import delete_topics_for_user
+from .data.datablob import delete_datablob
+from .data.datasource import delete_datasource
+from .db.models import APIKey, DataBlob, DataSource, Model, Prediction, User
 from .model.prediction import delete_prediction
 from .model.train import delete_model
+from sqlmodel import Session, select
 
 # %% ../notebooks/Cleanup.ipynb 5
 logger = get_logger(__name__)

@@ -18,14 +18,13 @@ from typing import *
 import httpx
 import pandas as pd
 import pyotp
+from airt.remote_path import RemotePath
+from .aws.utils import upload_to_s3_with_retry
+from .sanitizer import sanitized_print
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.storage import StorageManagementClient
-from fastcore.script import call_parse, Param
+from fastcore.script import Param, call_parse
 from sqlmodel import select
-
-from .sanitizer import sanitized_print
-from .aws.utils import upload_to_s3_with_retry
-from airt.remote_path import RemotePath
 
 # %% ../notebooks/Integration_Test.ipynb 5
 def integration_scenario_docs(base_url: str = "http://0.0.0.0:6006"):
