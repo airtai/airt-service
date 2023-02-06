@@ -28,7 +28,7 @@ def run_uvicorn(arg: Union[Config, FastAPI]):
     p = multiprocessing.Process(target=run)
     try:
         p.start()
-        sleep(5)
+        sleep(15)
         yield
     finally:
         p.terminate()
