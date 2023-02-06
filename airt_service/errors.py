@@ -7,9 +7,10 @@ __all__ = ['HTTPError']
 from pathlib import Path
 from typing import *
 
-import airt_service.sanitizer
 import yaml
 from pydantic import BaseModel
+
+import airt_service.sanitizer
 
 # %% ../notebooks/Errors.ipynb 5
 class HTTPError(BaseModel):

@@ -13,10 +13,11 @@ from subprocess import Popen  # nosec B404
 from time import sleep
 from typing import *
 
-import airt_service
-import airt_service.sanitizer
 import yaml
 from airt.logger import get_logger
+
+import airt_service
+import airt_service.sanitizer
 
 # %% ../notebooks/Background_Task.ipynb 5
 logger = get_logger(__name__)

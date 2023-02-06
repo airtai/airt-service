@@ -7,10 +7,11 @@ __all__ = ['AzureBatchJobContext']
 from os import environ
 from typing import *
 
-import airt_service
-import airt_service.sanitizer
 import azure.batch.models as batchmodels
 from airt.logger import get_logger
+
+import airt_service
+import airt_service.sanitizer
 from ..azure.batch_utils import azure_batch_create_job
 from ..azure.utils import get_batch_account_pool_job_names
 from .base import BatchJobContext

@@ -21,10 +21,11 @@ import boto3
 import yaml
 from airt.helpers import ensure
 from airt.logger import get_logger
-from airt_service.aws.utils import get_available_aws_regions
-from airt_service.sanitizer import sanitized_print
 from fastcore.script import Param, call_parse
 from fastcore.utils import patch
+
+from airt_service.aws.utils import get_available_aws_regions
+from airt_service.sanitizer import sanitized_print
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 5
 logger = get_logger(__name__)

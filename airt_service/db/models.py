@@ -26,10 +26,6 @@ from urllib.parse import quote_plus as urlquote
 import sqlalchemy
 from airt.logger import get_logger
 from airt.patching import patch
-from ..helpers import get_password_hash
-
-# from airt_service.data.tag import Tag
-from ..sanitizer import sanitized_print
 from fastapi import BackgroundTasks
 from pydantic import EmailStr, validator
 from sqlalchemy.engine.interfaces import Dialect
@@ -48,6 +44,11 @@ from sqlmodel import (
     select,
 )
 from sqlmodel.sql.sqltypes import GUID
+
+from ..helpers import get_password_hash
+
+# from airt_service.data.tag import Tag
+from ..sanitizer import sanitized_print
 
 # %% ../../notebooks/DB_Models.ipynb 4
 logger = get_logger(__name__)

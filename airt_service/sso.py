@@ -8,8 +8,14 @@ import os
 from datetime import datetime, timedelta
 from typing import *
 
-import airt_service.sanitizer
 import requests
+from fastapi import HTTPException, Request, status
+from pydantic import BaseModel
+from requests_oauthlib import OAuth2Session
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import select
+
+import airt_service.sanitizer
 from airt_service.db.models import (
     SSO,
     SSOProtocol,
@@ -18,11 +24,6 @@ from airt_service.db.models import (
     get_session_with_context,
 )
 from .errors import ERRORS
-from fastapi import HTTPException, Request, status
-from pydantic import BaseModel
-from requests_oauthlib import OAuth2Session
-from sqlalchemy.exc import NoResultFound
-from sqlmodel import select
 
 # %% ../notebooks/SSO.ipynb 4
 # Google APi discovery URL

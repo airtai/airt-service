@@ -14,10 +14,15 @@ import re
 import uuid
 from typing import *
 
-import airt_service
-import airt_service.sanitizer
 from airt.logger import get_logger
 from airt.patching import patch
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, EmailStr, validator
+from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlmodel import Session, select
+
+import airt_service
+import airt_service.sanitizer
 from .auth import get_current_active_user, get_user, get_valid_user
 from .cleanup import cleanup_user
 from .confluent import create_topics_for_user
@@ -48,10 +53,6 @@ from airt_service.totp import (
     require_otp_if_mfa_enabled,
     validate_totp,
 )
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, EmailStr, validator
-from sqlalchemy.exc import IntegrityError, NoResultFound
-from sqlmodel import Session, select
 
 # %% ../notebooks/Users.ipynb 5
 logger = get_logger(__name__)

@@ -8,12 +8,17 @@ __all__ = ['datasource_router', 'get_details_of_datasource', 'delete_datasource'
 from pathlib import Path
 from typing import *
 
-import airt_service.sanitizer
 import dask.dataframe as dd
 import pandas as pd
 from airt.logger import get_logger
 from airt.patching import patch
 from airt.remote_path import RemotePath
+from checksumdir import dirhash
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session, select
+
+import airt_service.sanitizer
 
 # import airt_service
 from ..auth import get_current_active_user
@@ -30,10 +35,6 @@ from airt_service.db.models import (
 )
 from ..errors import ERRORS, HTTPError
 from ..helpers import commit_or_rollback, df_to_dict
-from checksumdir import dirhash
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.exc import NoResultFound
-from sqlmodel import Session, select
 
 # %% ../../notebooks/DataSource_Router.ipynb 6
 logger = get_logger(__name__)

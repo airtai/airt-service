@@ -7,13 +7,14 @@ __all__ = ['generate_mfa_secret', 'generate_mfa_provisioning_url', 'validate_tot
 import functools
 from typing import *
 
-import airt_service.sanitizer
 import pyotp
 from airt.logger import get_logger
+from fastapi import HTTPException, status
+
+import airt_service.sanitizer
 from .constants import MFA_ISSUER_NAME
 from .errors import ERRORS
 from .helpers import get_attr_by_name
-from fastapi import HTTPException, status
 
 # %% ../notebooks/TOTP.ipynb 5
 logger = get_logger(__name__)

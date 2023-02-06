@@ -12,6 +12,7 @@ from airt.executor.subcommand import CLICommandBase, ModelExecutor
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
+
 from .utils import create_dag
 from ..sanitizer import sanitized_print
 

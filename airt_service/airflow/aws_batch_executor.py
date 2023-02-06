@@ -14,6 +14,8 @@ from airt.executor.subcommand import ClassCLICommand, CLICommandBase
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
+from fastcore.script import Param, call_parse
+
 from .base_executor import BaseAirflowExecutor, dag_template
 from .utils import trigger_dag, wait_for_run_to_complete
 from airt_service.aws.batch_utils import (
@@ -24,7 +26,6 @@ from ..aws.utils import get_batch_environment_arns, get_queue_definition_arns
 from ..batch_job import get_environment_vars_for_batch_job
 from ..helpers import generate_random_string
 from ..sanitizer import sanitized_print
-from fastcore.script import Param, call_parse
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 5
 logger = get_logger(__name__)

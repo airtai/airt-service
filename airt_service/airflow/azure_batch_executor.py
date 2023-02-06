@@ -15,6 +15,9 @@ from airt.executor.subcommand import ClassCLICommand, CLICommandBase
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
+from azure.batch.batch_auth import SharedKeyCredentials
+from fastcore.script import Param, call_parse
+
 from .base_executor import BaseAirflowExecutor, dag_template
 from .utils import trigger_dag, wait_for_run_to_complete
 from airt_service.azure.batch_utils import (
@@ -30,8 +33,6 @@ from airt_service.azure.utils import (
 from ..batch_job import get_environment_vars_for_batch_job
 from ..helpers import generate_random_string
 from ..sanitizer import sanitized_print
-from azure.batch.batch_auth import SharedKeyCredentials
-from fastcore.script import Param, call_parse
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 5
 logger = get_logger(__name__)

@@ -10,9 +10,15 @@ import uuid
 from datetime import timedelta
 from typing import *
 
-import airt_service.sanitizer
 from airt.logger import get_logger
 from airt.remote_path import RemotePath
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+from fastcore.script import Param, call_parse
+from pydantic import BaseModel
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session, select
+
+import airt_service.sanitizer
 from ..auth import get_current_active_user
 from ..aws.utils import create_s3_prediction_path
 from ..azure.utils import create_azure_blob_storage_prediction_path
@@ -32,11 +38,6 @@ from airt_service.db.models import (
 )
 from ..errors import ERRORS, HTTPError
 from ..helpers import truncate
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
-from fastcore.script import Param, call_parse
-from pydantic import BaseModel
-from sqlalchemy.exc import NoResultFound
-from sqlmodel import Session, select
 
 # %% ../../notebooks/Model_Train.ipynb 5
 logger = get_logger(__name__)

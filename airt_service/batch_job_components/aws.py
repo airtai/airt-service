@@ -6,9 +6,10 @@ __all__ = ['AwsBatchJobContext']
 # %% ../../notebooks/AWS_Batch_Job_Context.ipynb 3
 from typing import *
 
+from airt.logger import get_logger
+
 import airt_service
 import airt_service.sanitizer
-from airt.logger import get_logger
 from ..aws.batch_utils import aws_batch_create_job
 from ..aws.utils import get_queue_definition_arns
 from .base import BatchJobContext

@@ -11,10 +11,20 @@ from os import environ
 from pathlib import Path
 from typing import *
 
-import airt_service
 import yaml
 from aiokafka.helpers import create_ssl_context
 from airt.logger import get_logger
+from asyncer import asyncify
+from fast_kafka_api.application import FastKafkaAPI
+from fastapi import FastAPI, Request
+from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, NonNegativeInt, validator
+from sqlmodel import select
+
+import airt_service
 from .auth import auth_router
 from .confluent import aio_kafka_config
 from .data.datablob import datablob_router
@@ -28,15 +38,6 @@ from airt_service.training_status_process import (
     process_training_status,
 )
 from .users import user_router
-from asyncer import asyncify
-from fast_kafka_api.application import FastKafkaAPI
-from fastapi import FastAPI, Request
-from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
-from fastapi.openapi.utils import get_openapi
-from fastapi.responses import FileResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, EmailStr, Field, HttpUrl, NonNegativeInt, validator
-from sqlmodel import select
 
 # %% ../notebooks/API_Web_Service.ipynb 4
 logger = get_logger(__name__)

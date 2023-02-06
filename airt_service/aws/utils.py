@@ -15,10 +15,11 @@ import requests
 import yaml
 from airt.helpers import get_s3_bucket_name_and_folder_from_uri
 from airt.logger import get_logger
-from ..sanitizer import sanitized_print
 from botocore.client import Config
 from fastapi import HTTPException, status
 from mypy_boto3_s3.service_resource import Bucket
+
+from ..sanitizer import sanitized_print
 
 # %% ../../notebooks/AWS_Utils.ipynb 6
 logger = get_logger(__name__)

@@ -6,8 +6,9 @@ __all__ = ['FastAPIBatchJobContext']
 # %% ../../notebooks/FastAPI_Batch_Job_Context.ipynb 3
 from typing import *
 
-import airt_service.sanitizer
 from airt.logger import get_logger
+
+import airt_service.sanitizer
 from ..background_task import execute_cli
 from .base import BatchJobContext
 

@@ -12,7 +12,6 @@ import os
 from pathlib import Path
 from typing import *
 
-import airt_service.sanitizer
 import yaml
 from airt.helpers import get_s3_bucket_name_and_folder_from_uri
 from airt.logger import get_logger
@@ -22,6 +21,8 @@ from azure.mgmt.storage import StorageManagementClient
 from azure.storage.blob import BlobServiceClient
 from azure.storage.blob._container_client import ContainerClient
 from fastapi import HTTPException, status
+
+import airt_service.sanitizer
 
 # %% ../../notebooks/Azure_Utils.ipynb 6
 logger = get_logger(__name__)

@@ -16,9 +16,18 @@ from os import environ
 from typing import *
 from urllib.parse import parse_qs, urlparse
 
-import airt_service.sanitizer
 from airt.logger import get_logger
 from airt.patching import patch
+
+# from fastcore.foundation import patch
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from pydantic import BaseModel
+from sqlalchemy.exc import MultipleResultsFound, NoResultFound
+from sqlmodel import Session, select
+
+import airt_service.sanitizer
 from airt_service.db.models import (
     SSO,
     APIKey,
@@ -42,14 +51,6 @@ from airt_service.sso import (
     validate_sso_response,
 )
 from .totp import require_otp_if_mfa_enabled, validate_totp
-
-# from fastcore.foundation import patch
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
-from pydantic import BaseModel
-from sqlalchemy.exc import MultipleResultsFound, NoResultFound
-from sqlmodel import Session, select
 
 # %% ../notebooks/Auth.ipynb 5
 logger = get_logger(__name__)

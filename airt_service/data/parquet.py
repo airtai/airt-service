@@ -7,10 +7,14 @@ __all__ = ['process_parquet']
 import json
 from typing import *
 
-import airt_service.sanitizer
 from airt.data.importers import import_parquet
 from airt.logger import get_logger
 from airt.remote_path import RemotePath
+from fastcore.script import Param, call_parse
+from fastcore.utils import *
+from sqlmodel import select
+
+import airt_service.sanitizer
 from ..aws.utils import create_s3_datasource_path
 from ..azure.utils import create_azure_blob_storage_datasource_path
 from .datasource import DataSource
@@ -21,9 +25,6 @@ from airt_service.data.utils import (
 )
 from ..db.models import DataBlob, get_session_with_context
 from ..helpers import truncate
-from fastcore.script import Param, call_parse
-from fastcore.utils import *
-from sqlmodel import select
 
 # %% ../../notebooks/DataSource_Parquet.ipynb 6
 logger = get_logger(__name__)

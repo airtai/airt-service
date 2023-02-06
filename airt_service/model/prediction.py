@@ -10,11 +10,16 @@ __all__ = ['model_prediction_router', 'get_details_of_prediction', 'delete_predi
 from pathlib import Path
 from typing import *
 
-import airt_service.sanitizer
 import boto3
 import pandas as pd
 from airt.logger import get_logger
 from airt.patching import patch
+from botocore.client import Config
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session, select
+
+import airt_service.sanitizer
 from ..auth import get_current_active_user
 from ..aws.utils import get_s3_bucket_and_path_from_uri
 from ..batch_job import create_batch_job
@@ -42,10 +47,6 @@ from airt_service.db.models import (
 )
 from ..errors import ERRORS, HTTPError
 from ..helpers import commit_or_rollback
-from botocore.client import Config
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
-from sqlalchemy.exc import NoResultFound
-from sqlmodel import Session, select
 
 # %% ../../notebooks/Model_Prediction.ipynb 5
 logger = get_logger(__name__)

@@ -13,11 +13,18 @@ from os import environ
 from time import sleep
 from typing import *
 
-import airt_service
 import numpy as np
 import pandas as pd
 from airt.logger import get_logger
 from airt.patching import patch
+from asyncer import asyncify, create_task_group
+from fast_kafka_api.application import FastKafkaAPI
+from fastapi import FastAPI
+from sqlalchemy import create_engine as sqlalchemy_create_engine
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session, func, select
+
+import airt_service
 from .data.clickhouse import get_count_for_account_ids
 from airt_service.db.models import (
     TrainingStreamStatus,
@@ -28,12 +35,6 @@ from airt_service.db.models import (
     get_session_with_context,
 )
 from .users import User
-from asyncer import asyncify, create_task_group
-from fast_kafka_api.application import FastKafkaAPI
-from fastapi import FastAPI
-from sqlalchemy import create_engine as sqlalchemy_create_engine
-from sqlalchemy.exc import NoResultFound
-from sqlmodel import Session, func, select
 
 # %% ../notebooks/Training_Status_Process.ipynb 5
 logger = get_logger(__name__)
