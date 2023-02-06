@@ -14,44 +14,46 @@ import re
 import uuid
 from typing import *
 
-from airt.logger import get_logger
-from airt.patching import patch
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from pydantic import BaseModel, EmailStr, validator
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlmodel import Session, select
 
+from airt.logger import get_logger
+from airt.patching import patch
+
 import airt_service
 import airt_service.sanitizer
-from .auth import get_current_active_user, get_user, get_valid_user
+from .auth import get_current_active_user, get_valid_user, get_user
 from .cleanup import cleanup_user
 from .confluent import create_topics_for_user
 from airt_service.db.models import (
-    SMS,
-    SSO,
-    SMSProtocol,
-    SSOBase,
-    SSOProvider,
-    SSORead,
+    get_session,
     User,
     UserCreate,
     UserRead,
-    get_session,
+    SSORead,
+    SSO,
+    SSOBase,
+    SSOProvider,
+    SMS,
+    SMSProtocol,
 )
-from .errors import ERRORS, HTTPError
-from .helpers import commit_or_rollback, get_attr_by_name, get_password_hash
-from airt_service.sms_utils import (
-    get_app_and_message_id,
-    get_application_and_message_config,
-    send_sms,
-    validate_otp,
-    verify_pin,
-)
+from .errors import HTTPError, ERRORS
+from .helpers import commit_or_rollback, get_password_hash, get_attr_by_name
 from airt_service.totp import (
     generate_mfa_provisioning_url,
     generate_mfa_secret,
-    require_otp_if_mfa_enabled,
     validate_totp,
+    require_otp_if_mfa_enabled,
+)
+from airt_service.sms_utils import (
+    get_app_and_message_id,
+    send_sms,
+    verify_pin,
+    get_application_and_message_config,
+    validate_otp,
 )
 
 # %% ../notebooks/Users.ipynb 5

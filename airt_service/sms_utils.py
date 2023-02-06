@@ -4,21 +4,22 @@
 __all__ = ['get_application_and_message_config', 'get_app_and_message_id', 'send_sms', 'verify_pin']
 
 # %% ../notebooks/SMS_Utils.ipynb 3
+from typing import *
+import requests
 import json
 import os
 from time import sleep
-from typing import *
 
 import numpy as np
-import requests
-from airt.logger import get_logger
-from fastapi import HTTPException, status
+from fastapi import status, HTTPException
 from sqlmodel import Session, select
+
+from airt.logger import get_logger
 
 import airt_service
 import airt_service.sanitizer
-from .db.models import SMS, SMSProtocol, User
 from .errors import ERRORS
+from .db.models import SMS, SMSProtocol, User
 from .helpers import commit_or_rollback
 
 # %% ../notebooks/SMS_Utils.ipynb 5

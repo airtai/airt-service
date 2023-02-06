@@ -7,24 +7,24 @@ __all__ = ['process_csv']
 import json
 from typing import *
 
-from airt.data.importers import import_csv
-from airt.logger import get_logger
-from airt.remote_path import RemotePath
-from fastcore.script import Param, call_parse
+from fastcore.script import call_parse, Param
 from fastcore.utils import *
 from sqlmodel import select
 
 import airt_service.sanitizer
+from airt.data.importers import import_csv
+from airt.logger import get_logger
+from airt.remote_path import RemotePath
 from ..aws.utils import create_s3_datasource_path
 from ..azure.utils import create_azure_blob_storage_datasource_path
-from .datasource import DataSource
+from ..helpers import truncate
 from airt_service.data.utils import (
     calculate_azure_data_object_folder_size_and_path,
     calculate_data_object_folder_size_and_path,
     calculate_data_object_pulled_on,
 )
-from ..db.models import DataBlob, get_session_with_context
-from ..helpers import truncate
+from ..db.models import get_session_with_context, DataBlob
+from .datasource import DataSource
 
 # %% ../../notebooks/DataSource_CSV.ipynb 6
 logger = get_logger(__name__)

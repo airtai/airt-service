@@ -5,18 +5,18 @@ __all__ = ['list_dags', 'list_dag_runs', 'create_dag', 'create_testing_dag_ctx',
            'trigger_dag', 'wait_for_run_to_complete']
 
 # %% ../../notebooks/Airflow_Utils.ipynb 2
-import json
-import os
-import shlex
 import subprocess  # nosec B404
-import tempfile
-from contextlib import contextmanager
+import shlex
+from typing import *
+import pandas as pd
+import os
+import json
+
 from datetime import datetime, timedelta
 from pathlib import Path
+from contextlib import contextmanager
+import tempfile
 from time import sleep
-from typing import *
-
-import pandas as pd
 
 from ..sanitizer import sanitized_print
 

@@ -10,31 +10,31 @@ from typing import *
 
 import dask.dataframe as dd
 import pandas as pd
-from airt.logger import get_logger
-from airt.patching import patch
-from airt.remote_path import RemotePath
 from checksumdir import dirhash
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import Session, select
 
 import airt_service.sanitizer
+from airt.logger import get_logger
+from airt.remote_path import RemotePath
+from airt.patching import patch
 
 # import airt_service
 from ..auth import get_current_active_user
-from ..constants import DS_HEAD_FILE_NAME, METADATA_FOLDER_PATH
 from .utils import delete_data_object_files_in_cloud
 from airt_service.db.models import (
+    get_session,
     DataBlob,
     DataSource,
     DataSourceRead,
     Tag,
     TagCreate,
     User,
-    get_session,
 )
-from ..errors import ERRORS, HTTPError
+from ..errors import HTTPError, ERRORS
 from ..helpers import commit_or_rollback, df_to_dict
+from ..constants import METADATA_FOLDER_PATH, DS_HEAD_FILE_NAME
 
 # %% ../../notebooks/DataSource_Router.ipynb 6
 logger = get_logger(__name__)
@@ -369,7 +369,7 @@ def _create(
     datablob: DataBlob,
     total_steps: int = 1,
     user: User,
-    session: Session,
+    session: Session
 ) -> DataSource:
     """Create new datasource based on given params
 

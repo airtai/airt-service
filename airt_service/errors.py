@@ -4,13 +4,12 @@
 __all__ = ['HTTPError']
 
 # %% ../notebooks/Errors.ipynb 3
-from pathlib import Path
-from typing import *
-
 import yaml
-from pydantic import BaseModel
+from typing import *
+from pathlib import Path
 
 import airt_service.sanitizer
+from pydantic import BaseModel
 
 # %% ../notebooks/Errors.ipynb 5
 class HTTPError(BaseModel):

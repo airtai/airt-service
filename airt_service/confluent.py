@@ -10,8 +10,9 @@ from pathlib import Path
 from typing import *
 
 from aiokafka.helpers import create_ssl_context
-from airt.logger import get_logger
 from confluent_kafka.admin import AdminClient, NewTopic
+
+from airt.logger import get_logger
 
 # %% ../notebooks/Confluent.ipynb 5
 logger = get_logger(__name__)

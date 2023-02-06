@@ -7,14 +7,13 @@ __all__ = ['AirflowBashExecutor']
 from pathlib import Path
 from typing import *
 
+from ..sanitizer import sanitized_print
 from airt.executor.subcommand import CLICommandBase
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
-
 from .base_executor import BaseAirflowExecutor, dag_template
 from .utils import trigger_dag
-from ..sanitizer import sanitized_print
 
 # %% ../../notebooks/AirflowBashExecutor.ipynb 5
 logger = get_logger(__name__)
@@ -28,7 +27,7 @@ class AirflowBashExecutor(BaseAirflowExecutor):
         tags: Union[str, List[str]],
         on_step_start: Optional[CLICommandBase] = None,
         on_step_end: Optional[CLICommandBase] = None,
-        **kwargs,
+        **kwargs
     ) -> Tuple[Path, str]:
         """Create DAG and execute steps in airflow
 
@@ -117,7 +116,7 @@ def execute(
     tags: Union[str, List[str]],
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs
 ) -> Tuple[Path, str]:
     """Create DAG and execute steps in airflow
 
@@ -137,7 +136,7 @@ def execute(
         tags=tags,
         on_step_start=on_step_start,
         on_step_end=on_step_end,
-        **kwargs,
+        **kwargs
     )
 
     conf = {key: value for key, value in kwargs.items()}

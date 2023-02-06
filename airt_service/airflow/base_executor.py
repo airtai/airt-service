@@ -8,13 +8,16 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import *
 
-from airt.executor.subcommand import CLICommandBase, ModelExecutor
+from ..sanitizer import sanitized_print
+from airt.executor.subcommand import (
+    ModelExecutor,
+    CLICommandBase,
+)
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
 
 from .utils import create_dag
-from ..sanitizer import sanitized_print
 
 # %% ../../notebooks/BaseAirflowExecutor.ipynb 4
 logger = get_logger(__name__)

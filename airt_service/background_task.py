@@ -4,20 +4,22 @@
 __all__ = ['execute_cli']
 
 # %% ../notebooks/Background_Task.ipynb 3
-import asyncio
 import os
-import shlex
-import subprocess  # nosec B404
+import yaml
 from pathlib import Path
-from subprocess import Popen  # nosec B404
 from time import sleep
 from typing import *
 
-import yaml
-from airt.logger import get_logger
+import shlex
+import subprocess  # nosec B404
+from subprocess import Popen  # nosec B404
+
+import asyncio
+
 
 import airt_service
 import airt_service.sanitizer
+from airt.logger import get_logger
 
 # %% ../notebooks/Background_Task.ipynb 5
 logger = get_logger(__name__)
