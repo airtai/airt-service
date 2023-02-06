@@ -15,7 +15,7 @@ from typing import *
 import asyncio
 import numpy as np
 import pandas as pd
-from asyncer import asyncify
+from asyncer import asyncify, create_task_group
 from fastapi import FastAPI
 from fast_kafka_api.application import FastKafkaAPI
 from sqlalchemy.exc import NoResultFound
@@ -70,25 +70,20 @@ def _create(
     Returns:
         created object of type TrainingStreamStatus
     """
-    engine = get_engine(**get_db_params_from_env_vars())  # type: ignore
-    session = Session(engine)
-
-    training_event = TrainingStreamStatus(
-        account_id=account_id,
-        application_id=application_id,
-        model_id=model_id,
-        model_type=model_type,
-        event=event,
-        count=count,
-        total=total,
-        user_id=user.id,
-    )
-    session.add(training_event)
-    session.commit()
-    session.refresh(training_event)
-
-    session.close()
-    engine.dispose()
+    with get_session_with_context() as session:
+        training_event = TrainingStreamStatus(
+            account_id=account_id,
+            application_id=application_id,
+            model_id=model_id,
+            model_type=model_type,
+            event=event,
+            count=count,
+            total=total,
+            user_id=user.id,
+        )
+        session.add(training_event)
+        session.commit()
+        session.refresh(training_event)
 
     return training_event
 
@@ -166,13 +161,8 @@ def get_user(username: str) -> User:
     Returns:
         The user object
     """
-    engine = get_engine(**get_db_params_from_env_vars())  # type: ignore
-    session = Session(engine)
-
-    user = session.exec(select(User).where(User.username == username)).one()
-
-    session.close()
-    engine.dispose()
+    with get_session_with_context() as session:
+        user = session.exec(select(User).where(User.username == username)).one()
 
     return user
 
@@ -246,9 +236,11 @@ async def process_dataframes(
         xs,
     )
 
-    for account_id, row in df.iterrows():
-
-        await process_row(row, user=user, fast_kafka_api_app=fast_kafka_api_app)
+    async with create_task_group() as task_group:
+        for account_id, row in df.iterrows():
+            task_group.soonify(process_row)(
+                row=row, user=user, fast_kafka_api_app=fast_kafka_api_app
+            )
 
 # %% ../notebooks/Training_Status_Process.ipynb 20
 async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAPI):
