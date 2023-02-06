@@ -236,15 +236,14 @@ jobs:
       - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
       - run: if [[ $GITHUB_REF_NAME == "main" ]]; then echo "CONFIG=production.yml" >> $GITHUB_ENV ; elif [[ $GITHUB_REF_NAME == "dev" ]]; then echo "CONFIG=staging.yml" >> $GITHUB_ENV ; fi;
-      - run: if [[ $GITHUB_REF_NAME == "fix-db-conn-spikes" ]]; then echo "CONFIG=staging.yml" >> $GITHUB_ENV ; fi;
 
       - name: Create batch environment if branch name is main or dev
-        if: github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'fix-db-conn-spikes'
+        if: github.ref_name == 'main' || github.ref_name == 'dev'
         run: set -a && source .env && set +a && create_batch_environment "batch_env_config/$CONFIG" ./batch_environment.yml
 
       # If running in other branches then include config yml as output yml for building docker
       - name: Create dummy batch environment in other branches
-        if: github.ref_name != 'main' && github.ref_name != 'dev' && github.ref_name != 'fix-db-conn-spikes'
+        if: github.ref_name != 'main' && github.ref_name != 'dev'
         run: cp "batch_env_config/staging.yml" ./batch_environment.yml
 
       - uses: actions/upload-artifact@v3
@@ -281,13 +280,13 @@ jobs:
       - run: docker pull ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME || docker pull ghcr.io/$GITHUB_REPOSITORY:dev || true
       - run: bash ./ws/build_docker.sh
       - name: Push only if branch name is main or dev
-        if: github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'fix-db-conn-spikes'
+        if: github.ref_name == 'main' || github.ref_name == 'dev'
         run: docker push ghcr.io/$GITHUB_REPOSITORY --all-tags
 
   docker_image_check:
     runs-on: ubuntu-22.04
     needs: docker_build_push
-    if: github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'fix-db-conn-spikes'
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
     permissions:
       contents: read
       packages: read
@@ -314,7 +313,7 @@ jobs:
       run:
         shell: bash
     needs: [docker_image_check]
-    if: github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'fix-db-conn-spikes'
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
     container:
       image: python:3.7-stretch
     env:
@@ -351,7 +350,7 @@ jobs:
       run:
         shell: bash
     needs: [deploy]
-    if: github.ref_name == 'main' || github.ref_name == 'dev' || github.ref_name == 'fix-db-conn-spikes'
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
     env:
