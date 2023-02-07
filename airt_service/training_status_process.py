@@ -2,8 +2,7 @@
 
 # %% auto 0
 __all__ = ['update_mysql', 'create_sqlalchemy_engine', 'get_recent_event_for_user', 'get_count_from_training_data_ch_table',
-           'get_user', 'get_new_update_table', 'update_kafka', 'process_training_status', 'process_row',
-           'process_dataframes']
+           'get_user', 'get_new_update_table', 'update_kafka', 'process_training_status']
 
 # %% ../notebooks/Training_Status_Process.ipynb 2
 import random
@@ -62,8 +61,9 @@ def update_mysql(
         session: session object
 
     """
+    update_table = update_table.replace({np.nan: None, "nan": None})
     training_events = [
-        TrainingStreamStatus(**kwargs)
+        TrainingStreamStatus(**kwargs)  # type: ignore
         for kwargs in update_table.reset_index().to_dict(orient="records")
     ]
 
@@ -79,7 +79,7 @@ def update_mysql(
 def create_sqlalchemy_engine(
     url: str, **kwargs: Dict[str, Any]
 ) -> Generator[Engine, None, None]:
-    sqlalchemy_engine = sqlalchemy_create_engine(url, **kwargs)
+    sqlalchemy_engine = sqlalchemy_create_engine(url, **kwargs)  # type: ignore
     try:
         yield sqlalchemy_engine
     finally:
@@ -168,19 +168,19 @@ def get_user(username: str) -> User:
 
 # %% ../notebooks/Training_Status_Process.ipynb 18
 def get_new_update_table(
-    recent_events_df: pd.DataFrame, ch_df: pd.DataFrame
+    recent_events_df: pd.DataFrame, ch_df: pd.DataFrame, end_timedelta: int = 30
 ) -> pd.DataFrame:
     merged = recent_events_df.merge(right=ch_df, how="left", on="AccountId")
 
     updated = merged["curr_count"] > merged["prev_count"]
     not_update_for_30s = merged["curr_check_on"] - merged["created"] > timedelta(
-        seconds=30
+        seconds=end_timedelta
     )
 
     df = merged[updated | not_update_for_30s]
-
     df = df.assign(action="end")
-    df.loc[updated, "action"] = "upload"
+
+    df.loc[df["curr_count"] > df["prev_count"], "action"] = "upload"
 
     drop_columns = ["event", "id", "uuid", "prev_count", "created", "curr_check_on"]
     df = df.drop(columns=drop_columns)
@@ -190,9 +190,7 @@ def get_new_update_table(
     return df
 
 # %% ../notebooks/Training_Status_Process.ipynb 20
-async def update_kafka(
-    update_table: pd.DataFrame, kafka_app: FastKafkaAPI
-) -> pd.DataFrame:
+async def update_kafka(update_table: pd.DataFrame, kafka_app: FastKafkaAPI) -> None:
     async with create_task_group() as task_group:
         to_infobip_training_data_status = task_group.soonify(
             kafka_app.to_infobip_training_data_status
@@ -206,7 +204,7 @@ async def update_kafka(
             .to_dict(orient="records")
         )
         for kwargs in msgs:
-            to_infobip_training_data_status(**kwargs)
+            to_infobip_training_data_status(**kwargs)  # type: ignore
 
 # %% ../notebooks/Training_Status_Process.ipynb 22
 async def process_training_status(
@@ -242,11 +240,11 @@ async def process_training_status(
                 update_table = get_new_update_table(
                     recent_events_df=recent_events_df, ch_df=ch_df
                 )
-                with create_task_group() as tg:
+                async with create_task_group() as tg:
                     tg.soonify(update_kafka)(
                         update_table=update_table, kafka_app=fast_kafka_api_app
                     )
-                    tf.soonify(async_update_mysql)(update_table=update_table)
+                    tg.soonify(async_update_mysql)(update_table=update_table)
 
         except Exception as e:
             logger.info(
@@ -254,115 +252,3 @@ async def process_training_status(
             )
 
         await asyncio.sleep(random.randint(sleep_min, sleep_max))  # nosec B311
-
-# %% ../notebooks/Training_Status_Process.ipynb 36
-async def process_row(
-    row: pd.Series,
-    user: User,
-    fast_kafka_api_app: FastKafkaAPI,
-):
-    """
-    Process a single row, update mysql db and send status message to kafka
-
-    Args:
-        row: pandas row
-        user: user object
-    """
-    if not row["action"]:
-        return
-
-    async_training_stream_status_create = asyncify(TrainingStreamStatus._create)
-
-    account_id = row.name
-    application_id = None if np.isnan(row["application_id"]) else row["application_id"]
-
-    upload_event = await async_training_stream_status_create(  # type: ignore
-        account_id=account_id,
-        application_id=application_id,
-        model_id=row["model_id"],
-        model_type=row["model_type"],
-        event=row["action"],
-        count=row["curr_count"],
-        total=row["total"],
-        user=user,
-    )
-    await fast_kafka_api_app.to_infobip_training_data_status(
-        account_id=account_id,
-        application_id=application_id,
-        model_id=row["model_id"],
-        no_of_records=row["curr_count"],
-        total_no_of_records=row["total"],
-    )
-
-# %% ../notebooks/Training_Status_Process.ipynb 38
-async def process_dataframes(
-    recent_events_df: pd.DataFrame,
-    ch_df: pd.DataFrame,
-    *,
-    user: User,
-    end_timedelta: int = 30,
-    fast_kafka_api_app: FastKafkaAPI,
-):
-    """
-    Process mysql, clickhouse dataframes and take action if needed
-
-    Args:
-        recent_events_df: recent events as pandas dataframe from mysql db
-        ch_df: count from clickhouse table as dataframe
-        user: user object
-        end_timedelta: timedelta in seconds to use to determine whether upload is over or not
-    """
-    df = pd.merge(recent_events_df, ch_df, on="AccountId")
-    xs = np.where(  # type: ignore
-        df["curr_check_on"].subtract(df["created"])
-        > pd.Timedelta(seconds=end_timedelta),
-        "end",
-        None,
-    )
-    df["action"] = np.where(
-        df["curr_count"] != df["prev_count"],
-        "upload",
-        xs,
-    )
-
-    async with create_task_group() as task_group:
-        for account_id, row in df.iterrows():
-            task_group.soonify(process_row)(
-                row=row, user=user, fast_kafka_api_app=fast_kafka_api_app
-            )
-
-# %% ../notebooks/Training_Status_Process.ipynb 47
-async def process_training_status(username: str, fast_kafka_api_app: FastKafkaAPI):
-    """
-    An infinite loop to keep track of training_data uploads from user
-
-    Args:
-        username: username of user to track training data uploads
-    """
-    async_get_user = asyncify(get_user)
-    async_get_recent_event_for_user = asyncify(get_recent_event_for_user)
-    async_get_count_from_training_data_ch_table = asyncify(
-        get_count_from_training_data_ch_table
-    )
-
-    while True:
-        #         logger.info(f"Starting the process loop")
-        try:
-            user = await async_get_user(username)
-            recent_events_df = await async_get_recent_event_for_user(user=user)
-            if not recent_events_df.empty:
-                ch_df = await async_get_count_from_training_data_ch_table(
-                    account_ids=recent_events_df.index.tolist()
-                )
-                await process_dataframes(
-                    recent_events_df=recent_events_df,
-                    ch_df=ch_df,
-                    user=user,  # type: ignore
-                    fast_kafka_api_app=fast_kafka_api_app,
-                )
-        except Exception as e:
-            logger.info(
-                f"Error in process_training_status - {e}, {traceback.format_exc()}"
-            )
-
-        await asyncio.sleep(random.randint(5, 20))  # nosec B311
