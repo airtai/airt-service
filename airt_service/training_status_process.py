@@ -61,7 +61,6 @@ def update_mysql(
         session: session object
 
     """
-    update_table = update_table.replace({np.nan: None, "nan": None})
     training_events = [
         TrainingStreamStatus(**kwargs)  # type: ignore
         for kwargs in update_table.reset_index().to_dict(orient="records")
@@ -167,7 +166,7 @@ def get_user(username: str) -> User:
 
 # %% ../notebooks/Training_Status_Process.ipynb 18
 def get_new_update_table(
-    recent_events_df: pd.DataFrame, ch_df: pd.DataFrame, end_timedelta: int = 30
+    recent_events_df: pd.DataFrame, ch_df: pd.DataFrame, end_timedelta: int
 ) -> pd.DataFrame:
     merged = recent_events_df.merge(right=ch_df, how="left", on="AccountId")
 
@@ -186,11 +185,12 @@ def get_new_update_table(
     df = df.rename(columns=dict(curr_count="count", action="event"))
     df.index = df.index.rename("account_id")
 
+    df = df.replace({np.nan: None})
+
     return df
 
 # %% ../notebooks/Training_Status_Process.ipynb 20
 async def update_kafka(update_table: pd.DataFrame, kafka_app: FastKafkaAPI) -> None:
-    update_table = update_table.replace({np.nan: None, "nan": None})
     async with create_task_group() as task_group:
         to_infobip_training_data_status = task_group.soonify(
             kafka_app.to_infobip_training_data_status
@@ -206,7 +206,7 @@ async def update_kafka(update_table: pd.DataFrame, kafka_app: FastKafkaAPI) -> N
         for kwargs in msgs:
             to_infobip_training_data_status(**kwargs)  # type: ignore
 
-# %% ../notebooks/Training_Status_Process.ipynb 22
+# %% ../notebooks/Training_Status_Process.ipynb 23
 async def process_training_status(
     username: str,
     fast_kafka_api_app: FastKafkaAPI,
@@ -214,6 +214,7 @@ async def process_training_status(
     should_exit_f: Optional[Callable[[], bool]] = None,
     sleep_min: int = 5,
     sleep_max: int = 20,
+    end_timedelta: int = 120,
 ):
     """
     An infinite loop to keep track of training_data uploads from user
@@ -238,7 +239,9 @@ async def process_training_status(
                     account_ids=recent_events_df.index.tolist()
                 )
                 update_table = get_new_update_table(
-                    recent_events_df=recent_events_df, ch_df=ch_df
+                    recent_events_df=recent_events_df,
+                    ch_df=ch_df,
+                    end_timedelta=end_timedelta,
                 )
                 async with create_task_group() as tg:
                     tg.soonify(update_kafka)(
