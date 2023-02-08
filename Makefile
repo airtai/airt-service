@@ -116,7 +116,7 @@ install: dist install_airt start_airflow
 #pip install --force-reinstall dist/airt_service-*-py3-none-any.whl
 
 mypy: install
-	mypy airt_service --ignore-missing-imports
+	mypy airt_service
 
 check_git_history_for_secrets: .add_allowed_git_secrets
 	git secrets --scan-history

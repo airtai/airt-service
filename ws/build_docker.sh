@@ -17,7 +17,7 @@ then
 	export CACHE_FROM="latest"
 	export AIRT_LIB_BRANCH="main"
 else
-    export TAG=$CI_COMMIT_REF_NAME
+    export TAG=dev
 	export CACHE_FROM="dev"
 	export AIRT_LIB_BRANCH="dev"
 fi
