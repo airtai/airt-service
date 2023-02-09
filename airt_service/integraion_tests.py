@@ -58,6 +58,7 @@ def test_auth(base_url: str, username: str, password: str) -> str:
     r = httpx.post(
         f"{base_url}/token",
         data=dict(username=username, password=password),
+        timeout=30,
     )
     assert not r.is_error, r.text  # nosec B101
     token = r.json()["access_token"]

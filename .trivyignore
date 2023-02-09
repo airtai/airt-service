@@ -1,2 +1,4 @@
 # Specify at least 1 USER command in Dockerfile with non-root user as argument
 DS002
+# Add HEALTHCHECK instruction in your Dockerfile
+DS026

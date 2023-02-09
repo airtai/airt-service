@@ -8,13 +8,13 @@ __all__ = ['description', 'ModelType', 'ModelTrainingRequest', 'EventData', 'Rea
 from pathlib import Path
 from typing import *
 
-# %% ../notebooks/API_Web_Service.ipynb 3
 import yaml
 from datetime import datetime
 from enum import Enum
 from os import environ
 
 from aiokafka.helpers import create_ssl_context
+from asyncer import asyncify
 from fastapi import Request, FastAPI
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
@@ -30,17 +30,20 @@ from .auth import auth_router
 from .confluent import aio_kafka_config
 from .data.datablob import datablob_router
 from .data.datasource import datasource_router
-from .db.models import get_session_with_context, User, TrainingStreamStatus
+from .db.models import get_session_with_context, User
 from .model.train import model_train_router
 from .model.prediction import model_prediction_router
-from .training_status_process import process_training_status
+from airt_service.training_status_process import (
+    process_training_status,
+    TrainingStreamStatus,
+)
 from .users import user_router
 from airt.logger import get_logger
 
-# %% ../notebooks/API_Web_Service.ipynb 5
+# %% ../notebooks/API_Web_Service.ipynb 4
 logger = get_logger(__name__)
 
-# %% ../notebooks/API_Web_Service.ipynb 6
+# %% ../notebooks/API_Web_Service.ipynb 5
 description = """
 # airt service to import, train and predict events data
 
@@ -243,7 +246,7 @@ curl -X 'POST' \
 
 """
 
-# %% ../notebooks/API_Web_Service.ipynb 7
+# %% ../notebooks/API_Web_Service.ipynb 6
 class ModelType(str, Enum):
     churn = "churn"
     propensity_to_buy = "propensity_to_buy"
@@ -254,12 +257,22 @@ class ModelTrainingRequest(BaseModel):
         ..., example=202020, description="ID of an account"
     )
     ApplicationId: Optional[str] = Field(
-        default=None, example="TestApplicationId", description="ID of application"
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+    model_type: ModelType = Field(
+        ..., description="Model type, only 'churn' is supported right now"
     )
     total_no_of_records: NonNegativeInt = Field(
         ...,
         example=1_000_000,
-        description="total number of records (rows) to be ingested",
+        description="approximate total number of records (rows) to be ingested",
     )
 
 
@@ -271,11 +284,17 @@ class EventData(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    Application: Optional[str] = Field(
-        None,
-        example="DriverApp",
-        description="Name of the application in case there is more than one for the AccountId",
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
     )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     DefinitionId: str = Field(
         ...,
         example="appLaunch",
@@ -297,19 +316,7 @@ class EventData(BaseModel):
     )
 
 
-class RealtimeData(BaseModel):
-    event_data: EventData = Field(
-        ...,
-        example=dict(
-            AccountId=202020,
-            Application="DriverApp",
-            DefinitionId="appLaunch",
-            OccurredTime="2021-03-28T00:34:08",
-            OccurredTimeTicks=1616891648496,
-            PersonId=12345678,
-        ),
-        description="realtime event data",
-    )
+class RealtimeData(EventData):
     make_prediction: bool = Field(
         ..., example=True, description="trigger prediction message in prediction topic"
     )
@@ -319,6 +326,17 @@ class TrainingDataStatus(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     no_of_records: NonNegativeInt = Field(
         ...,
         example=12_345,
@@ -335,6 +353,17 @@ class TrainingModelStatus(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     current_step: NonNegativeInt = Field(
         ...,
         example=0,
@@ -363,11 +392,17 @@ class ModelMetrics(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    Application: Optional[str] = Field(
-        None,
-        example="DriverApp",
-        description="Name of the application in case there is more than one for the AccountId",
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
     )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     timestamp: datetime = Field(
         ...,
         example="2021-03-28T00:34:08",
@@ -378,6 +413,7 @@ class ModelMetrics(BaseModel):
         example="churn",
         description="Name of the model used (churn, propensity to buy)",
     )
+
     auc: float = Field(
         ..., example=0.91, description="Area under ROC curve", ge=0.0, le=1.0
     )
@@ -393,11 +429,17 @@ class Prediction(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    Application: Optional[str] = Field(
-        None,
-        example="DriverApp",
-        description="Name of the application in case there is more than one for the AccountId",
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
     )
+    ModelId: str = Field(
+        default=...,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+
     PersonId: NonNegativeInt = Field(
         ..., example=12345678, description="ID of a person"
     )
@@ -419,14 +461,11 @@ class Prediction(BaseModel):
         le=1.0,
     )
 
-# %% ../notebooks/API_Web_Service.ipynb 8
+# %% ../notebooks/API_Web_Service.ipynb 7
 _total_no_of_records = 1000000
 _no_of_records_received = 0
 
-
-_to_infobip_training_data_status = None
-
-# %% ../notebooks/API_Web_Service.ipynb 9
+# %% ../notebooks/API_Web_Service.ipynb 8
 def create_ws_server(
     assets_path: Path = Path("./assets"),
     start_process_for_username: Optional[str] = "infobip",
@@ -546,15 +585,15 @@ def create_ws_server(
             "port": 9092,
         },
         "staging": {
-            "url": "kafka.staging.airt.ai",
-            "description": "staging kafka",
+            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
+            "description": "Staging Kafka broker",
             "port": 9092,
             "protocol": "kafka-secure",
             "security": {"type": "plain"},
         },
         "production": {
-            "url": "kafka.airt.ai",
-            "description": "production kafka",
+            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
+            "description": "Production Kafka broker",
             "port": 9092,
             "protocol": "kafka-secure",
             "security": {"type": "plain"},
@@ -573,8 +612,9 @@ def create_ws_server(
         **aio_kafka_config,
     )
 
-    @fast_kafka_api_app.consumes()  # type: ignore
+    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_start_training_data")  # type: ignore
     async def on_infobip_start_training_data(msg: ModelTrainingRequest):
+        logger.info(f"start training msg={msg}")
         with get_session_with_context() as session:
             user = session.exec(
                 select(User).where(User.username == start_process_for_username)
@@ -582,6 +622,9 @@ def create_ws_server(
             start_event = TrainingStreamStatus(
                 event="start",
                 account_id=msg.AccountId,
+                application_id=msg.ApplicationId,
+                model_id=msg.ModelId,
+                model_type=msg.model_type,
                 count=0,
                 total=msg.total_no_of_records,
                 user=user,
@@ -589,7 +632,7 @@ def create_ws_server(
             session.add(start_event)
             session.commit()
 
-    @fast_kafka_api_app.consumes()  # type: ignore
+    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_training_data")  # type: ignore
     async def on_infobip_training_data(msg: EventData):
         # ToDo: this is not showing up in logs
         logger.debug(f"msg={msg}")
@@ -606,13 +649,16 @@ def create_ws_server(
     #             )
     #             await to_infobip_training_data_status(msg=training_data_status)
 
-    @fast_kafka_api_app.consumes()  # type: ignore
+    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_realtime_data")  # type: ignore
     async def on_infobip_realtime_data(msg: RealtimeData):
         pass
 
-    @fast_kafka_api_app.produces()  # type: ignore
+    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_training_data_status")  # type: ignore
     async def to_infobip_training_data_status(
         account_id: int,
+        *,
+        application_id: Optional[str] = None,
+        model_id: str,
         no_of_records: int,
         total_no_of_records: int,
     ) -> TrainingDataStatus:
@@ -621,22 +667,24 @@ def create_ws_server(
         )
         msg = TrainingDataStatus(
             AccountId=account_id,
+            ApplicationId=application_id,
+            ModelId=model_id,
             no_of_records=no_of_records,
             total_no_of_records=total_no_of_records,
         )
         return msg
 
-    @fast_kafka_api_app.produces()  # type: ignore
+    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_training_model_status")  # type: ignore
     async def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return TrainingModelStatus()
 
-    @fast_kafka_api_app.produces()  # type: ignore
+    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_model_metrics")  # type: ignore
     async def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return msg
 
-    @fast_kafka_api_app.produces()  # type: ignore
+    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_prediction")  # type: ignore
     async def to_infobip_prediction(msg: Prediction) -> Prediction:
         logger.debug(f"on_infobip_realtime_data_status(msg={msg})")
         return msg
@@ -646,8 +694,6 @@ def create_ws_server(
 
         @fast_kafka_api_app.run_in_background()
         async def startup_event():
-            #             _to_infobip_training_data_status = to_infobip_training_data_status
-            #             nonlocal to_infobip_training_data_status
             await process_training_status(
                 username=start_process_for_username,
                 fast_kafka_api_app=fast_kafka_api_app,
