@@ -32,7 +32,7 @@ async def execute_cli(
     on_timeout: Optional[Callable[[], None]] = None,
     on_success: Optional[Callable[[], None]] = None,
     on_error: Optional[Callable[[], None]] = None,
-):
+) -> None:
     """Execute CLI command
 
     Args:

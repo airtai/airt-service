@@ -48,7 +48,7 @@ def generate_mfa_provisioning_url(mfa_secret: str, user_email: str) -> str:
     return uri
 
 # %% ../notebooks/TOTP.ipynb 13
-def validate_totp(mfa_secret: str, user_otp: str):
+def validate_totp(mfa_secret: str, user_otp: str) -> None:
     """Validate the OTP passed in against the current time OTP
 
     Args:
@@ -67,14 +67,14 @@ def validate_totp(mfa_secret: str, user_otp: str):
         )
 
 # %% ../notebooks/TOTP.ipynb 15
-def require_otp_if_mfa_enabled(func):
+def require_otp_if_mfa_enabled(func: Callable[..., Any]) -> Callable[..., Any]:
     """A decorator function to validate the otp for MFA enabled user
 
     If the otp validation fails, the user will not be granted access to the decorated routes
     """
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # type: ignore
         user = kwargs["user"]
         session = kwargs["session"]
         otp = get_attr_by_name(kwargs, "otp")

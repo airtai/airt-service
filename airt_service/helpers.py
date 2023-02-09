@@ -120,7 +120,7 @@ def generate_random_string(length: int = 6) -> str:
 
 # %% ../notebooks/Helpers.ipynb 21
 @contextmanager
-def set_env_variable_context(variable: str, value: str):
+def set_env_variable_context(variable: str, value: str) -> Iterator[None]:
     old_value = environ[variable] if variable in environ else None
     environ[variable] = value
     yield
@@ -131,7 +131,7 @@ def set_env_variable_context(variable: str, value: str):
 
 # %% ../notebooks/Helpers.ipynb 23
 @contextmanager
-def commit_or_rollback(session: Session):
+def commit_or_rollback(session: Session) -> Iterator[None]:
     """A context manager to commit the changes to the database. In the case of an exception,
     the database will be rollback to the previous state.
 
@@ -206,7 +206,7 @@ def _detect_sql_code_injection(s: str) -> bool:
     return bool(re.search(regex_text, s))
 
 # %% ../notebooks/Helpers.ipynb 31
-def validate_user_inputs(xs: List[str]):
+def validate_user_inputs(xs: List[str]) -> None:
     """Validate the user input for SQL code injection
 
     Args:

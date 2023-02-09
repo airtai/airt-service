@@ -15,10 +15,10 @@ from os import environ
 
 from aiokafka.helpers import create_ssl_context
 from asyncer import asyncify
-from fastapi import Request, FastAPI
+from fastapi import Request, FastAPI, Response
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fast_kafka_api.application import FastKafkaAPI
 from pydantic import validator, BaseModel, Field, HttpUrl, EmailStr, NonNegativeInt
@@ -515,14 +515,16 @@ def create_ws_server(
     app.include_router(user_router)
 
     @app.middleware("http")
-    async def add_nosniff_x_content_type_options_header(request: Request, call_next):
-        response = await call_next(request)
+    async def add_nosniff_x_content_type_options_header(
+        request: Request, call_next: Callable[[Request], Response]
+    ) -> Response:
+        response = await call_next(request)  # type: ignore
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Strict-Transport-Security"] = "max-age=31536000"
         return response
 
     @app.get("/version")
-    def get_versions():
+    def get_versions() -> Dict[str, str]:
         return {"airt_service": airt_service.__version__}
 
     #     @app.get("/", include_in_schema=False)
@@ -530,7 +532,7 @@ def create_ws_server(
     #         return RedirectResponse("/docs")
 
     @app.get("/docs", include_in_schema=False)
-    def overridden_swagger():
+    def overridden_swagger() -> HTMLResponse:
         return get_swagger_ui_html(
             openapi_url=openapi_url,
             title=title,
@@ -538,7 +540,7 @@ def create_ws_server(
         )
 
     @app.get("/redoc", include_in_schema=False)
-    def overridden_redoc():
+    def overridden_redoc() -> HTMLResponse:
         return get_redoc_html(
             openapi_url=openapi_url,
             title=title,
@@ -546,10 +548,10 @@ def create_ws_server(
         )
 
     @app.get("/favicon.ico", include_in_schema=False)
-    async def serve_favicon():
+    async def serve_favicon() -> FileResponse:
         return FileResponse(favicon_path)
 
-    def custom_openapi():
+    def custom_openapi() -> Dict[str, Any]:
         if app.openapi_schema:
             return app.openapi_schema
 
@@ -693,9 +695,9 @@ def create_ws_server(
     if start_process_for_username is not None:
 
         @fast_kafka_api_app.run_in_background()
-        async def startup_event():
+        async def startup_event() -> None:
             await process_training_status(
-                username=start_process_for_username,
+                username=start_process_for_username,  # type: ignore
                 fast_kafka_api_app=fast_kafka_api_app,
             )
 

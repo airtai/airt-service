@@ -164,7 +164,7 @@ class BatchPool(ContextDecorator):
         state: str,
         timeout: int = 0,
         sleep_step: int = 5,
-    ):
+    ) -> None:
         """Wait until the batch pool reaches the given state
 
         Args:
@@ -196,7 +196,7 @@ class BatchPool(ContextDecorator):
             sleep(sleep_step)
             i = i + sleep_step
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete Batch Pool"""
         batch_service_client = BatchServiceClient(
             self.shared_key_credentials,
@@ -206,7 +206,7 @@ class BatchPool(ContextDecorator):
             batch_service_client.pool.delete(self.name)
         except BatchErrorException as e:
             if hasattr(e, "message"):
-                error_message = e.message.as_dict()
+                error_message = e.message.as_dict()  # type: ignore
                 if (
                     "value" in error_message
                     and "marked for deletion" in error_message["value"]
@@ -214,13 +214,12 @@ class BatchPool(ContextDecorator):
                     return
             raise e
 
-    def __enter__(self):
+    def __enter__(self) -> "BatchPool":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         self.delete()
         self.wait(state="deleting")
-        return False
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 13
 class BatchJob(ContextDecorator):
@@ -281,7 +280,7 @@ class BatchJob(ContextDecorator):
         state: str,
         timeout: int = 0,
         sleep_step: int = 5,
-    ):
+    ) -> None:
         """Wait until the batch job reaches the given state
 
         Args:
@@ -313,7 +312,7 @@ class BatchJob(ContextDecorator):
             sleep(sleep_step)
             i = i + sleep_step
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete Batch Pool"""
         batch_service_client = BatchServiceClient(
             self.shared_key_credentials,
@@ -323,7 +322,7 @@ class BatchJob(ContextDecorator):
             batch_service_client.job.delete(self.name)
         except BatchErrorException as e:
             if hasattr(e, "message"):
-                error_message = e.message.as_dict()
+                error_message = e.message.as_dict()  # type: ignore
                 if (
                     "value" in error_message
                     and "job does not exist" in error_message["value"]
@@ -331,13 +330,12 @@ class BatchJob(ContextDecorator):
                     return
             raise e
 
-    def __enter__(self):
+    def __enter__(self) -> "BatchJob":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         self.delete()
         #         self.wait(state="deleting")
-        return False
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 15
 class BatchTask(ContextDecorator):
@@ -416,7 +414,7 @@ class BatchTask(ContextDecorator):
         state: str,
         timeout: int = 0,
         sleep_step: int = 5,
-    ):
+    ) -> None:
         """Wait until the batch job reaches the given state
 
         Args:
@@ -448,7 +446,7 @@ class BatchTask(ContextDecorator):
             sleep(sleep_step)
             i = i + sleep_step
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete Batch task"""
         batch_service_client = BatchServiceClient(
             self.shared_key_credentials,
@@ -466,7 +464,7 @@ class BatchTask(ContextDecorator):
             #                     return
             raise e
 
-    def output(self):
+    def output(self) -> None:
         batch_service_client = BatchServiceClient(
             self.shared_key_credentials,
             batch_url=f"https://{self.batch_account_name}.{self.region}.batch.azure.com",
@@ -493,15 +491,13 @@ class BatchTask(ContextDecorator):
 
         logger.info(f"task output is: {file_text}")
 
-    def __enter__(self):
+    def __enter__(self) -> "BatchTask":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         self.wait(state="completed")
         self.output()
         self.delete()
-
-        return False
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 19
 def azure_batch_create_job(  # type: ignore

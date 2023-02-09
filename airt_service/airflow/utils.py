@@ -24,7 +24,7 @@ from ..sanitizer import sanitized_print
 def list_dags(
     *,
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
-):
+) -> Dict[str, Any]:
     command = f"{airflow_command} dags list -o json"
     # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
     p = subprocess.run(  # nosec B603
@@ -41,7 +41,7 @@ def list_dag_runs(
     dag_id: str,
     *,
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
-):
+) -> Dict[str, Any]:
     command = f"{airflow_command} dags list-runs -d {dag_id} -o json"
 
     # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
@@ -61,8 +61,8 @@ def create_dag(
     dag_definition_template: str,
     *,
     root_path: Path = Path(f"{os.environ['HOME']}/airflow/dags"),
-    **kwargs,
-):
+    **kwargs: Any,
+) -> Path:
     root_path.mkdir(exist_ok=True, parents=True)
     tmp_file_path = root_path / f'{dag_id.replace(":", "_")}.py'
     with open(tmp_file_path, "w") as temp_file:
@@ -82,8 +82,8 @@ def create_testing_dag_ctx(
     dag_definition_template: str,
     *,
     root_path: Path = Path(f"{os.environ['HOME']}/airflow/dags"),
-    **kwargs,
-):
+    **kwargs: Any,
+) -> Iterator[str]:
     tmp_file_path = None
     try:
         dag_id = f"test-{datetime.now().isoformat()}".replace(":", "_")
@@ -102,7 +102,7 @@ def create_testing_dag_ctx(
 # %% ../../notebooks/Airflow_Utils.ipynb 20
 def run_subprocess_with_retry(
     command: str, *, no_retries: int = 12, sleep_for: int = 5
-):
+) -> subprocess.CompletedProcess:
     for i in range(no_retries):
         # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
         p = subprocess.run(  # nosec B603
@@ -123,7 +123,7 @@ def unpause_dag(
     *,
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
     no_retries: int = 12,
-):
+) -> None:
     unpause_command = f"{airflow_command} dags unpause {dag_id}"
     p = run_subprocess_with_retry(unpause_command, no_retries=no_retries)
 
@@ -135,7 +135,7 @@ def trigger_dag(
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
     no_retries: int = 12,
     unpause_if_needed: bool = True,
-):
+) -> str:
     if unpause_if_needed:
         unpause_dag(
             dag_id=dag_id, airflow_command=airflow_command, no_retries=no_retries

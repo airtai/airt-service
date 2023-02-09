@@ -81,14 +81,16 @@ datablob_router = APIRouter(
 
 # %% ../../notebooks/DataBlob_Router.ipynb 9
 @patch
-def remove_tag_from_previous_datablobs(self: DataBlob, tag_name: str, session: Session):
+def remove_tag_from_previous_datablobs(
+    self: DataBlob, tag_name: str, session: Session
+) -> None:
     """Remove tag_name associated with other/previous datablobs
 
     Args:
         tag_name: Tag name to remove from other datablobs
         session: Sqlmodel session
     """
-    tag_to_remove = Tag.get_by_name(name=tag_name, session=session)  # type: ignore
+    tag_to_remove = Tag.get_by_name(name=tag_name, session=session)
     try:
         datablobs = session.exec(
             select(DataBlob).where(
@@ -162,7 +164,7 @@ def _create(
             datablob.remove_tag_from_previous_datablobs(  # type: ignore
                 tag_name=tag_name, session=session
             )
-            datablob.tags.append(Tag.get_by_name(name=tag_name, session=session))  # type: ignore
+            datablob.tags.append(Tag.get_by_name(name=tag_name, session=session))
 
         session.add(datablob)
         session.commit()
