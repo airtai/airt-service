@@ -160,7 +160,7 @@ def get_user(username: str) -> User:
         The user object
     """
     with get_session_with_context() as session:
-        user = session.exec(select(User).where(User.username == username)).one()
+        user: User = session.exec(select(User).where(User.username == username)).one()
 
     return user
 
@@ -215,7 +215,7 @@ async def process_training_status(
     sleep_min: int = 5,
     sleep_max: int = 20,
     end_timedelta: int = 120,
-):
+) -> None:
     """
     An infinite loop to keep track of training_data uploads from user
 

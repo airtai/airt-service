@@ -141,7 +141,7 @@ def get_default_security_group_id(region: str) -> str:
 class ComputeEnvironment(ContextDecorator):
     """A class for creating and managing the compute environment"""
 
-    def __init__(self, response, region):
+    def __init__(self, response: Dict[str, Any], region: str) -> None:
         """Constructs a new ComputeEnvironment instance
 
         Args:
@@ -339,35 +339,34 @@ class ComputeEnvironment(ContextDecorator):
             i = i + sleep_step
         return response["computeEnvironments"][0]
 
-    def update(self, *args, **kwargs):
+    def update(self, *args: Any, **kwargs: Any) -> None:
         """Update compute environment"""
         client = boto3.client("batch", region_name=self.region)
         response = client.update_compute_environment(
             computeEnvironment=self.arn, *args, **kwargs
         )
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete compute environment"""
         client = boto3.client("batch", region_name=self.region)
         response = client.delete_compute_environment(
             computeEnvironment=self.arn,
         )
 
-    def __enter__(self):
+    def __enter__(self) -> "ComputeEnvironment":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         client = boto3.client("batch", region_name=self.region)
         self.update(state="DISABLED")
         self.wait(status="VALID", state="DISABLED")
         self.delete()
-        return False
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 21
 class JobQueue(ContextDecorator):
     """A class for creating and managing the job queues"""
 
-    def __init__(self, response, region: str):
+    def __init__(self, response: Dict[str, Any], region: str) -> None:
         """Constructs a new Job Queue instance
 
         Args:
@@ -515,34 +514,33 @@ class JobQueue(ContextDecorator):
             i = i + sleep_step
         return response["jobQueues"][0]
 
-    def update(self, *args, **kwargs):
+    def update(self, *args: Any, **kwargs: Any) -> None:
         """Update job queue"""
         client = boto3.client("batch", region_name=self.region)
         response = client.update_job_queue(jobQueue=self.arn, *args, **kwargs)
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete job queue"""
         client = boto3.client("batch", region_name=self.region)
         response = client.delete_job_queue(
             jobQueue=self.arn,
         )
 
-    def __enter__(self):
+    def __enter__(self) -> "JobQueue":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         client = boto3.client("batch", region_name=self.region)
         self.update(state="DISABLED")
         self.wait(status="VALID", state="DISABLED")
         self.delete()
         self.wait(is_deleted=True)
-        return False
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 22
 @patch
 def create_job_queue(
     self: ComputeEnvironment, *, name: Optional[str] = None, priority: int = 100
-):
+) -> JobQueue:
     return JobQueue.create(name=name, compute_environment=self, priority=priority)
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 25
@@ -570,7 +568,7 @@ def get_max_vcpus_memory_for_container(
 class JobDefinition(ContextDecorator):
     """A class for creating and managing the job definition"""
 
-    def __init__(self, response, region: str):
+    def __init__(self, response: Dict[str, Any], region: str) -> None:
         """Constructs a new JobDefinition instance
 
         Args:
@@ -745,21 +743,20 @@ class JobDefinition(ContextDecorator):
             i = i + sleep_step
         return response["jobDefinitions"][0]
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete job definition"""
         client = boto3.client("batch", region_name=self.region)
         response = client.deregister_job_definition(
             jobDefinition=self.arn,
         )
 
-    def __enter__(self):
+    def __enter__(self) -> "JobDefinition":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         client = boto3.client("batch", region_name=self.region)
         self.delete()
         self.wait(status="INACTIVE")
-        return False
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 28
 @patch
@@ -773,7 +770,7 @@ def create_job_definition(
     command: Optional[str] = None,
     environment_vars: Optional[Dict[str, str]] = None,
     retries: int = 3,
-):
+) -> JobDefinition:
     return JobDefinition.create(
         name=name,
         compute_environment=self,
@@ -789,7 +786,7 @@ def create_job_definition(
 class Job(ContextDecorator):
     """A class for creating and managing the jobs"""
 
-    def __init__(self, response, region: str):
+    def __init__(self, response: Dict[str, Any], region: str) -> None:
         """Constructs a new Job instance
 
         Args:
@@ -960,20 +957,19 @@ class Job(ContextDecorator):
             i = i + sleep_step
         return response["jobs"][0]
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete job"""
         client = boto3.client("batch", region_name=self.region)
         response = client.terminate_job(
             jobId=self.job_id,
         )
 
-    def __enter__(self):
+    def __enter__(self) -> "Job":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         client = boto3.client("batch", region_name=self.region)
         self.wait(status="SUCCEEDED")
-        return False
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 32
 @patch
@@ -988,7 +984,7 @@ def create_job(
     command: Optional[str] = None,
     environment_vars: Optional[Dict[str, str]] = None,
     retries: Optional[int] = None,
-):
+) -> Job:
     return Job.create(
         name=name,
         job_queue=self,
@@ -1014,7 +1010,7 @@ def create_job(
     command: Optional[str] = None,
     environment_vars: Optional[Dict[str, str]] = None,
     retries: Optional[int] = None,
-):
+) -> Job:
     return Job.create(
         name=name,
         job_queue=job_queue,
@@ -1078,7 +1074,7 @@ def aws_batch_create_job(  # type: ignore
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 40
 def _create_default_batch_environment_config(
     prefix: str, output_path: Union[str, Path], regions: Optional[List[str]] = None
-):
+) -> None:
     """Generate batch environment YAML config to set up the batch job environment
 
     Args:
@@ -1086,7 +1082,7 @@ def _create_default_batch_environment_config(
         output_path: Path of yaml file to store generated config
     """
 
-    def _f(task_name, image, instance_type, prefix):
+    def _f(task_name: str, image: str, instance_type: str, prefix: str) -> str:
         return f"""
     {task_name}:
       compute_environment:
@@ -1133,7 +1129,7 @@ def _create_default_batch_environment_config(
 @call_parse
 def create_default_batch_environment_config(
     prefix: Param("prefix", str), output_path: Param("output_path", str), regions: Param("regions", List[str]) = None  # type: ignore
-):
+) -> None:
     """Generate batch environment YAML config to set up the batch job environment
 
     Args:
@@ -1146,7 +1142,7 @@ def create_default_batch_environment_config(
     )
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 43
-def _create_batch_environment(input_yaml_path: str, output_yaml_path: str):
+def _create_batch_environment(input_yaml_path: str, output_yaml_path: str) -> None:
     """Create a batch environment based on the config specified and store the created environment ARN in the output YAML file
 
     Args:
@@ -1186,7 +1182,7 @@ def _create_batch_environment(input_yaml_path: str, output_yaml_path: str):
 @call_parse
 def create_batch_environment(
     input_yaml_path: Param("yaml_path", str), output_yaml_path: Param("yaml_path", str)  # type: ignore
-):
+) -> None:
     """Create a batch environment based on the config specified and store the created environment ARN in the output YAML file
 
     Args:
@@ -1199,7 +1195,9 @@ def create_batch_environment(
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 45
 @contextmanager
-def create_testing_batch_environment_ctx(input_yaml_path: str, output_yaml_path: str):
+def create_testing_batch_environment_ctx(
+    input_yaml_path: str, output_yaml_path: str
+) -> Iterator[None]:
     """Create batch environment and tear it down after yield for testing
 
     Args:

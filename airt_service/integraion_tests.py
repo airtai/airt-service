@@ -28,7 +28,7 @@ from .aws.utils import upload_to_s3_with_retry
 from airt.remote_path import RemotePath
 
 # %% ../notebooks/Integration_Test.ipynb 5
-def integration_scenario_docs(base_url: str = "http://127.0.0.1:6006"):
+def integration_scenario_docs(base_url: str = "http://127.0.0.1:6006") -> None:
     """Test fastapi docs
 
     Args:
@@ -406,7 +406,7 @@ def test_activate_mfa(
 # %% ../notebooks/Integration_Test.ipynb 17
 def reset_test_user_password(
     base_url: str, headers: Dict[str, str], username: str, password: str, otp: str
-):
+) -> None:
     """Reset the test user password"""
     sanitized_print(f"Resetting password for: {username}")
     r = httpx.post(
@@ -419,7 +419,7 @@ def reset_test_user_password(
 # %% ../notebooks/Integration_Test.ipynb 18
 def test_disable_mfa(
     base_url: str, headers: Dict[str, str], username: str, otp: Optional[str] = None
-):
+) -> None:
     """Disable MFA for the user"""
     current_active_user = httpx.get(
         f"{base_url}/user/details?user_id_or_name=None", headers=headers
@@ -474,7 +474,7 @@ def test_auth_with_otp(
     return token
 
 # %% ../notebooks/Integration_Test.ipynb 20
-def delete_test_user(base_url: str, test_username: str):
+def delete_test_user(base_url: str, test_username: str) -> None:
     """Delete the test user created for testing
 
     Args:
@@ -497,7 +497,7 @@ def delete_test_user(base_url: str, test_username: str):
     assert not r.is_error, r.text  # nosec B101
 
 # %% ../notebooks/Integration_Test.ipynb 21
-def integration_tests(base_url: str = "http://127.0.0.1:6006"):
+def integration_tests(base_url: str = "http://127.0.0.1:6006") -> None:
     """Integration tests
 
     Args:
@@ -576,7 +576,7 @@ def run_integration_tests(
     host: Param("hostname", str),  # type: ignore
     port: Param("port", int),  # type: ignore
     protocol: Param("http or https", str) = "https",  # type: ignore
-):
+) -> None:
     """Run integration tests against given host and port
 
     Args:
