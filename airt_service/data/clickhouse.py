@@ -26,6 +26,8 @@ from sqlalchemy import MetaData, Table, and_, column, create_engine, select
 
 # from sqlmodel import create_engine, select, column, Table, MetaData, and_
 from sqlalchemy.engine import Connection
+from sqlalchemy.engine.cursor import CursorResult
+
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.expression import func
 
@@ -480,7 +482,7 @@ def _insert_table(
     database: str,
     table: str,
     protocol: str,
-) -> None:
+) -> CursorResult:
     with get_clickhouse_connection(  # type: ignore
         username=username,
         password=password,
@@ -498,7 +500,7 @@ def _insert_table(
         )
         logger.info(f"Inserting table with query={query}")
 
-        connection.execute(query)
+        return connection.execute(query)
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 34
 def _drop_table(
@@ -512,7 +514,7 @@ def _drop_table(
     database: str,
     table: str,
     protocol: str,
-) -> None:
+) -> CursorResult:
 
     with get_clickhouse_connection(  # type: ignore
         username=username,
@@ -539,7 +541,7 @@ def _drop_table(
         logger.info(f"Dropping table with query={query}")
 
         # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query
-        connection.execute(query)
+        return connection.execute(query)
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 37
 def _insert_data(
