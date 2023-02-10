@@ -1109,12 +1109,12 @@ def check_db_is_up():
     """Function to check whether DB is up and running or not"""
     # Based on - https://github.com/CTFd/CTFd/issues/725#issuecomment-814379242
     logger.info(f"Waiting for db to be up and running")
-    conn_str = create_connection_string(**get_db_params_from_env_vars())
+    conn_str = create_connection_string(**get_db_params_from_env_vars())  # type: ignore
     sleep_for = 10
     while True:
         try:
             logger.info("Checking connection")
-            sqlalchemy.create_engine(conn_str).raw_connection().ping()
+            sqlalchemy.create_engine(conn_str).raw_connection().ping()  # type: ignore
             logger.info("Connection established")
             break
         except Exception as e:
@@ -1132,7 +1132,7 @@ def get_session():
     Yields:
         session: SQLmodel session
     """
-    engine = get_engine(**get_db_params_from_env_vars())
+    engine = get_engine(**get_db_params_from_env_vars())  # type: ignore
     with Session(engine) as session:
         yield session
     engine.dispose()

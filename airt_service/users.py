@@ -1077,7 +1077,7 @@ def require_otp_or_totp(message_template_name: str):
             otp_or_totp = get_attr_by_name(kwargs, "otp")
             session = kwargs["session"]
 
-            user = get_user(username)
+            user = get_user(username)  # type: ignore
             if user is None:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -1086,14 +1086,14 @@ def require_otp_or_totp(message_template_name: str):
 
             if user.is_mfa_active:
                 try:
-                    validate_totp(user.mfa_secret, otp_or_totp)
+                    validate_totp(user.mfa_secret, otp_or_totp)  # type: ignore
                     return func(*args, **kwargs)
                 except HTTPException as e:
                     pass
             try:
                 validate_otp(
                     user=user,
-                    otp=otp_or_totp,
+                    otp=otp_or_totp,  # type: ignore
                     message_template_name=message_template_name,
                     session=session,
                 )
