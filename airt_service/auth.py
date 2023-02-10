@@ -9,42 +9,48 @@ __all__ = ['ALGORITHM', 'ACCESS_TOKEN_EXPIRE_MINUTES', 'oauth2_scheme', 'auth_ro
 
 # %% ../notebooks/Auth.ipynb 3
 import json
+import secrets
 import uuid
 from datetime import datetime, timedelta
 from os import environ
-import secrets
 from typing import *
-from urllib.parse import urlparse, parse_qs
-
-
-# from fastcore.foundation import patch
-from fastapi import APIRouter, Request
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi import Depends, HTTPException, status, Query
-from pydantic import BaseModel
-from jose import JWTError, jwt
-from sqlalchemy.exc import NoResultFound, MultipleResultsFound
-from sqlmodel import Session, select
+from urllib.parse import parse_qs, urlparse
 
 from airt.logger import get_logger
 from airt.patching import patch
 
+# from fastcore.foundation import patch
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from pydantic import BaseModel
+from sqlalchemy.exc import MultipleResultsFound, NoResultFound
+from sqlmodel import Session, select
+
 import airt_service.sanitizer
-from .db.models import get_session, get_session_with_context
-from .db.models import APIKeyCreate, APIKey, APIKeyRead, User, UserRead, SSO
-from .errors import HTTPError, ERRORS
+from airt_service.db.models import (
+    SSO,
+    APIKey,
+    APIKeyCreate,
+    APIKeyRead,
+    User,
+    UserRead,
+    get_session,
+    get_session_with_context,
+)
+from .errors import ERRORS, HTTPError
 from .helpers import commit_or_rollback, verify_password
-from .totp import validate_totp, require_otp_if_mfa_enabled
+from .sms_utils import validate_otp
 from airt_service.sso import (
+    SESSION_TIME_LIMIT,
     SSOAuthURL,
+    get_sso_if_enabled_for_user,
+    get_sso_protocol_and_email,
     get_valid_sso_providers,
     initiate_sso_flow,
-    get_sso_if_enabled_for_user,
     validate_sso_response,
-    get_sso_protocol_and_email,
-    SESSION_TIME_LIMIT,
 )
-from .sms_utils import validate_otp
+from .totp import require_otp_if_mfa_enabled, validate_totp
 
 # %% ../notebooks/Auth.ipynb 5
 logger = get_logger(__name__)

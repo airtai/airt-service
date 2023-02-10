@@ -9,20 +9,20 @@ __all__ = ['get_available_azure_regions', 'verify_azure_region', 'create_azure_r
 # %% ../../notebooks/Azure_Utils.ipynb 3
 import logging
 import os
-import yaml
 from pathlib import Path
 from typing import *
 
+import yaml
+from airt.helpers import get_s3_bucket_name_and_folder_from_uri
+from airt.logger import get_logger
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.storage import StorageManagementClient
 from azure.storage.blob import BlobServiceClient
 from azure.storage.blob._container_client import ContainerClient
-from fastapi import status, HTTPException
+from fastapi import HTTPException, status
 
 import airt_service.sanitizer
-from airt.helpers import get_s3_bucket_name_and_folder_from_uri
-from airt.logger import get_logger
 
 # %% ../../notebooks/Azure_Utils.ipynb 6
 logger = get_logger(__name__)

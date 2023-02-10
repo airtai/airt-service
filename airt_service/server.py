@@ -5,40 +5,39 @@ __all__ = ['description', 'ModelType', 'ModelTrainingRequest', 'EventData', 'Rea
            'TrainingModelStatus', 'ModelMetrics', 'Prediction', 'create_ws_server']
 
 # %% ../notebooks/API_Web_Service.ipynb 2
+from datetime import datetime
+from enum import Enum
+from os import environ
 from pathlib import Path
 from typing import *
 
 import yaml
-from datetime import datetime
-from enum import Enum
-from os import environ
-
 from aiokafka.helpers import create_ssl_context
+from airt.logger import get_logger
 from asyncer import asyncify
-from fastapi import Request, FastAPI, Response
-from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
-from fastapi.openapi.utils import get_openapi
-from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fast_kafka_api.application import FastKafkaAPI
-from pydantic import validator, BaseModel, Field, HttpUrl, EmailStr, NonNegativeInt
+from fastapi import FastAPI, Request, Response
+from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, NonNegativeInt, validator
 from sqlmodel import select
 
 import airt_service
-from .sanitizer import sanitized_print
 from .auth import auth_router
 from .confluent import aio_kafka_config
 from .data.datablob import datablob_router
 from .data.datasource import datasource_router
-from .db.models import get_session_with_context, User
-from .model.train import model_train_router
+from .db.models import User, get_session_with_context
 from .model.prediction import model_prediction_router
+from .model.train import model_train_router
+from .sanitizer import sanitized_print
 from airt_service.training_status_process import (
-    process_training_status,
     TrainingStreamStatus,
+    process_training_status,
 )
 from .users import user_router
-from airt.logger import get_logger
 
 # %% ../notebooks/API_Web_Service.ipynb 4
 logger = get_logger(__name__)

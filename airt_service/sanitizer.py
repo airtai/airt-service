@@ -12,7 +12,6 @@ from logging import Logger
 from typing import *
 
 import IPython
-
 from airt.logger import get_logger
 from airt.patching import patch
 
@@ -78,7 +77,7 @@ def new_publish_display_data(
     source=IPython.core.display_functions._sentinel,
     *,
     transient=None,
-    **kwargs
+    **kwargs,
 ):
     sanitized_data = {
         k: sanitize_secrets(v.__repr__() if not isinstance(v, str) else v)

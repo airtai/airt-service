@@ -7,13 +7,14 @@ __all__ = ['AirflowExecutor']
 from os import environ
 from typing import *
 
-import airt_service.sanitizer
 from airt.executor.subcommand import CLICommandBase
 from airt.logger import get_logger
-from .base_executor import BaseAirflowExecutor
-from .bash_executor import AirflowBashExecutor
+
+import airt_service.sanitizer
 from .aws_batch_executor import AirflowAWSBatchExecutor
 from .azure_batch_executor import AirflowAzureBatchExecutor
+from .base_executor import BaseAirflowExecutor
+from .bash_executor import AirflowBashExecutor
 
 # %% ../../notebooks/AirflowExecutor.ipynb 4
 logger = get_logger(__name__)

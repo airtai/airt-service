@@ -6,9 +6,9 @@ __all__ = ['NoneBatchJobContext']
 # %% ../../notebooks/None_Batch_Job_Context.ipynb 3
 from typing import *
 
-import airt_service.sanitizer
 from airt.logger import get_logger
 
+import airt_service.sanitizer
 from .base import BatchJobContext
 
 # %% ../../notebooks/None_Batch_Job_Context.ipynb 5

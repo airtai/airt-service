@@ -4,17 +4,17 @@
 __all__ = ['AzureBatchJobContext']
 
 # %% ../../notebooks/Azure_Batch_Job_Context.ipynb 3
-from typing import *
 from os import environ
+from typing import *
 
 import azure.batch.models as batchmodels
 from airt.logger import get_logger
 
 import airt_service
 import airt_service.sanitizer
-from .base import BatchJobContext
-from ..azure.utils import get_batch_account_pool_job_names
 from ..azure.batch_utils import azure_batch_create_job
+from ..azure.utils import get_batch_account_pool_job_names
+from .base import BatchJobContext
 
 # %% ../../notebooks/Azure_Batch_Job_Context.ipynb 5
 logger = get_logger(__name__)

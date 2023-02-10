@@ -10,9 +10,9 @@ from airt.logger import get_logger
 
 import airt_service
 import airt_service.sanitizer
-from .base import BatchJobContext
-from ..aws.utils import get_queue_definition_arns
 from ..aws.batch_utils import aws_batch_create_job
+from ..aws.utils import get_queue_definition_arns
+from .base import BatchJobContext
 
 # %% ../../notebooks/AWS_Batch_Job_Context.ipynb 5
 logger = get_logger(__name__)

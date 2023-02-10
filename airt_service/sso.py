@@ -5,19 +5,24 @@ __all__ = ['get_valid_sso_providers', 'SSOAuthURL', 'initiate_sso_flow', 'get_ss
 
 # %% ../notebooks/SSO.ipynb 2
 import os
-import requests
-from typing import *
 from datetime import datetime, timedelta
+from typing import *
 
-from requests_oauthlib import OAuth2Session
+import requests
+from fastapi import HTTPException, Request, status
 from pydantic import BaseModel
+from requests_oauthlib import OAuth2Session
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import select
-from fastapi import status, Request, HTTPException
 
 import airt_service.sanitizer
-from .db.models import SSOProvider, SSO, SSOProtocol, User
-from .db.models import get_session_with_context
+from airt_service.db.models import (
+    SSO,
+    SSOProtocol,
+    SSOProvider,
+    User,
+    get_session_with_context,
+)
 from .errors import ERRORS
 
 # %% ../notebooks/SSO.ipynb 4
