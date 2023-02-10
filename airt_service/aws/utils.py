@@ -7,19 +7,19 @@ __all__ = ['get_available_aws_regions', 'verify_aws_region', 'get_s3_storage_buc
 
 # %% ../../notebooks/AWS_Utils.ipynb 3
 import os
-import yaml
 from pathlib import Path
 from typing import *
 
 import boto3
 import requests
+import yaml
+from airt.helpers import get_s3_bucket_name_and_folder_from_uri
+from airt.logger import get_logger
 from botocore.client import Config
-from fastapi import status, HTTPException
+from fastapi import HTTPException, status
 from mypy_boto3_s3.service_resource import Bucket
 
 from ..sanitizer import sanitized_print
-from airt.helpers import get_s3_bucket_name_and_folder_from_uri
-from airt.logger import get_logger
 
 # %% ../../notebooks/AWS_Utils.ipynb 6
 logger = get_logger(__name__)

@@ -9,8 +9,8 @@ from typing import *
 from airt.logger import get_logger
 
 import airt_service.sanitizer
-from .base import BatchJobContext
 from ..background_task import execute_cli
+from .base import BatchJobContext
 
 # %% ../../notebooks/FastAPI_Batch_Job_Context.ipynb 5
 logger = get_logger(__name__)

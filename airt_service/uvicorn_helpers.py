@@ -4,11 +4,10 @@
 __all__ = ['run_uvicorn']
 
 # %% ../notebooks/Uvicorn_Helpers.ipynb 1
+import multiprocessing
+from contextlib import contextmanager
 from time import sleep
 from typing import *
-from contextlib import contextmanager
-
-import multiprocessing
 
 from fastapi import FastAPI
 from uvicorn import Config, Server

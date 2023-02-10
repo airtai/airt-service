@@ -4,17 +4,16 @@
 __all__ = ['generate_mfa_secret', 'generate_mfa_provisioning_url', 'validate_totp', 'require_otp_if_mfa_enabled']
 
 # %% ../notebooks/TOTP.ipynb 3
-import pyotp
-from typing import *
 import functools
+from typing import *
 
+import pyotp
+from airt.logger import get_logger
 from fastapi import HTTPException, status
 
-from airt.logger import get_logger
-
 import airt_service.sanitizer
-from .errors import ERRORS
 from .constants import MFA_ISSUER_NAME
+from .errors import ERRORS
 from .helpers import get_attr_by_name
 
 # %% ../notebooks/TOTP.ipynb 5

@@ -24,32 +24,31 @@ from typing import *
 from urllib.parse import quote_plus as urlquote
 
 import sqlalchemy
-from pydantic import EmailStr, validator
-from sqlalchemy.exc import NoResultFound, IntegrityError
-from sqlalchemy.future.engine import Engine
+from airt.logger import get_logger
+from airt.patching import patch
 from fastapi import BackgroundTasks
-
+from pydantic import EmailStr, validator
+from sqlalchemy.engine.interfaces import Dialect
+from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy.future.engine import Engine
 from sqlmodel import (
+    TEXT,
+    VARCHAR,
+    Column,
+    Enum,
     Field,
     Relationship,
     Session,
     SQLModel,
     create_engine,
     select,
-    Column,
-    VARCHAR,
-    TEXT,
-    Enum,
 )
 from sqlmodel.sql.sqltypes import GUID
-from sqlalchemy.engine.interfaces import Dialect
 
-from airt.logger import get_logger
-from airt.patching import patch
+from ..helpers import get_password_hash
 
 # from airt_service.data.tag import Tag
 from ..sanitizer import sanitized_print
-from ..helpers import get_password_hash
 
 # %% ../../notebooks/DB_Models.ipynb 4
 logger = get_logger(__name__)

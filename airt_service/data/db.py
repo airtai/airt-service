@@ -10,7 +10,10 @@ from typing import *
 
 import dask.dataframe as dd
 import pandas as pd
-from fastcore.script import call_parse, Param
+from airt.engine.engine import using_cluster
+from airt.logger import get_logger
+from airt.remote_path import RemotePath
+from fastcore.script import Param, call_parse
 from fastcore.utils import *
 from sqlmodel import select
 
@@ -23,15 +26,12 @@ from airt_service.data.utils import (
     get_db_connection_params_from_db_uri,
 )
 from airt_service.db.models import (
-    create_connection_string,
-    get_session_with_context,
     DataBlob,
     PredictionPush,
+    create_connection_string,
+    get_session_with_context,
 )
 from ..helpers import truncate
-from airt.engine.engine import using_cluster
-from airt.logger import get_logger
-from airt.remote_path import RemotePath
 
 # %% ../../notebooks/DataBlob_DB.ipynb 6
 logger = get_logger(__name__)
