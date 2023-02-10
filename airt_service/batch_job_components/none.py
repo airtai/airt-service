@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 
 # %% ../../notebooks/None_Batch_Job_Context.ipynb 6
 class NoneBatchJobContext(BatchJobContext):
-    def __init__(self, task: str, **kwargs):
+    def __init__(self, task: str, **kwargs: Any):
         """None Batch Job Context
 
         Do not use __init__, please use factory method `create` to initiate object
@@ -24,7 +24,7 @@ class NoneBatchJobContext(BatchJobContext):
         BatchJobContext.__init__(self, task=task)
         # do nothing
 
-    def create_job(self, command: str, environment_vars: Dict[str, str]):
+    def create_job(self, command: str, environment_vars: Dict[str, str]) -> None:
         """Create a new job
 
         Args:

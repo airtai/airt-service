@@ -183,7 +183,7 @@ def get_user_to_disable_mfa(user: User, session: Session, user_uuid: str) -> Use
     return _user
 
 # %% ../notebooks/Users.ipynb 21
-def create_sms_protocol(xs: Dict[str, str], sms: SMS, session: Session):
+def create_sms_protocol(xs: Dict[str, str], sms: SMS, session: Session) -> None:
     """Create a new record in the sms protocol table
 
     Args:
@@ -320,7 +320,9 @@ def send_sms_otp(
     return SEND_SMS_OTP_MSG
 
 # %% ../notebooks/Users.ipynb 31
-def require_otp_or_totp_if_mfa_enabled(message_template_name: str):
+def require_otp_or_totp_if_mfa_enabled(
+    message_template_name: str,
+) -> Callable[..., Any]:
     """A decorator function to validate the totp/otp for MFA enabled user
 
     If the totp/otp validation fails, the user will not be granted access to the decorated route
@@ -507,7 +509,7 @@ class UserUpdateRequest(BaseModel):
 
 # %% ../notebooks/Users.ipynb 49
 @patch(cls_method=True)
-def check_username_exists(cls: User, username: str, session: Session):
+def check_username_exists(cls: User, username: str, session: Session) -> None:
     """Check given username already exists in database or not
 
     Args:
@@ -550,7 +552,7 @@ def check_valid_email(email: str) -> str:
 
 # %% ../notebooks/Users.ipynb 53
 @patch(cls_method=True)
-def check_email_exists(cls: User, email: str, session: Session):
+def check_email_exists(cls: User, email: str, session: Session) -> None:
     """Check given email already exists in database or not
 
     Args:
@@ -575,7 +577,7 @@ def check_email_exists(cls: User, email: str, session: Session):
 
 # %% ../notebooks/Users.ipynb 54
 @patch
-def _update(self: User, to_update: UserUpdateRequest, session: Session):
+def _update(self: User, to_update: UserUpdateRequest, session: Session) -> User:
     if to_update.username:
         User.check_username_exists(to_update.username, session)
         self.username = to_update.username
@@ -624,7 +626,7 @@ def update_user(
 
 # %% ../notebooks/Users.ipynb 60
 @patch
-def disable(self: User, session: Session):
+def disable(self: User, session: Session) -> User:
     """Disable user
 
     Args:
@@ -680,7 +682,7 @@ def disable_user(
 
 # %% ../notebooks/Users.ipynb 65
 @patch
-def enable(self: User, session: Session):
+def enable(self: User, session: Session) -> User:
     """Enable user
 
     Args:
@@ -1061,7 +1063,7 @@ class ResetPasswordRequest(BaseModel):
     otp: str
 
 # %% ../notebooks/Users.ipynb 101
-def require_otp_or_totp(message_template_name: str):
+def require_otp_or_totp(message_template_name: str) -> Callable[..., Any]:
     """A decorator function to validate the totp/otp
 
     If the totp/otp validation fails, the user will not be granted access to the decorated route

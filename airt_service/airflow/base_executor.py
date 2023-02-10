@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 
 # %% ../../notebooks/BaseAirflowExecutor.ipynb 8
 class BaseAirflowExecutor(ModelExecutor):
-    def _create_step_template(self, step: CLICommandBase, **kwargs):
+    def _create_step_template(self, step: CLICommandBase, **kwargs: Any) -> str:
         """Create template for step
 
         Args:
@@ -36,7 +36,7 @@ class BaseAirflowExecutor(ModelExecutor):
         self,
         on_step_start: Optional[CLICommandBase] = None,
         on_step_end: Optional[CLICommandBase] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> str:
         """
         Create DAG template with steps as tasks
@@ -58,7 +58,7 @@ class BaseAirflowExecutor(ModelExecutor):
         tags: Union[str, List[str]],
         on_step_start: Optional[CLICommandBase] = None,
         on_step_end: Optional[CLICommandBase] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Path:
         """Create scheduled DAG in airflow
 
@@ -81,7 +81,7 @@ class BaseAirflowExecutor(ModelExecutor):
         tags: Union[str, List[str]],
         on_step_start: Optional[CLICommandBase] = None,
         on_step_end: Optional[CLICommandBase] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Tuple[Path, str]:
         """Create DAG and execute steps in airflow
 
@@ -146,7 +146,7 @@ with DAG(
 
 # %% ../../notebooks/BaseAirflowExecutor.ipynb 11
 @patch
-def _create_dag_id(self: BaseAirflowExecutor, **kwargs) -> str:
+def _create_dag_id(self: BaseAirflowExecutor, **kwargs: Any) -> str:
     """
     Create dag id by combining steps CLIs and their arguments
 
@@ -160,7 +160,7 @@ def _create_dag_id(self: BaseAirflowExecutor, **kwargs) -> str:
 # %% ../../notebooks/BaseAirflowExecutor.ipynb 14
 @patch
 def _create_jinja2_template_kwargs(
-    self: BaseAirflowExecutor, **kwargs
+    self: BaseAirflowExecutor, **kwargs: Any
 ) -> Dict[str, Any]:
     """
     Convert kwargs into jinja2 compatible template kwargs
@@ -193,7 +193,7 @@ def _create_dag(
     tags: Union[str, List[str]],
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> Tuple[str, Path]:
     """Create DAG in airflow
 
@@ -235,7 +235,7 @@ def schedule(
     tags: Union[str, List[str]],
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> Path:
     """Create scheduled DAG in airflow
 

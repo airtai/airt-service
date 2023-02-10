@@ -28,7 +28,7 @@ class AirflowBashExecutor(BaseAirflowExecutor):
         tags: Union[str, List[str]],
         on_step_start: Optional[CLICommandBase] = None,
         on_step_end: Optional[CLICommandBase] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Tuple[Path, str]:
         """Create DAG and execute steps in airflow
 
@@ -45,7 +45,9 @@ class AirflowBashExecutor(BaseAirflowExecutor):
 
 # %% ../../notebooks/AirflowBashExecutor.ipynb 10
 @patch
-def _create_step_template(self: AirflowBashExecutor, step: CLICommandBase, **kwargs):
+def _create_step_template(
+    self: AirflowBashExecutor, step: CLICommandBase, **kwargs: Any
+) -> str:
     """
     Create template for step
 
@@ -70,7 +72,7 @@ def _create_dag_template(
     self: BaseAirflowExecutor,
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> str:
     """
     Create DAG template with steps as tasks
@@ -117,7 +119,7 @@ def execute(
     tags: Union[str, List[str]],
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> Tuple[Path, str]:
     """Create DAG and execute steps in airflow
 

@@ -173,7 +173,7 @@ def create_db_uri_for_local_datablob(bucket: Bucket, s3_path: str) -> str:
 # %% ../../notebooks/Data_Utils.ipynb 21
 def calculate_azure_data_object_folder_size_and_path(
     data_object: Union[DataBlob, DataSource]
-):
+) -> None:
     """Calculate datasource/datablob folder size based on azure blob storage object size and its path
 
     Args:
@@ -207,7 +207,7 @@ def calculate_azure_data_object_folder_size_and_path(
 # %% ../../notebooks/Data_Utils.ipynb 23
 def calculate_s3_data_object_folder_size_and_path(
     data_object: Union[DataBlob, DataSource]
-):
+) -> None:
     """Calculate datasource/datablob folder size based on s3 object size and its s3 path
 
     Args:
@@ -235,7 +235,7 @@ def calculate_s3_data_object_folder_size_and_path(
 # %% ../../notebooks/Data_Utils.ipynb 25
 def calculate_data_object_folder_size_and_path(
     data_object: Union[DataBlob, DataSource]
-):
+) -> None:
     """Calculate datasource/datablob folder size for both aws and azure data objects
 
     Args:
@@ -247,7 +247,7 @@ def calculate_data_object_folder_size_and_path(
         calculate_azure_data_object_folder_size_and_path(data_object=data_object)
 
 # %% ../../notebooks/Data_Utils.ipynb 27
-def calculate_data_object_pulled_on(data_object: Union[DataBlob, DataSource]):
+def calculate_data_object_pulled_on(data_object: Union[DataBlob, DataSource]) -> None:
     """Calculate datasource/datablob's pulled_on datetime
 
     Args:
@@ -258,7 +258,7 @@ def calculate_data_object_pulled_on(data_object: Union[DataBlob, DataSource]):
 # %% ../../notebooks/Data_Utils.ipynb 29
 def delete_data_object_files_in_cloud(
     data_object: Union[DataBlob, DataSource, Model, Prediction]
-):
+) -> None:
     """
     Delete files for data object stored in cloud - aws or azure
 

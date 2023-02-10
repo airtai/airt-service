@@ -48,7 +48,7 @@ def download_from_db(
     table: str,
     chunksize: Optional[int] = 1_000_000,
     output_path: Path,
-):
+) -> None:
     """Download data from database and stores it as parquet files in output path
 
     Args:
@@ -92,7 +92,7 @@ def download_from_db(
 
 # %% ../../notebooks/DataBlob_DB.ipynb 11
 @call_parse
-def db_pull(datablob_id: Param("id of datablob in db", int)):  # type: ignore
+def db_pull(datablob_id: Param("id of datablob in db", int)) -> None:  # type: ignore
     """Pull the datablob and update its progress in internal db
 
     Args:
@@ -174,7 +174,7 @@ def db_pull(datablob_id: Param("id of datablob in db", int)):  # type: ignore
 
 # %% ../../notebooks/DataBlob_DB.ipynb 13
 @call_parse
-def db_push(prediction_push_id: int):
+def db_push(prediction_push_id: int) -> None:
     """Push prediction data to a rdbms
 
     Params:

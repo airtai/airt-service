@@ -40,7 +40,7 @@ def process_parquet(
     sort_by: Param("sort_by", str),  # type: ignore
     blocksize: Param("blocksize", str) = "256MB",  # type: ignore
     kwargs_json: Param("kwargs_json", str) = "{}",  # type: ignore
-):
+) -> None:
     """Download the user uploaded parquet file from S3, processes it and upload the processed parquet files to S3
 
     Args:

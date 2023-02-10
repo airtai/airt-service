@@ -38,7 +38,7 @@ def copy_between_azure_blob_storage(
     destination_credential: Optional[Union[str, DefaultAzureCredential]] = None,
     datablob: Optional[DataBlob] = None,
     skip_metadata_dir: Optional[bool] = False,
-):
+) -> None:
     """Copy files from source azure blob storage path and to destination azure blob storage path
 
     By default, all files are copied to the destination_remote_url. In case
@@ -98,7 +98,7 @@ def copy_between_azure_blob_storage(
 
 # %% ../../notebooks/DataBlob_Azure_Blob_Storage.ipynb 10
 @call_parse
-def azure_blob_storage_pull(datablob_id: int):
+def azure_blob_storage_pull(datablob_id: int) -> None:
     """Pull the data from azure blob storage and updates progress in db
 
     Args:
@@ -180,7 +180,7 @@ def azure_blob_storage_pull(datablob_id: int):
 
 # %% ../../notebooks/DataBlob_Azure_Blob_Storage.ipynb 14
 @call_parse
-def azure_blob_storage_push(prediction_push_id: int):
+def azure_blob_storage_push(prediction_push_id: int) -> None:
     """Push the data to azure blob storage and update its progress in db
 
     Args:

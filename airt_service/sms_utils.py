@@ -251,7 +251,7 @@ def _send_put_request_to_infobip(
     return response
 
 # %% ../notebooks/SMS_Utils.ipynb 22
-def _update_application_config(app_id: str, config: Dict[str, Any]):
+def _update_application_config(app_id: str, config: Dict[str, Any]) -> Dict[str, Any]:
     """Update an existing application configuration
 
     Args:
@@ -382,7 +382,7 @@ def validate_otp(
     otp: str,
     message_template_name: str,
     session: Session,
-):
+) -> None:
     """Validate the SMS OTP
 
     Args:

@@ -88,7 +88,7 @@ def get_available_azure_regions() -> List[str]:
     ]
 
 # %% ../../notebooks/Azure_Utils.ipynb 10
-def verify_azure_region(region: str):
+def verify_azure_region(region: str) -> None:
     """
     Verify given region is in available azure regions else raise an error
 

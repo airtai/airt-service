@@ -59,7 +59,7 @@ def get_available_aws_regions() -> List[str]:
     ]
 
 # %% ../../notebooks/AWS_Utils.ipynb 9
-def verify_aws_region(region: str):
+def verify_aws_region(region: str) -> None:
     """
     Verify region is in available regions else raise an error
 
@@ -215,7 +215,7 @@ def upload_to_s3_with_retry(
     presigned_fields: Dict[str, Any],
     max_retry: int = 3,
     curr_iteration: int = 1,
-):
+) -> None:
     """
     Helper function to upload local files to s3 using presigned url; Used only in tests
 

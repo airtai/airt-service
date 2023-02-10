@@ -17,7 +17,7 @@ logger = get_logger(__name__)
 
 # %% ../../notebooks/FastAPI_Batch_Job_Context.ipynb 6
 class FastAPIBatchJobContext(BatchJobContext):
-    def __init__(self, task: str, **kwargs):
+    def __init__(self, task: str, **kwargs: Any):
         """FastAPI Batch Job Context
 
         Do not use __init__, please use factory method `create` to initiate object
@@ -25,7 +25,7 @@ class FastAPIBatchJobContext(BatchJobContext):
         BatchJobContext.__init__(self, task=task)
         self.background_tasks = kwargs["background_tasks"]
 
-    def create_job(self, command: str, environment_vars: Dict[str, str]):
+    def create_job(self, command: str, environment_vars: Dict[str, str]) -> None:
         """Create a new job
 
         Args:

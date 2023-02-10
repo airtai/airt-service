@@ -616,7 +616,7 @@ def create_ws_server(
     @fast_kafka_api_app.consumes(
         topic=f"{start_process_for_username}_start_training_data"
     )
-    async def on_infobip_start_training_data(msg: ModelTrainingRequest):
+    async def on_infobip_start_training_data(msg: ModelTrainingRequest) -> None:
         logger.info(f"start training msg={msg}")
         with get_session_with_context() as session:
             user = session.exec(
@@ -636,7 +636,7 @@ def create_ws_server(
             session.commit()
 
     @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_training_data")
-    async def on_infobip_training_data(msg: EventData):
+    async def on_infobip_training_data(msg: EventData) -> None:
         # ToDo: this is not showing up in logs
         logger.debug(f"msg={msg}")
 
@@ -653,7 +653,7 @@ def create_ws_server(
     #             await to_infobip_training_data_status(msg=training_data_status)
 
     @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_realtime_data")
-    async def on_infobip_realtime_data(msg: RealtimeData):
+    async def on_infobip_realtime_data(msg: RealtimeData) -> None:
         pass
 
     @fast_kafka_api_app.produces(

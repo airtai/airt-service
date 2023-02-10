@@ -40,7 +40,7 @@ def copy_between_s3(
     destination_secret_key: Optional[str] = None,
     datablob: Optional[DataBlob] = None,
     skip_metadata_dir: Optional[bool] = False,
-):
+) -> None:
     """Copy files from source S3 path and to destination S3 path
 
     By default, all files are copied to the destination_remote_url. In case
@@ -97,7 +97,7 @@ def copy_between_s3(
 
 # %% ../../notebooks/DataBlob_S3.ipynb 10
 @call_parse
-def s3_pull(datablob_id: int):
+def s3_pull(datablob_id: int) -> None:
     """Pull the data from s3 and updates progress in db
 
     Args:
@@ -184,7 +184,7 @@ def s3_pull(datablob_id: int):
 
 # %% ../../notebooks/DataBlob_S3.ipynb 14
 @call_parse
-def s3_push(prediction_push_id: int):
+def s3_push(prediction_push_id: int) -> None:
     """Push the data from s3 and update its progress in db
 
     Args:

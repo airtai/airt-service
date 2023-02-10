@@ -25,7 +25,7 @@ class BatchJobContext:
         """
         self.task = task
 
-    def create_job(self, command: str, environment_vars: Dict[str, str]):
+    def create_job(self, command: str, environment_vars: Dict[str, str]) -> None:
         """Create a new job
 
         Args:
@@ -37,7 +37,7 @@ class BatchJobContext:
     _factories: Dict[str, Any] = {}
 
     @classmethod
-    def create(cls, task: str, **kwargs) -> "BatchJobContext":
+    def create(cls, task: str, **kwargs: Any) -> "BatchJobContext":
         """Factory method to create a new job
 
         Args:

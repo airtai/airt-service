@@ -865,7 +865,7 @@ def get(cls: DataBlob, uuid: str, user: User, session: Session) -> DataBlob:
 
 # %% ../../notebooks/DataBlob_Router.ipynb 44
 @patch
-def is_ready(self: DataBlob):
+def is_ready(self: DataBlob) -> None:
     """Check if the datablob's completed steps equal to total steps, else raise HTTPException"""
     if self.completed_steps != self.total_steps:
         if self.path:
@@ -999,7 +999,7 @@ def get_details_of_datablob(
 
 # %% ../../notebooks/DataBlob_Router.ipynb 53
 @patch
-def delete(self: DataBlob, user: User, session: Session):
+def delete(self: DataBlob, user: User, session: Session) -> DataBlob:
     """Delete a datablob
 
     Args:
@@ -1088,7 +1088,7 @@ def get_all_datablobs(
 
 # %% ../../notebooks/DataBlob_Router.ipynb 60
 @patch
-def tag(self: DataBlob, tag_name: str, session: Session):
+def tag(self: DataBlob, tag_name: str, session: Session) -> DataBlob:
     """Tag an existing datablob
 
     Args:

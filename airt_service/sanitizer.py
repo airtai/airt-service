@@ -64,7 +64,7 @@ old_log = Logger._log
 
 # %% ../notebooks/Sanitize_Secrets.ipynb 18
 @patch
-def _log(self: Logger, level, msg, *args, **kwargs):
+def _log(self: Logger, level: int, msg: str, *args: Any, **kwargs: Any) -> None:
     return old_log(self, level, sanitize_secrets(msg), *args, **kwargs)
 
 # %% ../notebooks/Sanitize_Secrets.ipynb 23

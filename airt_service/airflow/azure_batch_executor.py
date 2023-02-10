@@ -112,7 +112,7 @@ class AirflowAzureBatchExecutor(BaseAirflowExecutor):
         tags: Union[str, List[str]],
         on_step_start: Optional[CLICommandBase] = None,
         on_step_end: Optional[CLICommandBase] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Tuple[Path, str]:
         """Create DAG and execute steps in airflow
 
@@ -133,8 +133,8 @@ def _create_step_template(
     self: AirflowAzureBatchExecutor,
     step: CLICommandBase,
     exec_environment: str,
-    **kwargs,
-):
+    **kwargs: Any,
+) -> str:
     """
     Create template for step
 
@@ -192,7 +192,7 @@ def _create_dag_template(
     self: AirflowAzureBatchExecutor,
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> str:
     """
     Create DAG template with steps as tasks
@@ -239,7 +239,7 @@ def execute(
     tags: Union[str, List[str]],
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> Tuple[Path, str]:
     """Create DAG and execute steps in airflow
 
@@ -266,7 +266,7 @@ def execute(
     return dag_file_path, run_id
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 23
-def _test_azure_batch_executor(region: str = "northeurope"):
+def _test_azure_batch_executor(region: str = "northeurope") -> None:
     with tempfile.TemporaryDirectory() as d:
         data_path_url, model_path_url = setup_test_paths(d)
 

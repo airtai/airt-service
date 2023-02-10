@@ -135,7 +135,7 @@ class User(UserBase, table=True):
         raise NotImplementedError()
 
     @classmethod
-    def check_username_exists(cls, username: str, session: Session):
+    def check_username_exists(cls, username: str, session: Session) -> None:
         """Check given username already exists in database or not
 
         Args:
@@ -148,7 +148,7 @@ class User(UserBase, table=True):
         raise NotImplementedError()
 
     @classmethod
-    def check_email_exists(cls, email: str, session: Session):
+    def check_email_exists(cls, email: str, session: Session) -> None:
         """Check given email already exists in database or not
 
         Args:

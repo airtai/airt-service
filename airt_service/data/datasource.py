@@ -56,7 +56,7 @@ datasource_router = APIRouter(
 
 # %% ../../notebooks/DataSource_Router.ipynb 9
 @patch
-def calculate_properties(self: DataSource, cache_path: Path):
+def calculate_properties(self: DataSource, cache_path: Path) -> None:
     """Calculate properties of datasource like no of rows, dtypes, head, hash from parquet files
 
     Args:
@@ -77,7 +77,7 @@ def calculate_properties(self: DataSource, cache_path: Path):
 @patch
 def remove_tag_from_previous_datasources(
     self: DataSource, tag_name: str, session: Session
-):
+) -> None:
     """Remove the tag_name associated with other/previous datasources
 
     Args:
@@ -165,7 +165,7 @@ def get_details_of_datasource(
 
 # %% ../../notebooks/DataSource_Router.ipynb 19
 @patch
-def delete(self: DataSource, user: User, session: Session):
+def delete(self: DataSource, user: User, session: Session) -> DataSource:
     """Delete a datasource
 
     Args:
@@ -222,7 +222,7 @@ def _get_ds_head_and_dtypes(datasource_s3_path: str) -> Dict[str, Any]:
 
 # %% ../../notebooks/DataSource_Router.ipynb 25
 @patch
-def is_ready(self: DataSource):
+def is_ready(self: DataSource) -> None:
     """Check if the datasource's completed steps equal to total steps, else raise HTTPException"""
     if self.completed_steps != self.total_steps:
         raise HTTPException(
@@ -329,7 +329,7 @@ def get_all_datasources(
 
 # %% ../../notebooks/DataSource_Router.ipynb 36
 @patch
-def tag(self: DataSource, tag_name: str, session: Session):
+def tag(self: DataSource, tag_name: str, session: Session) -> DataSource:
     """Tag an existing datasource
 
     Args:

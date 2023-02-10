@@ -151,7 +151,7 @@ def get_clickhouse_connection(  # type: ignore
 def get_max_timestamp(
     timestamp_column: str,
     connection: Connection,
-    table,
+    table: str,
     verbose: bool = False,
 ) -> int:
     engine = connection.engine
@@ -244,8 +244,8 @@ def _download_from_clickhouse(
     timestamp_column: str,
     filters: Optional[Dict[str, str]] = None,
     output_path: Path,
-    db_download_size=50_000_000,
-):
+    db_download_size: int = 50_000_000,
+) -> None:
     """Downloads data from database and stores it as parquet files in output path
 
     Args:
@@ -338,7 +338,7 @@ def clickhouse_pull(
     filters_json: Param(  # type: ignore
         "additional column filters as json string key, value pairs", str
     ) = "{}",
-):
+) -> None:
     """Pull datablob from a clickhouse database and update progress in the internal database
 
     Args:
@@ -480,7 +480,7 @@ def _insert_table(
     database: str,
     table: str,
     protocol: str,
-):
+) -> None:
     with get_clickhouse_connection(  # type: ignore
         username=username,
         password=password,
@@ -498,7 +498,7 @@ def _insert_table(
         )
         logger.info(f"Inserting table with query={query}")
 
-        return connection.execute(query)
+        connection.execute(query)
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 34
 def _drop_table(
@@ -512,7 +512,7 @@ def _drop_table(
     database: str,
     table: str,
     protocol: str,
-):
+) -> None:
 
     with get_clickhouse_connection(  # type: ignore
         username=username,
@@ -539,7 +539,7 @@ def _drop_table(
         logger.info(f"Dropping table with query={query}")
 
         # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query
-        return connection.execute(query)
+        connection.execute(query)
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 37
 def _insert_data(
@@ -554,7 +554,7 @@ def _insert_data(
     database: str,
     table: str,
     protocol: str,
-):
+) -> None:
     _insert_table(
         df,
         table_name,
@@ -583,7 +583,7 @@ def _insert_data(
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 39
 @call_parse
-def clickhouse_push(prediction_push_id: int):
+def clickhouse_push(prediction_push_id: int) -> None:
     """Push the data to a clickhouse database
 
     Args:

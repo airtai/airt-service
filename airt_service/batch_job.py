@@ -58,7 +58,7 @@ def create_batch_job(
     cloud_provider: str,
     region: str,
     background_tasks: BackgroundTasks,
-):
+) -> None:
     """Create a new batch job
 
     Args:
