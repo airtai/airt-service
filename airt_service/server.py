@@ -493,7 +493,7 @@ def create_ws_server(
         docs_url=None,
         redoc_url=None,
     )
-    app.mount("/assets", StaticFiles(directory=assets_path), name="assets")  # type: ignore
+    app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 
     # attaches /token to routes
     app.include_router(auth_router)
@@ -613,7 +613,9 @@ def create_ws_server(
         **aio_kafka_config,
     )
 
-    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_start_training_data")  # type: ignore
+    @fast_kafka_api_app.consumes(
+        topic=f"{start_process_for_username}_start_training_data"
+    )
     async def on_infobip_start_training_data(msg: ModelTrainingRequest):
         logger.info(f"start training msg={msg}")
         with get_session_with_context() as session:
@@ -633,7 +635,7 @@ def create_ws_server(
             session.add(start_event)
             session.commit()
 
-    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_training_data")  # type: ignore
+    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_training_data")
     async def on_infobip_training_data(msg: EventData):
         # ToDo: this is not showing up in logs
         logger.debug(f"msg={msg}")
@@ -650,11 +652,13 @@ def create_ws_server(
     #             )
     #             await to_infobip_training_data_status(msg=training_data_status)
 
-    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_realtime_data")  # type: ignore
+    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_realtime_data")
     async def on_infobip_realtime_data(msg: RealtimeData):
         pass
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_training_data_status")  # type: ignore
+    @fast_kafka_api_app.produces(
+        topic=f"{start_process_for_username}_training_data_status"
+    )
     async def to_infobip_training_data_status(
         account_id: int,
         *,
@@ -675,17 +679,19 @@ def create_ws_server(
         )
         return msg
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_training_model_status")  # type: ignore
+    @fast_kafka_api_app.produces(
+        topic=f"{start_process_for_username}_training_model_status"
+    )
     async def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return TrainingModelStatus()
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_model_metrics")  # type: ignore
+    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_model_metrics")
     async def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return msg
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_prediction")  # type: ignore
+    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_prediction")
     async def to_infobip_prediction(msg: Prediction) -> Prediction:
         logger.debug(f"on_infobip_realtime_data_status(msg={msg})")
         return msg

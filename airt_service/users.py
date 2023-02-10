@@ -150,7 +150,7 @@ def activate_mfa(
             detail=ERRORS["GENERATE_MFA_URL_NOT_GENERATED"],
         )
 
-    validate_totp(user.mfa_secret, user_otp)  # type: ignore
+    validate_totp(user.mfa_secret, user_otp)
 
     with commit_or_rollback(session):
         user.is_mfa_active = True
@@ -345,7 +345,7 @@ def require_otp_or_totp_if_mfa_enabled(message_template_name: str):
             if user.is_mfa_active:
                 if otp_or_totp is not None:
                     try:
-                        validate_totp(user.mfa_secret, otp_or_totp)  # type: ignore
+                        validate_totp(user.mfa_secret, otp_or_totp)
                     except HTTPException as e:
                         try:
                             validate_otp(
@@ -577,11 +577,11 @@ def check_email_exists(cls: User, email: str, session: Session):
 @patch
 def _update(self: User, to_update: UserUpdateRequest, session: Session):
     if to_update.username:
-        User.check_username_exists(to_update.username, session)  # type: ignore
+        User.check_username_exists(to_update.username, session)
         self.username = to_update.username
 
     if to_update.email:
-        User.check_email_exists(to_update.email, session)  # type: ignore
+        User.check_email_exists(to_update.email, session)
         self.email = to_update.email  # type: ignore
 
     if to_update.first_name:
@@ -772,7 +772,7 @@ def get_all_users(
     """Get all users"""
     user = session.merge(user)
 
-    return User.get_all(disabled=disabled, offset=offset, limit=limit, session=session)  # type: ignore
+    return User.get_all(disabled=disabled, offset=offset, limit=limit, session=session)
 
 # %% ../notebooks/Users.ipynb 74
 @user_router.get("/details", response_model=UserRead)
@@ -1086,7 +1086,7 @@ def require_otp_or_totp(message_template_name: str):
 
             if user.is_mfa_active:
                 try:
-                    validate_totp(user.mfa_secret, otp_or_totp)  # type: ignore
+                    validate_totp(user.mfa_secret, otp_or_totp)
                     return func(*args, **kwargs)
                 except HTTPException as e:
                     pass

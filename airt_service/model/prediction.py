@@ -253,7 +253,7 @@ def prediction_to_local_route(
     user = session.merge(user)
     prediction = Prediction.get(uuid=prediction_uuid, user=user, session=session)  # type: ignore
 
-    return prediction.to_local(session)  # type: ignore
+    return prediction.to_local(session)
 
 # %% ../../notebooks/Model_Prediction.ipynb 23
 @patch
@@ -326,7 +326,7 @@ def prediction_to_s3_route(
     user = session.merge(user)
     prediction = Prediction.get(uuid=prediction_uuid, user=user, session=session)  # type: ignore
 
-    return prediction.to_s3(s3_request, session, background_tasks)  # type: ignore
+    return prediction.to_s3(s3_request, session, background_tasks)
 
 # %% ../../notebooks/Model_Prediction.ipynb 26
 @patch
@@ -483,7 +483,7 @@ def prediction_to_mysql_route(
     user = session.merge(user)
     prediction = Prediction.get(uuid=prediction_uuid, user=user, session=session)  # type: ignore
 
-    return prediction.to_rdbms(  # type: ignore
+    return prediction.to_rdbms(
         db_request=db_request,
         database_server="mysql",
         session=session,
@@ -567,7 +567,7 @@ def prediction_to_clickhouse_route(
     user = session.merge(user)
     prediction = Prediction.get(uuid=prediction_uuid, user=user, session=session)  # type: ignore
 
-    return prediction.to_clickhouse(  # type: ignore
+    return prediction.to_clickhouse(
         clickhouse_request=clickhouse_request,
         session=session,
         background_tasks=background_tasks,

@@ -366,7 +366,7 @@ def predict(prediction_id: Param("id of prediction in db", int)):  # type: ignor
                     for f in source_files:
                         shutil.move(str(f), sync_path)
 
-            prediction.path = destination_remote_url  # type: ignore
+            prediction.path = destination_remote_url
             prediction.completed_steps = prediction.total_steps
         except Exception as e:
             prediction.error = truncate(str(e))

@@ -174,7 +174,7 @@ def db_pull(datablob_id: Param("id of datablob in db", int)):  # type: ignore
 
 # %% ../../notebooks/DataBlob_DB.ipynb 13
 @call_parse
-def db_push(prediction_push_id: int):  # type: ignore
+def db_push(prediction_push_id: int):
     """Push prediction data to a rdbms
 
     Params:

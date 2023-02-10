@@ -73,7 +73,7 @@ def require_otp_if_mfa_enabled(func: Callable[..., Any]) -> Callable[..., Any]:
     """
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):  # type: ignore
+    def wrapper(*args, **kwargs):
         user = kwargs["user"]
         session = kwargs["session"]
         otp = get_attr_by_name(kwargs, "otp")

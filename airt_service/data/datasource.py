@@ -84,7 +84,7 @@ def remove_tag_from_previous_datasources(
         tag_name: Tag name to remove from other datasources
         session: Sqlmodel session
     """
-    tag_to_remove = Tag.get_by_name(name=tag_name, session=session)  # type: ignore
+    tag_to_remove = Tag.get_by_name(name=tag_name, session=session)
     try:
         datasources = session.exec(
             select(DataSource).where(
@@ -246,7 +246,7 @@ def datasource_head_route(
     """Get head of the datasource"""
     user = session.merge(user)
     datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
-    datasource.is_ready()  # type: ignore
+    datasource.is_ready()
 
     df_dict = _get_ds_head_and_dtypes(datasource_s3_path=datasource.path)
     return df_dict
@@ -268,7 +268,7 @@ def datasource_dtypes_route(
     user = session.merge(user)
     # get locally saved parquet file path, read it and return columns and its dtypes
     datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
-    datasource.is_ready()  # type: ignore
+    datasource.is_ready()
 
     df_dict = _get_ds_head_and_dtypes(datasource_s3_path=datasource.path)
     return df_dict["dtypes"]
@@ -318,7 +318,7 @@ def get_all_datasources(
 ) -> List[DataSource]:
     """Get all datasources created by user"""
     user = session.merge(user)
-    return DataSource.get_all(  # type: ignore
+    return DataSource.get_all(
         disabled=disabled,
         completed=completed,
         offset=offset,
@@ -337,7 +337,7 @@ def tag(self: DataSource, tag_name: str, session: Session):
         session: Sqlmodel session
     """
 
-    user_tag = Tag.get_by_name(name=tag_name, session=session)  # type: ignore
+    user_tag = Tag.get_by_name(name=tag_name, session=session)
 
     self.remove_tag_from_previous_datasources(tag_name=user_tag.name, session=session)  # type: ignore
     self.tags.append(user_tag)

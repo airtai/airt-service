@@ -1206,7 +1206,7 @@ def get_by_name(cls: Tag, name: str, session: Session) -> Tag:
             session.commit()
         except IntegrityError:
             session.rollback()
-            tag = Tag.get_by_name(name=name, session=session)  # type: ignore
+            tag = Tag.get_by_name(name=name, session=session)
     return tag
 
 # %% ../../notebooks/DB_Models.ipynb 37

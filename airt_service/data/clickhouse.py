@@ -583,7 +583,7 @@ def _insert_data(
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 39
 @call_parse
-def clickhouse_push(prediction_push_id: int):  # type: ignore
+def clickhouse_push(prediction_push_id: int):
     """Push the data to a clickhouse database
 
     Args:

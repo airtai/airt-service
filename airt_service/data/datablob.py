@@ -314,7 +314,7 @@ def from_s3_route(
 ) -> DataBlob:
     """Create a datablob from csv/parquet files in s3 bucket"""
     user = session.merge(user)
-    return DataBlob.from_s3(  # type: ignore
+    return DataBlob.from_s3(
         from_s3_request=from_s3_request,
         user=user,
         session=session,
@@ -559,7 +559,7 @@ def from_mysql_route(
 ) -> DataBlob:
     """Create a datablob from a database"""
     user = session.merge(user)
-    return DataBlob.from_rdbms(  # type: ignore
+    return DataBlob.from_rdbms(
         from_db_request=from_db_request,
         database_server="mysql",
         user=user,
@@ -690,7 +690,7 @@ def from_clickhouse_route(
 ) -> DataBlob:
     """Create a datablob from a database"""
     user = session.merge(user)
-    return DataBlob.from_clickhouse(  # type: ignore
+    return DataBlob.from_clickhouse(
         from_clickhouse_request=from_clickhouse_request,
         user=user,
         session=session,
@@ -869,7 +869,7 @@ def is_ready(self: DataBlob):
     """Check if the datablob's completed steps equal to total steps, else raise HTTPException"""
     if self.completed_steps != self.total_steps:
         if self.path:
-            bucket, s3_path = get_s3_bucket_and_path_from_uri(self.path)  # type: ignore
+            bucket, s3_path = get_s3_bucket_and_path_from_uri(self.path)
         else:
             bucket, s3_path = create_s3_datablob_path(user_id=self.user.id, datablob_id=self.id, region=self.region)  # type: ignore
 
@@ -1077,7 +1077,7 @@ def get_all_datablobs(
     Get all datablobs created by user
     """
     user = session.merge(user)
-    return DataBlob.get_all(  # type: ignore
+    return DataBlob.get_all(
         disabled=disabled,
         completed=completed,
         offset=offset,
@@ -1095,7 +1095,7 @@ def tag(self: DataBlob, tag_name: str, session: Session):
         tag_name: A string to tag the datablob
         session: Sqlmodel session
     """
-    user_tag = Tag.get_by_name(name=tag_name, session=session)  # type: ignore
+    user_tag = Tag.get_by_name(name=tag_name, session=session)
 
     self.remove_tag_from_previous_datablobs(tag_name=user_tag.name, session=session)  # type: ignore
     self.tags.append(user_tag)

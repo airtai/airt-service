@@ -205,7 +205,7 @@ def generate_token(username: str) -> Token:
         minutes=ACCESS_TOKEN_EXPIRE_MINUTES
     )
     access_token = create_access_token(
-        data={"sub": username}, expire=access_token_expires  # type: ignore
+        data={"sub": username}, expire=access_token_expires
     )
 
     # Sast recongnizes "bearer" string as hardcoded password but it is not. So using nosec B106.
@@ -489,7 +489,8 @@ def create_apikey(
     try:
         apikey = APIKey._create(apikey_to_create, user, session)  # type: ignore
         access_token = create_access_token(
-            data={"sub": user.username, "key_uuid": str(apikey.uuid)}, expire=apikey.expiry  # type: ignore
+            data={"sub": user.username, "key_uuid": str(apikey.uuid)},
+            expire=apikey.expiry,
         )
     except Exception as e:
         logger.exception(e)
@@ -591,7 +592,7 @@ def delete_apikey(
     # get details from the internal db for apikey_id
     apikey = APIKey.get(key_uuid_or_name=key_uuid_or_name, user=get_valid_user(user, session, user_uuid_or_name), session=session)  # type: ignore
 
-    return apikey.disable(session)  # type: ignore
+    return apikey.disable(session)
 
 # %% ../notebooks/Auth.ipynb 75
 @patch(cls_method=True)
@@ -645,7 +646,7 @@ def get_all_apikey(
 ) -> List[APIKey]:
     """Get all apikeys created by user"""
     user = session.merge(user)
-    return APIKey.get_all(  # type: ignore
+    return APIKey.get_all(
         user=get_valid_user(user, session, user_uuid_or_name),
         include_disabled=include_disabled,
         offset=offset,

@@ -1024,7 +1024,7 @@ def create_job(
     )
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 38
-def aws_batch_create_job(  # type: ignore
+def aws_batch_create_job(
     *,
     name: Optional[str] = None,
     job_queue_arn: str,

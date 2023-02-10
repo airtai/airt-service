@@ -500,7 +500,7 @@ class BatchTask(ContextDecorator):
         self.delete()
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 19
-def azure_batch_create_job(  # type: ignore
+def azure_batch_create_job(
     *,
     name: Optional[str] = None,
     command: str,

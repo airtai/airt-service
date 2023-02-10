@@ -240,7 +240,7 @@ def execute(
     return dag_file_path, run_id
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 23
-def _test_aws_batch_executor(region: str = "eu-west-1"):  # type: ignore
+def _test_aws_batch_executor(region: str = "eu-west-1"):
     with tempfile.TemporaryDirectory() as d:
         data_path_url, model_path_url = setup_test_paths(d)
 

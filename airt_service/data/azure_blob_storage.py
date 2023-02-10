@@ -98,7 +98,7 @@ def copy_between_azure_blob_storage(
 
 # %% ../../notebooks/DataBlob_Azure_Blob_Storage.ipynb 10
 @call_parse
-def azure_blob_storage_pull(datablob_id: int):  # type: ignore
+def azure_blob_storage_pull(datablob_id: int):
     """Pull the data from azure blob storage and updates progress in db
 
     Args:
@@ -180,7 +180,7 @@ def azure_blob_storage_pull(datablob_id: int):  # type: ignore
 
 # %% ../../notebooks/DataBlob_Azure_Blob_Storage.ipynb 14
 @call_parse
-def azure_blob_storage_push(prediction_push_id: int):  # type: ignore
+def azure_blob_storage_push(prediction_push_id: int):
     """Push the data to azure blob storage and update its progress in db
 
     Args:

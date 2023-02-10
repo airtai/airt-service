@@ -97,7 +97,7 @@ def copy_between_s3(
 
 # %% ../../notebooks/DataBlob_S3.ipynb 10
 @call_parse
-def s3_pull(datablob_id: int):  # type: ignore
+def s3_pull(datablob_id: int):
     """Pull the data from s3 and updates progress in db
 
     Args:
@@ -184,7 +184,7 @@ def s3_pull(datablob_id: int):  # type: ignore
 
 # %% ../../notebooks/DataBlob_S3.ipynb 14
 @call_parse
-def s3_push(prediction_push_id: int):  # type: ignore
+def s3_push(prediction_push_id: int):
     """Push the data from s3 and update its progress in db
 
     Args:

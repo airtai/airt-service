@@ -439,10 +439,10 @@ def validate_otp(
 
     if not pin_verification_status["verified"]:
         with commit_or_rollback(session):
-            sms_protocol.pin_verified = pin_verification_status["verified"]  # type: ignore
+            sms_protocol.pin_verified = pin_verification_status["verified"]
             sms_protocol.pin_attempts_remaining = pin_verification_status[
                 "attemptsRemaining"
-            ]  # type: ignore
+            ]
             session.add(sms_protocol)
 
         raise HTTPException(
