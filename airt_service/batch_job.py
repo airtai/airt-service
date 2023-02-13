@@ -81,7 +81,7 @@ def create_batch_job(
         )
 
 # %% ../notebooks/BatchJob.ipynb 14
-def update_all():
+def update_all() -> None:
     global __all__
     __all__ = [
         "BatchJobContext",

@@ -27,7 +27,6 @@ from sqlalchemy import MetaData, Table, and_, column, create_engine, select
 # from sqlmodel import create_engine, select, column, Table, MetaData, and_
 from sqlalchemy.engine import Connection
 from sqlalchemy.engine.cursor import CursorResult
-
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.expression import func
 

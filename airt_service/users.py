@@ -77,11 +77,11 @@ user_router = APIRouter(
 )
 
 # %% ../notebooks/Users.ipynb 10
-def ensure_super_user(func):
+def ensure_super_user(func: Callable[..., Any]) -> Callable[..., Any]:
     """Decorator to ensure the user who executes the operation is a super user"""
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         if not kwargs["user"].super_user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -331,9 +331,9 @@ def require_otp_or_totp_if_mfa_enabled(
         message_template_name: Name of the message template that was used to send the SMS
     """
 
-    def outer_wrapper(func):
+    def outer_wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def inner_wrapper(*args, **kwargs):
+        def inner_wrapper(*args: Any, **kwargs: Any) -> Any:
             user = kwargs["user"]
             session = kwargs["session"]
             otp_or_totp = get_attr_by_name(kwargs, "otp")
@@ -1072,9 +1072,9 @@ def require_otp_or_totp(message_template_name: str) -> Callable[..., Any]:
         message_template_name: Name of the message template that was used to send the SMS
     """
 
-    def outer_wrapper(func):
+    def outer_wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def inner_wrapper(*args, **kwargs):
+        def inner_wrapper(*args: Any, **kwargs: Any) -> Any:
             username = get_attr_by_name(kwargs, "username")
             otp_or_totp = get_attr_by_name(kwargs, "otp")
             session = kwargs["session"]
