@@ -83,7 +83,7 @@ def new_publish_display_data(
         k: sanitize_secrets(v.__repr__() if not isinstance(v, str) else v)
         for k, v in data.items()
     }
-    return old_publish_display_data(
+    return old_publish_display_data(  # type: ignore
         sanitized_data, metadata=metadata, source=source, transient=transient, **kwargs
     )
 

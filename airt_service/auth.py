@@ -74,7 +74,9 @@ def get_user(username: str) -> Optional[User]:
     """
     with get_session_with_context() as session:
         try:
-            user = session.exec(select(User).where(User.username == username)).one()
+            user: Optional[User] = session.exec(
+                select(User).where(User.username == username)
+            ).one()
         except NoResultFound:
             user = None
     return user
@@ -161,7 +163,7 @@ def create_access_token(data: dict, expire: Optional[datetime] = None) -> str:
     if expire:
         to_encode.update({"exp": expire})
 
-    encoded_jwt = jwt.encode(
+    encoded_jwt: str = jwt.encode(
         to_encode,
         # nosemgrep: python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret
         environ["AIRT_TOKEN_SECRET_KEY"],
@@ -590,9 +592,9 @@ def delete_apikey(
     """Revoke apikey"""
     user = session.merge(user)
     # get details from the internal db for apikey_id
-    apikey = APIKey.get(key_uuid_or_name=key_uuid_or_name, user=get_valid_user(user, session, user_uuid_or_name), session=session)  # type: ignore
+    apikey: APIKey = APIKey.get(key_uuid_or_name=key_uuid_or_name, user=get_valid_user(user, session, user_uuid_or_name), session=session)  # type: ignore
 
-    return apikey.disable(session)
+    return apikey.disable(session)  # type: ignore
 
 # %% ../notebooks/Auth.ipynb 75
 @patch(cls_method=True)  # type: ignore

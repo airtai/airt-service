@@ -71,7 +71,7 @@ class BatchJobContext:
                 raise ValueError(f'Unknown value: {environ["JOB_EXECUTOR"]=}')
 
         factory = BatchJobContext._factories[ctx_name]
-        return factory(task=task, **kwargs)
+        return factory(task=task, **kwargs)  # type: ignore
 
     @classmethod
     def add_factory(cls) -> None:

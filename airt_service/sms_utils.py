@@ -123,7 +123,7 @@ def _send_get_request_to_infobip(
         logger.exception(f"Unexpected response from infobip", exc_info=err)
         raise HTTPException(status_code=500, detail=f"Unexpected exception: {err}")
 
-    return response_json
+    return response_json  # type: ignore
 
 # %% ../notebooks/SMS_Utils.ipynb 14
 def _get_application_id(application_name: str) -> Optional[str]:
@@ -163,7 +163,7 @@ def _send_post_request_to_infobip(
     url = f"{os.environ['INFOBIP_BASE_URL']}{relative_url}"
 
     try:
-        response = requests.post(url, json=data, headers=headers).json()
+        response: Dict[str, Any] = requests.post(url, json=data, headers=headers).json()
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -242,7 +242,7 @@ def _send_put_request_to_infobip(
     url = f"{os.environ['INFOBIP_BASE_URL']}{relative_url}"
 
     try:
-        response = requests.put(url, json=data, headers=headers).json()
+        response: Dict[str, Any] = requests.put(url, json=data, headers=headers).json()
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

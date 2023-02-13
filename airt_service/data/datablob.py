@@ -263,7 +263,7 @@ def from_s3(
     for i in range(no_retries):
         e: Optional[Exception] = None
         try:
-            datablob = DataBlob._create(  # type: ignore
+            datablob: DataBlob = DataBlob._create(  # type: ignore
                 type="s3",
                 uri=uri,
                 source=source,
@@ -394,7 +394,7 @@ def from_azure_blob_storage(
     )
     source = from_azure_blob_storage_request.uri
 
-    datablob = DataBlob._create(  # type: ignore
+    datablob: DataBlob = DataBlob._create(  # type: ignore
         type="azure_blob_storage",
         uri=uri,
         source=source,
@@ -517,7 +517,7 @@ def from_rdbms(
     )
 
     with commit_or_rollback(session):
-        datablob = DataBlob._create(  # type: ignore
+        datablob: DataBlob = DataBlob._create(  # type: ignore
             type="db",
             uri=uri,
             source=source,
@@ -649,7 +649,7 @@ def from_clickhouse(
     )
 
     with commit_or_rollback(session):
-        datablob = DataBlob._create(  # type: ignore
+        datablob: DataBlob = DataBlob._create(  # type: ignore
             type="db",
             uri=uri,
             source=source,
@@ -928,7 +928,7 @@ def to_datasource(
     """
 
     self.is_ready()  # type: ignore
-    datasource = DataSource._create(datablob=self, user=user, session=session)  # type: ignore
+    datasource: DataSource = DataSource._create(datablob=self, user=user, session=session)  # type: ignore
 
     if to_datasource_request.file_type == "csv":
         process_command = "process_csv"
@@ -979,9 +979,10 @@ def to_datasource_route(
     user = session.merge(user)
     datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
 
-    return datablob.to_datasource(
+    datasource: DataSource = datablob.to_datasource(
         to_datasource_request, user, session, background_tasks
     )
+    return datasource
 
 # %% ../../notebooks/DataBlob_Router.ipynb 50
 @datablob_router.get(
@@ -994,7 +995,7 @@ def get_details_of_datablob(
 ) -> DataBlob:
     """Get details of the datablob"""
     user = session.merge(user)
-    datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
+    datablob: DataBlob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
     return datablob
 
 # %% ../../notebooks/DataBlob_Router.ipynb 53
@@ -1028,9 +1029,9 @@ def delete_datablob(
 ) -> DataBlob:
     """Delete datablob"""
     user = session.merge(user)
-    datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
+    datablob: DataBlob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
 
-    return datablob.delete(user, session)
+    return datablob.delete(user, session)  # type: ignore
 
 # %% ../../notebooks/DataBlob_Router.ipynb 56
 @patch(cls_method=True)  # type: ignore
@@ -1115,6 +1116,6 @@ def tag_datablob(
 ) -> DataBlob:
     """Add tag to datablob"""
     user = session.merge(user)
-    datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
+    datablob: DataBlob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
 
-    return datablob.tag(tag_name=tag_to_create.name, session=session)
+    return datablob.tag(tag_name=tag_to_create.name, session=session)  # type: ignore

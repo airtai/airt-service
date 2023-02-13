@@ -167,7 +167,7 @@ def get_max_timestamp(
     query = func.max(sql_table.columns[timestamp_column])
     #     logger.info(f"query='{query}'")
 
-    result = session.query(query).scalar()
+    result: int = session.query(query).scalar()
     return result
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 18
@@ -686,7 +686,8 @@ def get_count(
 
         # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query
         result = connection.execute(query)
-        return result.fetchall()[0][0]
+        count: int = result.fetchall()[0][0]
+        return count
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 44
 def get_count_for_account_ids(

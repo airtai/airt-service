@@ -83,7 +83,7 @@ def _get_google_provider_cfg(api_uri: Optional[str] = None) -> Union[str, dict]:
             detail=ERRORS["SERVICE_UNAVAILABLE"],
         )
 
-    return google_provider_cfg[api_uri] if api_uri is not None else google_provider_cfg
+    return google_provider_cfg[api_uri] if api_uri is not None else google_provider_cfg  # type: ignore
 
 # %% ../notebooks/SSO.ipynb 11
 def _get_authorization_url_and_nonce(
@@ -156,7 +156,7 @@ def get_sso_if_enabled_for_user(username: str, sso_provider: str) -> Optional[SS
         except NoResultFound:
             sso = None
 
-        return sso
+        return sso  # type: ignore
 
 # %% ../notebooks/SSO.ipynb 21
 class SSOAuthURL(BaseModel):
@@ -256,7 +256,7 @@ def get_email_from_provider(
 
     response = client.get(userinfo_endpoint).json()
 
-    email = (
+    email: str = (
         response["email"]
         if sso_provider == "google"
         else [email["email"] for email in response if email["primary"]][0]

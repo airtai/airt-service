@@ -155,7 +155,8 @@ def _create_dag_id(self: BaseAirflowExecutor, **kwargs: Any) -> str:
     Returns:
         Created dag id
     """
-    return slugify("_".join([step.to_cli(**kwargs) for step in self.steps]))
+    dag_id: str = slugify("_".join([step.to_cli(**kwargs) for step in self.steps]))
+    return dag_id
 
 # %% ../../notebooks/BaseAirflowExecutor.ipynb 14
 @patch  # type: ignore
@@ -263,4 +264,4 @@ def schedule(
         **kwargs,
     )
 
-    return dag_file_path
+    return dag_file_path  # type: ignore

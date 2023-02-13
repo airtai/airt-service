@@ -517,7 +517,7 @@ def create_ws_server(
     async def add_nosniff_x_content_type_options_header(
         request: Request, call_next: Callable[[Request], Response]
     ) -> Response:
-        response = await call_next(request)  # type: ignore
+        response: Response = await call_next(request)  # type: ignore
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Strict-Transport-Security"] = "max-age=31536000"
         return response

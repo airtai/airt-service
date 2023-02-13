@@ -159,7 +159,7 @@ def get_details_of_datasource(
 ) -> DataSource:
     """Get details of the datasource"""
     user = session.merge(user)
-    datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
+    datasource: DataSource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
 
     return datasource
 
@@ -193,9 +193,9 @@ def delete_datasource(
 ) -> DataSource:
     """Delete datasource"""
     user = session.merge(user)
-    datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
+    datasource: DataSource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
 
-    return datasource.delete(user, session)
+    return datasource.delete(user, session)  # type: ignore
 
 # %% ../../notebooks/DataSource_Router.ipynb 23
 def _get_ds_head_and_dtypes(datasource_s3_path: str) -> Dict[str, Any]:
@@ -271,7 +271,7 @@ def datasource_dtypes_route(
     datasource.is_ready()
 
     df_dict = _get_ds_head_and_dtypes(datasource_s3_path=datasource.path)
-    return df_dict["dtypes"]
+    return df_dict["dtypes"]  # type: ignore
 
 # %% ../../notebooks/DataSource_Router.ipynb 32
 @patch(cls_method=True)  # type: ignore
@@ -357,9 +357,9 @@ def tag_datasource(
 ) -> DataSource:
     """Add tag to datasource"""
     user = session.merge(user)
-    datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
+    datasource: DataSource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
 
-    return datasource.tag(tag_name=tag_to_create.name, session=session)
+    return datasource.tag(tag_name=tag_to_create.name, session=session)  # type: ignore
 
 # %% ../../notebooks/DataSource_Router.ipynb 39
 @patch(cls_method=True)  # type: ignore

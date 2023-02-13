@@ -61,7 +61,7 @@ def test_auth(base_url: str, username: str, password: str) -> str:
         timeout=30,
     )
     assert not r.is_error, r.text  # nosec B101
-    token = r.json()["access_token"]
+    token: str = r.json()["access_token"]
     return token
 
 # %% ../notebooks/Integration_Test.ipynb 7
@@ -125,7 +125,7 @@ def test_apikey(
         headers=headers,
     )
     assert not r.is_error, r.text  # nosec B101
-    apikey = r.json()["access_token"]
+    apikey: str = r.json()["access_token"]
     return apikey
 
 # %% ../notebooks/Integration_Test.ipynb 9
@@ -142,7 +142,7 @@ def check_steps_completed(url: str, headers: Dict[str, str]) -> Dict[str, Any]:
     while True:
         r = httpx.get(url, headers=headers)
         assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
-        obj = r.json()
+        obj: Dict[str, Any] = r.json()
         if obj["completed_steps"] == obj["total_steps"]:
             break
         time.sleep(5)
@@ -262,7 +262,7 @@ def test_azure_datablob(base_url: str, headers: Dict[str, str]) -> Dict[str, Any
         headers=headers,
     )
     assert not r.is_error, r.text  # nosec B101
-    datablob = r.json()
+    datablob: Dict[str, Any] = r.json()
 
     # Wait for pull to complete
     datablob = check_steps_completed(
@@ -299,7 +299,7 @@ def test_model(
         headers=headers,
     )
     assert not r.is_error, r.text  # nosec B101
-    model = r.json()
+    model: Dict[str, Any] = r.json()
 
     # Wait for model training to complete
     model = check_steps_completed(
@@ -335,7 +335,7 @@ def test_prediction(
         headers=headers,
     )
     assert not r.is_error, r.text  # nosec B101
-    prediction = r.json()
+    prediction: Dict[str, Any] = r.json()
 
     # Wait for prediction to complete
     prediction = check_steps_completed(
@@ -366,7 +366,8 @@ def test_generate_mfa_url(base_url: str, headers: Dict[str, str]) -> Dict[str, A
     r = httpx.get(f"{base_url}/user/mfa/generate", headers=headers)
     assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
     sanitized_print("Generating mfa url")
-    return r.json()
+    generated_mfa_url: Dict[str, Any] = r.json()
+    return generated_mfa_url
 
 # %% ../notebooks/Integration_Test.ipynb 15
 def get_valid_otp(mfa_url: str) -> str:
@@ -401,7 +402,8 @@ def test_activate_mfa(
     )
     assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
     sanitized_print("Activate mfa")
-    return r.json()
+    activated_mfa: Dict[str, Any] = r.json()
+    return activated_mfa
 
 # %% ../notebooks/Integration_Test.ipynb 17
 def reset_test_user_password(
@@ -470,7 +472,7 @@ def test_auth_with_otp(
             break
 
     assert not r.is_error, r.text  # nosec B101
-    token = r.json()["access_token"]
+    token: str = r.json()["access_token"]
     return token
 
 # %% ../notebooks/Integration_Test.ipynb 20

@@ -185,7 +185,7 @@ def get_batch_environment_arns(
     with open(batch_environment_arn_path) as f:
         batch_environment_arns = yaml.safe_load(f)
 
-    return batch_environment_arns[region]
+    return batch_environment_arns[region]  # type: ignore
 
 # %% ../../notebooks/AWS_Utils.ipynb 23
 def get_queue_definition_arns(
