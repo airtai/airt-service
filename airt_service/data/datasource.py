@@ -55,7 +55,7 @@ datasource_router = APIRouter(
 )
 
 # %% ../../notebooks/DataSource_Router.ipynb 9
-@patch
+@patch  # type: ignore
 def calculate_properties(self: DataSource, cache_path: Path) -> None:
     """Calculate properties of datasource like no of rows, dtypes, head, hash from parquet files
 
@@ -74,7 +74,7 @@ def calculate_properties(self: DataSource, cache_path: Path) -> None:
     head.to_parquet(metadata_folder_path / DS_HEAD_FILE_NAME)
 
 # %% ../../notebooks/DataSource_Router.ipynb 11
-@patch
+@patch  # type: ignore
 def remove_tag_from_previous_datasources(
     self: DataSource, tag_name: str, session: Session
 ) -> None:
@@ -108,7 +108,7 @@ get_datasource_responses = {
 }
 
 
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get(cls: DataSource, uuid: str, user: User, session: Session) -> DataSource:
     """Get datasource based on uuid
 
@@ -164,7 +164,7 @@ def get_details_of_datasource(
     return datasource
 
 # %% ../../notebooks/DataSource_Router.ipynb 19
-@patch
+@patch  # type: ignore
 def delete(self: DataSource, user: User, session: Session) -> DataSource:
     """Delete a datasource
 
@@ -221,7 +221,7 @@ def _get_ds_head_and_dtypes(datasource_s3_path: str) -> Dict[str, Any]:
         return df_to_dict(df)
 
 # %% ../../notebooks/DataSource_Router.ipynb 25
-@patch
+@patch  # type: ignore
 def is_ready(self: DataSource) -> None:
     """Check if the datasource's completed steps equal to total steps, else raise HTTPException"""
     if self.completed_steps != self.total_steps:
@@ -274,7 +274,7 @@ def datasource_dtypes_route(
     return df_dict["dtypes"]
 
 # %% ../../notebooks/DataSource_Router.ipynb 32
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_all(
     cls: DataSource,
     disabled: bool,
@@ -328,7 +328,7 @@ def get_all_datasources(
     )
 
 # %% ../../notebooks/DataSource_Router.ipynb 36
-@patch
+@patch  # type: ignore
 def tag(self: DataSource, tag_name: str, session: Session) -> DataSource:
     """Tag an existing datasource
 
@@ -362,7 +362,7 @@ def tag_datasource(
     return datasource.tag(tag_name=tag_to_create.name, session=session)
 
 # %% ../../notebooks/DataSource_Router.ipynb 39
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def _create(
     cls: DataSource,
     *,

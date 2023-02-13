@@ -410,7 +410,7 @@ def disable_mfa(
     return user_to_disable_mfa
 
 # %% ../notebooks/Users.ipynb 41
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def _create(cls: User, user_to_create: UserCreate, session: Session) -> User:
     """Method to create new user
 
@@ -465,7 +465,7 @@ def create_user(
     return User._create(user_to_create, session)  # type: ignore
 
 # %% ../notebooks/Users.ipynb 47
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get(cls: User, uuid: str, session: Session) -> User:
     """Function to get user object based on given user id
 
@@ -508,7 +508,7 @@ class UserUpdateRequest(BaseModel):
     otp: Optional[str] = None
 
 # %% ../notebooks/Users.ipynb 49
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def check_username_exists(cls: User, username: str, session: Session) -> None:
     """Check given username already exists in database or not
 
@@ -551,7 +551,7 @@ def check_valid_email(email: str) -> str:
     return email
 
 # %% ../notebooks/Users.ipynb 53
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def check_email_exists(cls: User, email: str, session: Session) -> None:
     """Check given email already exists in database or not
 
@@ -576,7 +576,7 @@ def check_email_exists(cls: User, email: str, session: Session) -> None:
     )
 
 # %% ../notebooks/Users.ipynb 54
-@patch
+@patch  # type: ignore
 def _update(self: User, to_update: UserUpdateRequest, session: Session) -> User:
     if to_update.username:
         User.check_username_exists(to_update.username, session)
@@ -625,7 +625,7 @@ def update_user(
     return user_to_update._update(to_update, session)  # type: ignore
 
 # %% ../notebooks/Users.ipynb 60
-@patch
+@patch  # type: ignore
 def disable(self: User, session: Session) -> User:
     """Disable user
 
@@ -681,7 +681,7 @@ def disable_user(
     return user_to_disable.disable(session)
 
 # %% ../notebooks/Users.ipynb 65
-@patch
+@patch  # type: ignore
 def enable(self: User, session: Session) -> User:
     """Enable user
 
@@ -728,7 +728,7 @@ def enable_user(
     return user_to_enable.enable(session)
 
 # %% ../notebooks/Users.ipynb 70
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_all(
     cls: User,
     disabled: bool,

@@ -97,7 +97,7 @@ def copy_between_azure_blob_storage(
             )
 
 # %% ../../notebooks/DataBlob_Azure_Blob_Storage.ipynb 10
-@call_parse
+@call_parse  # type: ignore
 def azure_blob_storage_pull(datablob_id: int) -> None:
     """Pull the data from azure blob storage and updates progress in db
 
@@ -179,7 +179,7 @@ def azure_blob_storage_pull(datablob_id: int) -> None:
         session.commit()
 
 # %% ../../notebooks/DataBlob_Azure_Blob_Storage.ipynb 14
-@call_parse
+@call_parse  # type: ignore
 def azure_blob_storage_push(prediction_push_id: int) -> None:
     """Push the data to azure blob storage and update its progress in db
 

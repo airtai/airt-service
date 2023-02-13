@@ -120,7 +120,7 @@ class AirflowAWSBatchExecutor(BaseAirflowExecutor):
         raise NotImplementedError("Need to implement")
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 15
-@patch
+@patch  # type: ignore
 def _create_step_template(
     self: AirflowAWSBatchExecutor,
     step: CLICommandBase,
@@ -164,7 +164,7 @@ def _create_step_template(
     return task
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 17
-@patch
+@patch  # type: ignore
 def _create_dag_template(
     self: AirflowAWSBatchExecutor,
     on_step_start: Optional[CLICommandBase] = None,
@@ -208,7 +208,7 @@ def _create_dag_template(
     return curr_dag_template
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 21
-@patch
+@patch  # type: ignore
 def execute(
     self: AirflowAWSBatchExecutor,
     *,
@@ -294,7 +294,7 @@ def _test_aws_batch_executor(region: str = "eu-west-1") -> None:
             dag_file_path.unlink()
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 24
-@call_parse
+@call_parse  # type: ignore
 def test_aws_batch_executor(region: Param("region", str) = "eu-west-1"):  # type: ignore
     """
     Create throw away environment for aws batch and execute airflow batch executor

@@ -571,7 +571,7 @@ def integration_tests(base_url: str = "http://127.0.0.1:6006") -> None:
     sanitized_print("ok")
 
 # %% ../notebooks/Integration_Test.ipynb 23
-@call_parse
+@call_parse  # type: ignore
 def run_integration_tests(
     host: Param("hostname", str),  # type: ignore
     port: Param("port", int),  # type: ignore

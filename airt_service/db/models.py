@@ -1184,7 +1184,7 @@ def create_user_for_testing(
     return username
 
 # %% ../../notebooks/DB_Models.ipynb 35
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_by_name(cls: Tag, name: str, session: Session) -> Tag:
     """Get tag object for given name
 

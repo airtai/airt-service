@@ -302,7 +302,7 @@ def predict_model(
     return prediction
 
 # %% ../../notebooks/Model_Train.ipynb 29
-@call_parse
+@call_parse  # type: ignore
 def predict(prediction_id: Param("id of prediction in db", int)):  # type: ignore
     """Copy datasource parquet to prediction path to create dummy prediction output
 

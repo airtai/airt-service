@@ -331,7 +331,7 @@ def _download_from_clickhouse(
             ddf.to_parquet(output_path, engine="pyarrow")
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 26
-@call_parse
+@call_parse  # type: ignore
 def clickhouse_pull(
     datablob_id: Param("id of datablob in db", int),  # type: ignore
     index_column: Param("column to use to partition rows and to use as index", str),  # type: ignore
@@ -583,7 +583,7 @@ def _insert_data(
         df.to_sql(table_name, connection, if_exists="append")
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 39
-@call_parse
+@call_parse  # type: ignore
 def clickhouse_push(prediction_push_id: int) -> None:
     """Push the data to a clickhouse database
 

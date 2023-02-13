@@ -30,7 +30,7 @@ from ..helpers import truncate
 logger = get_logger(__name__)
 
 # %% ../../notebooks/DataSource_Parquet.ipynb 7
-@call_parse
+@call_parse  # type: ignore
 def process_parquet(
     datablob_id: Param("datablob_id", int),  # type: ignore
     datasource_id: Param("datasource_id", int),  # type: ignore

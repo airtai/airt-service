@@ -44,7 +44,7 @@ class AirflowBashExecutor(BaseAirflowExecutor):
         raise NotImplementedError("Need to implement")
 
 # %% ../../notebooks/AirflowBashExecutor.ipynb 10
-@patch
+@patch  # type: ignore
 def _create_step_template(
     self: AirflowBashExecutor, step: CLICommandBase, **kwargs: Any
 ) -> str:
@@ -67,7 +67,7 @@ def _create_step_template(
     return task
 
 # %% ../../notebooks/AirflowBashExecutor.ipynb 13
-@patch
+@patch  # type: ignore
 def _create_dag_template(
     self: BaseAirflowExecutor,
     on_step_start: Optional[CLICommandBase] = None,
@@ -111,7 +111,7 @@ def _create_dag_template(
     return curr_dag_template
 
 # %% ../../notebooks/AirflowBashExecutor.ipynb 17
-@patch
+@patch  # type: ignore
 def execute(
     self: AirflowBashExecutor,
     *,

@@ -91,7 +91,7 @@ def download_from_db(
         ddf.to_parquet(output_path)
 
 # %% ../../notebooks/DataBlob_DB.ipynb 11
-@call_parse
+@call_parse  # type: ignore
 def db_pull(datablob_id: Param("id of datablob in db", int)) -> None:  # type: ignore
     """Pull the datablob and update its progress in internal db
 
@@ -173,7 +173,7 @@ def db_pull(datablob_id: Param("id of datablob in db", int)) -> None:  # type: i
         session.commit()
 
 # %% ../../notebooks/DataBlob_DB.ipynb 13
-@call_parse
+@call_parse  # type: ignore
 def db_push(prediction_push_id: int) -> None:
     """Push prediction data to a rdbms
 

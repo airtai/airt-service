@@ -537,7 +537,7 @@ class JobQueue(ContextDecorator):
         self.wait(is_deleted=True)
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 22
-@patch
+@patch  # type: ignore
 def create_job_queue(
     self: ComputeEnvironment, *, name: Optional[str] = None, priority: int = 100
 ) -> JobQueue:
@@ -759,7 +759,7 @@ class JobDefinition(ContextDecorator):
         self.wait(status="INACTIVE")
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 28
-@patch
+@patch  # type: ignore
 def create_job_definition(
     self: ComputeEnvironment,
     *,
@@ -1126,7 +1126,7 @@ def _create_default_batch_environment_config(
         yaml.dump(yaml_str, f, default_flow_style=False)
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 41
-@call_parse
+@call_parse  # type: ignore
 def create_default_batch_environment_config(
     prefix: Param("prefix", str), output_path: Param("output_path", str), regions: Param("regions", List[str]) = None  # type: ignore
 ) -> None:
@@ -1179,7 +1179,7 @@ def _create_batch_environment(input_yaml_path: str, output_yaml_path: str) -> No
         yaml.dump(output, f, default_flow_style=False)
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 44
-@call_parse
+@call_parse  # type: ignore
 def create_batch_environment(
     input_yaml_path: Param("yaml_path", str), output_yaml_path: Param("yaml_path", str)  # type: ignore
 ) -> None:

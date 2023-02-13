@@ -128,7 +128,7 @@ class AirflowAzureBatchExecutor(BaseAirflowExecutor):
         raise NotImplementedError("Need to implement")
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 15
-@patch
+@patch  # type: ignore
 def _create_step_template(
     self: AirflowAzureBatchExecutor,
     step: CLICommandBase,
@@ -187,7 +187,7 @@ def _create_step_template(
     return task
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 17
-@patch
+@patch  # type: ignore
 def _create_dag_template(
     self: AirflowAzureBatchExecutor,
     on_step_start: Optional[CLICommandBase] = None,
@@ -231,7 +231,7 @@ def _create_dag_template(
     return curr_dag_template
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 21
-@patch
+@patch  # type: ignore
 def execute(
     self: AirflowAzureBatchExecutor,
     *,
@@ -339,7 +339,7 @@ def _test_azure_batch_executor(region: str = "northeurope") -> None:
         dag_file_path.unlink()
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 24
-@call_parse
+@call_parse  # type: ignore
 def test_azure_batch_executor(region: Param("region", str) = "northeurope"):  # type: ignore
     """
     Create throw away environment for azure batch and execute airflow batch executor

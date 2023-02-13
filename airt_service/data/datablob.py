@@ -79,7 +79,7 @@ datablob_router = APIRouter(
 )
 
 # %% ../../notebooks/DataBlob_Router.ipynb 9
-@patch
+@patch  # type: ignore
 def remove_tag_from_previous_datablobs(
     self: DataBlob, tag_name: str, session: Session
 ) -> None:
@@ -116,7 +116,7 @@ create_datablob_responses = {
 }
 
 
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def _create(
     cls: DataBlob,
     *,
@@ -212,7 +212,7 @@ class FromS3Request(S3Request):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 16
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_s3(
     cls: DataBlob,
     *,
@@ -349,7 +349,7 @@ class FromAzureBlobStorageRequest(AzureBlobStorageRequest):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 22
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_azure_blob_storage(
     cls: DataBlob,
     *,
@@ -472,7 +472,7 @@ class FromDBRequest(DBRequest):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 28
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_rdbms(
     cls: DataBlob,
     *,
@@ -604,7 +604,7 @@ class FromClickHouseRequest(ClickHouseRequest):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 34
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_clickhouse(
     cls: DataBlob,
     *,
@@ -731,7 +731,7 @@ class FromLocalResponse(BaseModel):
     presigned: Dict[str, Any]
 
 # %% ../../notebooks/DataBlob_Router.ipynb 38
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_local(
     cls: DataBlob,
     *,
@@ -825,7 +825,7 @@ get_datablob_responses = {
 }
 
 
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get(cls: DataBlob, uuid: str, user: User, session: Session) -> DataBlob:
     """Get datablob based on uuid
 
@@ -864,7 +864,7 @@ def get(cls: DataBlob, uuid: str, user: User, session: Session) -> DataBlob:
     return datablob
 
 # %% ../../notebooks/DataBlob_Router.ipynb 44
-@patch
+@patch  # type: ignore
 def is_ready(self: DataBlob) -> None:
     """Check if the datablob's completed steps equal to total steps, else raise HTTPException"""
     if self.completed_steps != self.total_steps:
@@ -910,7 +910,7 @@ class ToDataSourceRequest(BaseModel):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 46
-@patch
+@patch  # type: ignore
 def to_datasource(
     self: DataBlob,
     to_datasource_request: ToDataSourceRequest,
@@ -998,7 +998,7 @@ def get_details_of_datablob(
     return datablob
 
 # %% ../../notebooks/DataBlob_Router.ipynb 53
-@patch
+@patch  # type: ignore
 def delete(self: DataBlob, user: User, session: Session) -> DataBlob:
     """Delete a datablob
 
@@ -1033,7 +1033,7 @@ def delete_datablob(
     return datablob.delete(user, session)
 
 # %% ../../notebooks/DataBlob_Router.ipynb 56
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_all(
     cls: DataBlob,
     disabled: bool,
@@ -1087,7 +1087,7 @@ def get_all_datablobs(
     )
 
 # %% ../../notebooks/DataBlob_Router.ipynb 60
-@patch
+@patch  # type: ignore
 def tag(self: DataBlob, tag_name: str, session: Session) -> DataBlob:
     """Tag an existing datablob
 

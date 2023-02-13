@@ -145,7 +145,7 @@ with DAG(
 """
 
 # %% ../../notebooks/BaseAirflowExecutor.ipynb 11
-@patch
+@patch  # type: ignore
 def _create_dag_id(self: BaseAirflowExecutor, **kwargs: Any) -> str:
     """
     Create dag id by combining steps CLIs and their arguments
@@ -158,7 +158,7 @@ def _create_dag_id(self: BaseAirflowExecutor, **kwargs: Any) -> str:
     return slugify("_".join([step.to_cli(**kwargs) for step in self.steps]))
 
 # %% ../../notebooks/BaseAirflowExecutor.ipynb 14
-@patch
+@patch  # type: ignore
 def _create_jinja2_template_kwargs(
     self: BaseAirflowExecutor, **kwargs: Any
 ) -> Dict[str, Any]:
@@ -184,7 +184,7 @@ def _create_jinja2_template_kwargs(
     return formatted_kwargs
 
 # %% ../../notebooks/BaseAirflowExecutor.ipynb 20
-@patch
+@patch  # type: ignore
 def _create_dag(
     self: BaseAirflowExecutor,
     *,
@@ -226,7 +226,7 @@ def _create_dag(
     return dag_id, dag_file_path
 
 # %% ../../notebooks/BaseAirflowExecutor.ipynb 22
-@patch
+@patch  # type: ignore
 def schedule(
     self: BaseAirflowExecutor,
     *,

@@ -348,7 +348,7 @@ get_apikey_responses = {
 }
 
 
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get(cls: APIKey, key_uuid_or_name: str, user: User, session: Session) -> APIKey:
     """Function to get APIKey object
 
@@ -443,7 +443,7 @@ def get_current_active_user(token: str = Depends(oauth2_scheme)) -> User:
     return user  # type: ignore
 
 # %% ../notebooks/Auth.ipynb 54
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def _create(
     cls: APIKey, apikey_to_create: APIKeyCreate, user: User, session: Session
 ) -> APIKey:
@@ -560,7 +560,7 @@ def get_valid_user(user: User, session: Session, user_uuid_or_name: str) -> User
     return _user
 
 # %% ../notebooks/Auth.ipynb 67
-@patch
+@patch  # type: ignore
 def disable(self: APIKey, session: Session) -> APIKey:
     """Disable an APIKey
 
@@ -595,7 +595,7 @@ def delete_apikey(
     return apikey.disable(session)
 
 # %% ../notebooks/Auth.ipynb 75
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_all(
     cls: APIKey,
     user: User,
