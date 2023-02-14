@@ -108,7 +108,7 @@ class User(UserBase, table=True):
     ssos: List["SSO"] = Relationship(back_populates="user")
     smss: List["SMS"] = Relationship(back_populates="user")
 
-    def __repr__(self):
+    def __repr__(self: "User") -> str:
         """Return custom string representation of the User class objects"""
         return (
             f"User(id={repr(self.id)}, uuid={repr(self.uuid)}, username={repr(self.username)}, first_name={repr(self.first_name)}, last_name={repr(self.last_name)}, "
@@ -135,7 +135,7 @@ class User(UserBase, table=True):
         raise NotImplementedError()
 
     @classmethod
-    def check_username_exists(cls, username: str, session: Session):
+    def check_username_exists(cls, username: str, session: Session) -> None:
         """Check given username already exists in database or not
 
         Args:
@@ -148,7 +148,7 @@ class User(UserBase, table=True):
         raise NotImplementedError()
 
     @classmethod
-    def check_email_exists(cls, email: str, session: Session):
+    def check_email_exists(cls, email: str, session: Session) -> None:
         """Check given email already exists in database or not
 
         Args:
@@ -438,7 +438,7 @@ class DataBlob(DataBlobBase, table=True):
         back_populates="datablobs", link_model=DataBlobTagLink
     )
 
-    def __repr__(self):
+    def __repr__(self: "DataBlob") -> str:
         """Return custom string representation of the DataBlob class objects"""
         return (
             f"DataBlob(id={repr(self.id)}, uuid={repr(self.uuid)}, type={repr(self.type)}, uri={repr(self.uri)}, source={repr(self.source)}, "
@@ -634,7 +634,7 @@ class DataSource(DataSourceBase, table=True):
         back_populates="datasources", link_model=DataSourceTagLink
     )
 
-    def __repr__(self):
+    def __repr__(self: "DataSource") -> str:
         """Return custom string representation of the DataSource class objects"""
         return (
             f"DataSource(id={repr(self.id)}, uuid={repr(self.uuid)}, hash={repr(self.hash)}, "
@@ -918,7 +918,7 @@ class PredictionPush(PredictionPushBase, table=True):
     prediction_id: int = Field(default=None, foreign_key="prediction.id")
     prediction: Prediction = Relationship(back_populates="prediction_pushes")
 
-    def __repr__(self):
+    def __repr__(self: "PredictionPush") -> str:
         """Return custom string representation of the PredictionPush class objects"""
         return (
             f"PredictionPush(id={repr(self.id)}, uuid={repr(self.uuid)}, uri={repr(self.uri)}, "
@@ -1105,16 +1105,16 @@ def get_engine(
     return engine
 
 # %% ../../notebooks/DB_Models.ipynb 27
-def check_db_is_up():
+def check_db_is_up() -> None:
     """Function to check whether DB is up and running or not"""
     # Based on - https://github.com/CTFd/CTFd/issues/725#issuecomment-814379242
     logger.info(f"Waiting for db to be up and running")
-    conn_str = create_connection_string(**get_db_params_from_env_vars())
+    conn_str = create_connection_string(**get_db_params_from_env_vars())  # type: ignore
     sleep_for = 10
     while True:
         try:
             logger.info("Checking connection")
-            sqlalchemy.create_engine(conn_str).raw_connection().ping()
+            sqlalchemy.create_engine(conn_str).raw_connection().ping()  # type: ignore
             logger.info("Connection established")
             break
         except Exception as e:
@@ -1126,20 +1126,20 @@ def check_db_is_up():
     logger.info(f"DB is up and running")
 
 # %% ../../notebooks/DB_Models.ipynb 29
-def get_session():
+def get_session():  # type: ignore
     """Get DB session without context manager
 
     Yields:
         session: SQLmodel session
     """
-    engine = get_engine(**get_db_params_from_env_vars())
+    engine = get_engine(**get_db_params_from_env_vars())  # type: ignore
     with Session(engine) as session:
         yield session
     engine.dispose()
 
 # %% ../../notebooks/DB_Models.ipynb 31
 @contextmanager
-def get_session_with_context():
+def get_session_with_context():  # type: ignore
     """Get DB session with context manager
 
     Yields:
@@ -1184,7 +1184,7 @@ def create_user_for_testing(
     return username
 
 # %% ../../notebooks/DB_Models.ipynb 35
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_by_name(cls: Tag, name: str, session: Session) -> Tag:
     """Get tag object for given name
 
@@ -1206,7 +1206,7 @@ def get_by_name(cls: Tag, name: str, session: Session) -> Tag:
             session.commit()
         except IntegrityError:
             session.rollback()
-            tag = Tag.get_by_name(name=name, session=session)  # type: ignore
+            tag = Tag.get_by_name(name=name, session=session)
     return tag
 
 # %% ../../notebooks/DB_Models.ipynb 37
@@ -1241,7 +1241,7 @@ users_to_create = [
 ]
 
 # %% ../../notebooks/DB_Models.ipynb 38
-def create_initial_users():
+def create_initial_users() -> None:
     """Create initial users"""
     check_db_is_up()
 

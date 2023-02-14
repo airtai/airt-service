@@ -77,11 +77,11 @@ user_router = APIRouter(
 )
 
 # %% ../notebooks/Users.ipynb 10
-def ensure_super_user(func):
+def ensure_super_user(func: Callable[..., Any]) -> Callable[..., Any]:
     """Decorator to ensure the user who executes the operation is a super user"""
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         if not kwargs["user"].super_user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -150,7 +150,7 @@ def activate_mfa(
             detail=ERRORS["GENERATE_MFA_URL_NOT_GENERATED"],
         )
 
-    validate_totp(user.mfa_secret, user_otp)  # type: ignore
+    validate_totp(user.mfa_secret, user_otp)
 
     with commit_or_rollback(session):
         user.is_mfa_active = True
@@ -183,7 +183,7 @@ def get_user_to_disable_mfa(user: User, session: Session, user_uuid: str) -> Use
     return _user
 
 # %% ../notebooks/Users.ipynb 21
-def create_sms_protocol(xs: Dict[str, str], sms: SMS, session: Session):
+def create_sms_protocol(xs: Dict[str, str], sms: SMS, session: Session) -> None:
     """Create a new record in the sms protocol table
 
     Args:
@@ -320,7 +320,9 @@ def send_sms_otp(
     return SEND_SMS_OTP_MSG
 
 # %% ../notebooks/Users.ipynb 31
-def require_otp_or_totp_if_mfa_enabled(message_template_name: str):
+def require_otp_or_totp_if_mfa_enabled(
+    message_template_name: str,
+) -> Callable[..., Any]:
     """A decorator function to validate the totp/otp for MFA enabled user
 
     If the totp/otp validation fails, the user will not be granted access to the decorated route
@@ -329,9 +331,9 @@ def require_otp_or_totp_if_mfa_enabled(message_template_name: str):
         message_template_name: Name of the message template that was used to send the SMS
     """
 
-    def outer_wrapper(func):
+    def outer_wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def inner_wrapper(*args, **kwargs):
+        def inner_wrapper(*args: Any, **kwargs: Any) -> Any:
             user = kwargs["user"]
             session = kwargs["session"]
             otp_or_totp = get_attr_by_name(kwargs, "otp")
@@ -345,7 +347,7 @@ def require_otp_or_totp_if_mfa_enabled(message_template_name: str):
             if user.is_mfa_active:
                 if otp_or_totp is not None:
                     try:
-                        validate_totp(user.mfa_secret, otp_or_totp)  # type: ignore
+                        validate_totp(user.mfa_secret, otp_or_totp)
                     except HTTPException as e:
                         try:
                             validate_otp(
@@ -408,7 +410,7 @@ def disable_mfa(
     return user_to_disable_mfa
 
 # %% ../notebooks/Users.ipynb 41
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def _create(cls: User, user_to_create: UserCreate, session: Session) -> User:
     """Method to create new user
 
@@ -463,7 +465,7 @@ def create_user(
     return User._create(user_to_create, session)  # type: ignore
 
 # %% ../notebooks/Users.ipynb 47
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get(cls: User, uuid: str, session: Session) -> User:
     """Function to get user object based on given user id
 
@@ -506,8 +508,8 @@ class UserUpdateRequest(BaseModel):
     otp: Optional[str] = None
 
 # %% ../notebooks/Users.ipynb 49
-@patch(cls_method=True)
-def check_username_exists(cls: User, username: str, session: Session):
+@patch(cls_method=True)  # type: ignore
+def check_username_exists(cls: User, username: str, session: Session) -> None:
     """Check given username already exists in database or not
 
     Args:
@@ -549,8 +551,8 @@ def check_valid_email(email: str) -> str:
     return email
 
 # %% ../notebooks/Users.ipynb 53
-@patch(cls_method=True)
-def check_email_exists(cls: User, email: str, session: Session):
+@patch(cls_method=True)  # type: ignore
+def check_email_exists(cls: User, email: str, session: Session) -> None:
     """Check given email already exists in database or not
 
     Args:
@@ -574,14 +576,14 @@ def check_email_exists(cls: User, email: str, session: Session):
     )
 
 # %% ../notebooks/Users.ipynb 54
-@patch
-def _update(self: User, to_update: UserUpdateRequest, session: Session):
+@patch  # type: ignore
+def _update(self: User, to_update: UserUpdateRequest, session: Session) -> User:
     if to_update.username:
-        User.check_username_exists(to_update.username, session)  # type: ignore
+        User.check_username_exists(to_update.username, session)
         self.username = to_update.username
 
     if to_update.email:
-        User.check_email_exists(to_update.email, session)  # type: ignore
+        User.check_email_exists(to_update.email, session)
         self.email = to_update.email  # type: ignore
 
     if to_update.first_name:
@@ -623,8 +625,8 @@ def update_user(
     return user_to_update._update(to_update, session)  # type: ignore
 
 # %% ../notebooks/Users.ipynb 60
-@patch
-def disable(self: User, session: Session):
+@patch  # type: ignore
+def disable(self: User, session: Session) -> User:
     """Disable user
 
     Args:
@@ -679,8 +681,8 @@ def disable_user(
     return user_to_disable.disable(session)
 
 # %% ../notebooks/Users.ipynb 65
-@patch
-def enable(self: User, session: Session):
+@patch  # type: ignore
+def enable(self: User, session: Session) -> User:
     """Enable user
 
     Args:
@@ -726,7 +728,7 @@ def enable_user(
     return user_to_enable.enable(session)
 
 # %% ../notebooks/Users.ipynb 70
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_all(
     cls: User,
     disabled: bool,
@@ -772,7 +774,7 @@ def get_all_users(
     """Get all users"""
     user = session.merge(user)
 
-    return User.get_all(disabled=disabled, offset=offset, limit=limit, session=session)  # type: ignore
+    return User.get_all(disabled=disabled, offset=offset, limit=limit, session=session)
 
 # %% ../notebooks/Users.ipynb 74
 @user_router.get("/details", response_model=UserRead)
@@ -1061,7 +1063,7 @@ class ResetPasswordRequest(BaseModel):
     otp: str
 
 # %% ../notebooks/Users.ipynb 101
-def require_otp_or_totp(message_template_name: str):
+def require_otp_or_totp(message_template_name: str) -> Callable[..., Any]:
     """A decorator function to validate the totp/otp
 
     If the totp/otp validation fails, the user will not be granted access to the decorated route
@@ -1070,14 +1072,14 @@ def require_otp_or_totp(message_template_name: str):
         message_template_name: Name of the message template that was used to send the SMS
     """
 
-    def outer_wrapper(func):
+    def outer_wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def inner_wrapper(*args, **kwargs):
+        def inner_wrapper(*args: Any, **kwargs: Any) -> Any:
             username = get_attr_by_name(kwargs, "username")
             otp_or_totp = get_attr_by_name(kwargs, "otp")
             session = kwargs["session"]
 
-            user = get_user(username)
+            user = get_user(username)  # type: ignore
             if user is None:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -1093,7 +1095,7 @@ def require_otp_or_totp(message_template_name: str):
             try:
                 validate_otp(
                     user=user,
-                    otp=otp_or_totp,
+                    otp=otp_or_totp,  # type: ignore
                     message_template_name=message_template_name,
                     session=session,
                 )

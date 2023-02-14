@@ -135,7 +135,8 @@ def get_default_security_group_id(region: str) -> str:
     """
     client = boto3.client("ec2", region_name=region)
     security_groups = client.describe_security_groups(GroupNames=["default"])
-    return security_groups["SecurityGroups"][0]["GroupId"]
+    default_security_group_id: str = security_groups["SecurityGroups"][0]["GroupId"]
+    return default_security_group_id
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 17
 class ComputeEnvironment(ContextDecorator):
@@ -157,7 +158,8 @@ class ComputeEnvironment(ContextDecorator):
         Returns:
             The ARN of the compute environment
         """
-        return self.response["computeEnvironmentArn"]
+        arn: str = self.response["computeEnvironmentArn"]
+        return arn
 
     @property
     def name(self) -> str:
@@ -166,7 +168,8 @@ class ComputeEnvironment(ContextDecorator):
         Returns:
             The name of the compute environment
         """
-        return self.response["computeEnvironmentName"]
+        name: str = self.response["computeEnvironmentName"]
+        return name
 
     @property
     def instance_type(self) -> str:
@@ -175,7 +178,8 @@ class ComputeEnvironment(ContextDecorator):
         Returns:
             The instance type of the compute environment
         """
-        return self.response["computeResources"]["instanceTypes"][0]
+        instance_type: str = self.response["computeResources"]["instanceTypes"][0]
+        return instance_type
 
     @classmethod
     def from_name_or_arn(cls, name: str, region: str) -> "ComputeEnvironment":
@@ -337,7 +341,9 @@ class ComputeEnvironment(ContextDecorator):
                 break
             sleep(sleep_step)
             i = i + sleep_step
-        return response["computeEnvironments"][0]
+
+        resp: Dict[str, Any] = response["computeEnvironments"][0]
+        return resp
 
     def update(self, *args: Any, **kwargs: Any) -> None:
         """Update compute environment"""
@@ -382,7 +388,8 @@ class JobQueue(ContextDecorator):
         Returns:
             The arn of job queue
         """
-        return self.response["jobQueueArn"]
+        arn: str = self.response["jobQueueArn"]
+        return arn
 
     @property
     def name(self) -> str:
@@ -391,7 +398,8 @@ class JobQueue(ContextDecorator):
         Returns:
             The name of job queue
         """
-        return self.response["jobQueueName"]
+        name: str = self.response["jobQueueName"]
+        return name
 
     @classmethod
     def from_name_or_arn(cls, name: str, region: str) -> "JobQueue":
@@ -512,7 +520,9 @@ class JobQueue(ContextDecorator):
                 break
             sleep(sleep_step)
             i = i + sleep_step
-        return response["jobQueues"][0]
+
+        resp: Dict[str, Any] = response["jobQueues"][0]
+        return resp
 
     def update(self, *args: Any, **kwargs: Any) -> None:
         """Update job queue"""
@@ -537,7 +547,7 @@ class JobQueue(ContextDecorator):
         self.wait(is_deleted=True)
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 22
-@patch
+@patch  # type: ignore
 def create_job_queue(
     self: ComputeEnvironment, *, name: Optional[str] = None, priority: int = 100
 ) -> JobQueue:
@@ -584,7 +594,8 @@ class JobDefinition(ContextDecorator):
         Returns:
             The ARN of job definition
         """
-        return self.response["jobDefinitionArn"]
+        arn: str = self.response["jobDefinitionArn"]
+        return arn
 
     @property
     def name(self) -> str:
@@ -593,7 +604,8 @@ class JobDefinition(ContextDecorator):
         Returns:
             The name of job definition
         """
-        return self.response["jobDefinitionName"]
+        name: str = self.response["jobDefinitionName"]
+        return name
 
     @classmethod
     def from_name_or_arn(cls, name: str, region: str) -> "JobDefinition":
@@ -741,7 +753,9 @@ class JobDefinition(ContextDecorator):
                 break
             sleep(sleep_step)
             i = i + sleep_step
-        return response["jobDefinitions"][0]
+
+        resp: Dict[str, Any] = response["jobDefinitions"][0]
+        return resp
 
     def delete(self) -> None:
         """Delete job definition"""
@@ -759,7 +773,7 @@ class JobDefinition(ContextDecorator):
         self.wait(status="INACTIVE")
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 28
-@patch
+@patch  # type: ignore
 def create_job_definition(
     self: ComputeEnvironment,
     *,
@@ -803,7 +817,8 @@ class Job(ContextDecorator):
         Returns:
             ARN of the job
         """
-        return self.response["jobArn"]
+        arn: str = self.response["jobArn"]
+        return arn
 
     @property
     def name(self) -> str:
@@ -812,7 +827,8 @@ class Job(ContextDecorator):
         Returns:
             name of the job
         """
-        return self.response["jobName"]
+        name: str = self.response["jobName"]
+        return name
 
     @property
     def job_id(self) -> str:
@@ -821,7 +837,8 @@ class Job(ContextDecorator):
         Returns:
             job id of the job
         """
-        return self.response["jobId"]
+        job_id: str = self.response["jobId"]
+        return job_id
 
     @classmethod
     def from_job_id(cls, job_id: str, region: str) -> "Job":
@@ -955,7 +972,9 @@ class Job(ContextDecorator):
                 raise ValueError(f'{response["jobs"][0]["status"]=}')
             sleep(sleep_step)
             i = i + sleep_step
-        return response["jobs"][0]
+
+        resp: Dict[str, Any] = response["jobs"][0]
+        return resp
 
     def delete(self) -> None:
         """Delete job"""
@@ -1024,7 +1043,7 @@ def create_job(
     )
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 38
-def aws_batch_create_job(  # type: ignore
+def aws_batch_create_job(
     *,
     name: Optional[str] = None,
     job_queue_arn: str,
@@ -1126,7 +1145,7 @@ def _create_default_batch_environment_config(
         yaml.dump(yaml_str, f, default_flow_style=False)
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 41
-@call_parse
+@call_parse  # type: ignore
 def create_default_batch_environment_config(
     prefix: Param("prefix", str), output_path: Param("output_path", str), regions: Param("regions", List[str]) = None  # type: ignore
 ) -> None:
@@ -1179,7 +1198,7 @@ def _create_batch_environment(input_yaml_path: str, output_yaml_path: str) -> No
         yaml.dump(output, f, default_flow_style=False)
 
 # %% ../../notebooks/AWS_Batch_Job_Utils.ipynb 44
-@call_parse
+@call_parse  # type: ignore
 def create_batch_environment(
     input_yaml_path: Param("yaml_path", str), output_yaml_path: Param("yaml_path", str)  # type: ignore
 ) -> None:

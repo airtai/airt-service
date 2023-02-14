@@ -104,7 +104,7 @@ class AirflowAWSBatchExecutor(BaseAirflowExecutor):
         tags: Union[str, List[str]],
         on_step_start: Optional[CLICommandBase] = None,
         on_step_end: Optional[CLICommandBase] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Tuple[Path, str]:
         """Create DAG and execute steps in airflow
 
@@ -120,10 +120,13 @@ class AirflowAWSBatchExecutor(BaseAirflowExecutor):
         raise NotImplementedError("Need to implement")
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 15
-@patch
+@patch  # type: ignore
 def _create_step_template(
-    self: AirflowAWSBatchExecutor, step: CLICommandBase, exec_environment: str, **kwargs
-):
+    self: AirflowAWSBatchExecutor,
+    step: CLICommandBase,
+    exec_environment: str,
+    **kwargs: Any,
+) -> str:
     """
     Create template for step
 
@@ -161,12 +164,12 @@ def _create_step_template(
     return task
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 17
-@patch
+@patch  # type: ignore
 def _create_dag_template(
     self: AirflowAWSBatchExecutor,
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> str:
     """
     Create DAG template with steps as tasks
@@ -205,7 +208,7 @@ def _create_dag_template(
     return curr_dag_template
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 21
-@patch
+@patch  # type: ignore
 def execute(
     self: AirflowAWSBatchExecutor,
     *,
@@ -213,7 +216,7 @@ def execute(
     tags: Union[str, List[str]],
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> Tuple[Path, str]:
     """Create DAG and execute steps in airflow
 
@@ -240,7 +243,7 @@ def execute(
     return dag_file_path, run_id
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 23
-def _test_aws_batch_executor(region: str = "eu-west-1"):  # type: ignore
+def _test_aws_batch_executor(region: str = "eu-west-1") -> None:
     with tempfile.TemporaryDirectory() as d:
         data_path_url, model_path_url = setup_test_paths(d)
 
@@ -291,7 +294,7 @@ def _test_aws_batch_executor(region: str = "eu-west-1"):  # type: ignore
             dag_file_path.unlink()
 
 # %% ../../notebooks/AirflowAWSBatchExecutor.ipynb 24
-@call_parse
+@call_parse  # type: ignore
 def test_aws_batch_executor(region: Param("region", str) = "eu-west-1"):  # type: ignore
     """
     Create throw away environment for aws batch and execute airflow batch executor

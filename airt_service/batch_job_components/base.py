@@ -5,6 +5,7 @@ __all__ = ['BatchJobContext']
 
 # %% ../../notebooks/Base_Batch_Job_Context.ipynb 3
 from os import environ
+from types import TracebackType
 from typing import *
 
 from airt.logger import get_logger
@@ -25,7 +26,7 @@ class BatchJobContext:
         """
         self.task = task
 
-    def create_job(self, command: str, environment_vars: Dict[str, str]):
+    def create_job(self, command: str, environment_vars: Dict[str, str]) -> None:
         """Create a new job
 
         Args:
@@ -37,7 +38,7 @@ class BatchJobContext:
     _factories: Dict[str, Any] = {}
 
     @classmethod
-    def create(cls, task: str, **kwargs) -> "BatchJobContext":
+    def create(cls, task: str, **kwargs: Any) -> "BatchJobContext":
         """Factory method to create a new job
 
         Args:
@@ -70,19 +71,23 @@ class BatchJobContext:
                 raise ValueError(f'Unknown value: {environ["JOB_EXECUTOR"]=}')
 
         factory = BatchJobContext._factories[ctx_name]
-        return factory(task=task, **kwargs)
+        return factory(task=task, **kwargs)  # type: ignore
 
     @classmethod
-    def add_factory(cls):
+    def add_factory(cls) -> None:
         BatchJobContext._factories[cls.__name__] = cls
 
-    def __enter__(self):
+    def __enter__(self: "BatchJobContext") -> "BatchJobContext":
         logger.info(f"Entering {self}")
         return self
 
-    def __exit__(self, exc_type, exc, exc_tb):
+    def __exit__(
+        self,
+        exc_type: Optional[type[BaseException]],
+        exc: Optional[BaseException],
+        exc_tb: TracebackType,
+    ) -> None:
         logger.info(f"Exiting {self}: {exc_type=}, {exc=}, {exc_tb}")
-        return False
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(task={self.task})"

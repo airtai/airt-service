@@ -88,7 +88,7 @@ def get_available_azure_regions() -> List[str]:
     ]
 
 # %% ../../notebooks/Azure_Utils.ipynb 10
-def verify_azure_region(region: str):
+def verify_azure_region(region: str) -> None:
     """
     Verify given region is in available azure regions else raise an error
 
@@ -285,7 +285,7 @@ def get_azure_batch_environment_component_names(
         batch_environment_names = yaml.safe_load(f)
 
     # ToDo: For now we have azure batch environment only for northeurope region. Fix this once we have more regions
-    return batch_environment_names["northeurope"]
+    return batch_environment_names["northeurope"]  # type: ignore
 
 # %% ../../notebooks/Azure_Utils.ipynb 25
 def get_batch_account_pool_job_names(

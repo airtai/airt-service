@@ -72,7 +72,7 @@ get_prediction_responses = {
 }
 
 
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get(cls: Prediction, uuid: str, user: User, session: Session) -> Prediction:
     """Get prediction object for given prediction uuid
 
@@ -203,7 +203,7 @@ def prediction_pandas(
     return df.to_dict("list")  # type: ignore
 
 # %% ../../notebooks/Model_Prediction.ipynb 20
-@patch
+@patch  # type: ignore
 def to_local(
     self: Prediction,
     session: Session,
@@ -253,10 +253,10 @@ def prediction_to_local_route(
     user = session.merge(user)
     prediction = Prediction.get(uuid=prediction_uuid, user=user, session=session)  # type: ignore
 
-    return prediction.to_local(session)  # type: ignore
+    return prediction.to_local(session)
 
 # %% ../../notebooks/Model_Prediction.ipynb 23
-@patch
+@patch  # type: ignore
 def to_s3(
     self: Prediction,
     s3_request: S3Request,
@@ -326,10 +326,10 @@ def prediction_to_s3_route(
     user = session.merge(user)
     prediction = Prediction.get(uuid=prediction_uuid, user=user, session=session)  # type: ignore
 
-    return prediction.to_s3(s3_request, session, background_tasks)  # type: ignore
+    return prediction.to_s3(s3_request, session, background_tasks)
 
 # %% ../../notebooks/Model_Prediction.ipynb 26
-@patch
+@patch  # type: ignore
 def to_azure_blob_storage(
     self: Prediction,
     azure_blob_storage_request: AzureBlobStorageRequest,
@@ -401,7 +401,7 @@ def prediction_to_azure_blob_storage_route(
     return prediction.to_azure_blob_storage(azure_blob_storage_request, session, background_tasks)  # type: ignore
 
 # %% ../../notebooks/Model_Prediction.ipynb 29
-@patch
+@patch  # type: ignore
 def to_rdbms(
     self: Prediction,
     db_request: DBRequest,
@@ -483,7 +483,7 @@ def prediction_to_mysql_route(
     user = session.merge(user)
     prediction = Prediction.get(uuid=prediction_uuid, user=user, session=session)  # type: ignore
 
-    return prediction.to_rdbms(  # type: ignore
+    return prediction.to_rdbms(
         db_request=db_request,
         database_server="mysql",
         session=session,
@@ -491,7 +491,7 @@ def prediction_to_mysql_route(
     )
 
 # %% ../../notebooks/Model_Prediction.ipynb 32
-@patch
+@patch  # type: ignore
 def to_clickhouse(
     self: Prediction,
     clickhouse_request: ClickHouseRequest,
@@ -567,7 +567,7 @@ def prediction_to_clickhouse_route(
     user = session.merge(user)
     prediction = Prediction.get(uuid=prediction_uuid, user=user, session=session)  # type: ignore
 
-    return prediction.to_clickhouse(  # type: ignore
+    return prediction.to_clickhouse(
         clickhouse_request=clickhouse_request,
         session=session,
         background_tasks=background_tasks,

@@ -58,7 +58,7 @@ def create_batch_job(
     cloud_provider: str,
     region: str,
     background_tasks: BackgroundTasks,
-):
+) -> None:
     """Create a new batch job
 
     Args:
@@ -81,7 +81,7 @@ def create_batch_job(
         )
 
 # %% ../notebooks/BatchJob.ipynb 14
-def update_all():
+def update_all() -> None:
     global __all__
     __all__ = [
         "BatchJobContext",

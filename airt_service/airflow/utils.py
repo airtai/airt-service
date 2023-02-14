@@ -31,7 +31,8 @@ def list_dags(
         shlex.split(command), shell=False, capture_output=True, text=True, check=True
     )
     try:
-        return json.loads(p.stdout)
+        dags_list: Dict[str, Any] = json.loads(p.stdout)
+        return dags_list
     except Exception as e:
         sanitized_print(f"{p.stdout=}")
         raise e
@@ -53,7 +54,8 @@ def list_dag_runs(
         check=True,
     )
 
-    return json.loads(p.stdout)
+    dag_runs: Dict[str, Any] = json.loads(p.stdout)
+    return dag_runs
 
 # %% ../../notebooks/Airflow_Utils.ipynb 17
 def create_dag(
@@ -156,7 +158,7 @@ def wait_for_run_to_complete(dag_id: str, run_id: str, timeout: int = 60) -> str
     t0 = datetime.now()
     while (datetime.now() - t0) < timedelta(seconds=timeout):
         runs = pd.DataFrame(list_dag_runs(dag_id=dag_id))
-        state = runs.loc[runs["run_id"] == run_id, "state"].iloc[0]
+        state: str = runs.loc[runs["run_id"] == run_id, "state"].iloc[0]
         if state in ["success", "failed"]:
             return state
         sleep(5)

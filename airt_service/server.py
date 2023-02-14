@@ -493,7 +493,7 @@ def create_ws_server(
         docs_url=None,
         redoc_url=None,
     )
-    app.mount("/assets", StaticFiles(directory=assets_path), name="assets")  # type: ignore
+    app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 
     # attaches /token to routes
     app.include_router(auth_router)
@@ -517,7 +517,7 @@ def create_ws_server(
     async def add_nosniff_x_content_type_options_header(
         request: Request, call_next: Callable[[Request], Response]
     ) -> Response:
-        response = await call_next(request)  # type: ignore
+        response: Response = await call_next(request)  # type: ignore
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Strict-Transport-Security"] = "max-age=31536000"
         return response
@@ -613,7 +613,9 @@ def create_ws_server(
         **aio_kafka_config,
     )
 
-    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_start_training_data")  # type: ignore
+    @fast_kafka_api_app.consumes(  # type: ignore
+        topic=f"{start_process_for_username}_start_training_data"
+    )
     async def on_infobip_start_training_data(msg: ModelTrainingRequest):
         logger.info(f"start training msg={msg}")
         with get_session_with_context() as session:
@@ -654,7 +656,9 @@ def create_ws_server(
     async def on_infobip_realtime_data(msg: RealtimeData):
         pass
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_training_data_status")  # type: ignore
+    @fast_kafka_api_app.produces(  # type: ignore
+        topic=f"{start_process_for_username}_training_data_status"
+    )
     async def to_infobip_training_data_status(
         account_id: int,
         *,
@@ -675,7 +679,9 @@ def create_ws_server(
         )
         return msg
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_training_model_status")  # type: ignore
+    @fast_kafka_api_app.produces(  # type: ignore
+        topic=f"{start_process_for_username}_training_model_status"
+    )
     async def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return TrainingModelStatus()
@@ -693,7 +699,7 @@ def create_ws_server(
     fast_kafka_api_app.to_infobip_training_data_status = to_infobip_training_data_status
     if start_process_for_username is not None:
 
-        @fast_kafka_api_app.run_in_background()
+        @fast_kafka_api_app.run_in_background()  # type: ignore
         async def startup_event() -> None:
             await process_training_status(
                 username=start_process_for_username,  # type: ignore

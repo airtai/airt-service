@@ -55,8 +55,8 @@ datasource_router = APIRouter(
 )
 
 # %% ../../notebooks/DataSource_Router.ipynb 9
-@patch
-def calculate_properties(self: DataSource, cache_path: Path):
+@patch  # type: ignore
+def calculate_properties(self: DataSource, cache_path: Path) -> None:
     """Calculate properties of datasource like no of rows, dtypes, head, hash from parquet files
 
     Args:
@@ -74,17 +74,17 @@ def calculate_properties(self: DataSource, cache_path: Path):
     head.to_parquet(metadata_folder_path / DS_HEAD_FILE_NAME)
 
 # %% ../../notebooks/DataSource_Router.ipynb 11
-@patch
+@patch  # type: ignore
 def remove_tag_from_previous_datasources(
     self: DataSource, tag_name: str, session: Session
-):
+) -> None:
     """Remove the tag_name associated with other/previous datasources
 
     Args:
         tag_name: Tag name to remove from other datasources
         session: Sqlmodel session
     """
-    tag_to_remove = Tag.get_by_name(name=tag_name, session=session)  # type: ignore
+    tag_to_remove = Tag.get_by_name(name=tag_name, session=session)
     try:
         datasources = session.exec(
             select(DataSource).where(
@@ -108,7 +108,7 @@ get_datasource_responses = {
 }
 
 
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get(cls: DataSource, uuid: str, user: User, session: Session) -> DataSource:
     """Get datasource based on uuid
 
@@ -159,13 +159,13 @@ def get_details_of_datasource(
 ) -> DataSource:
     """Get details of the datasource"""
     user = session.merge(user)
-    datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
+    datasource: DataSource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
 
     return datasource
 
 # %% ../../notebooks/DataSource_Router.ipynb 19
-@patch
-def delete(self: DataSource, user: User, session: Session):
+@patch  # type: ignore
+def delete(self: DataSource, user: User, session: Session) -> DataSource:
     """Delete a datasource
 
     Args:
@@ -193,9 +193,9 @@ def delete_datasource(
 ) -> DataSource:
     """Delete datasource"""
     user = session.merge(user)
-    datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
+    datasource: DataSource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
 
-    return datasource.delete(user, session)
+    return datasource.delete(user, session)  # type: ignore
 
 # %% ../../notebooks/DataSource_Router.ipynb 23
 def _get_ds_head_and_dtypes(datasource_s3_path: str) -> Dict[str, Any]:
@@ -221,8 +221,8 @@ def _get_ds_head_and_dtypes(datasource_s3_path: str) -> Dict[str, Any]:
         return df_to_dict(df)
 
 # %% ../../notebooks/DataSource_Router.ipynb 25
-@patch
-def is_ready(self: DataSource):
+@patch  # type: ignore
+def is_ready(self: DataSource) -> None:
     """Check if the datasource's completed steps equal to total steps, else raise HTTPException"""
     if self.completed_steps != self.total_steps:
         raise HTTPException(
@@ -246,7 +246,7 @@ def datasource_head_route(
     """Get head of the datasource"""
     user = session.merge(user)
     datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
-    datasource.is_ready()  # type: ignore
+    datasource.is_ready()
 
     df_dict = _get_ds_head_and_dtypes(datasource_s3_path=datasource.path)
     return df_dict
@@ -268,13 +268,13 @@ def datasource_dtypes_route(
     user = session.merge(user)
     # get locally saved parquet file path, read it and return columns and its dtypes
     datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
-    datasource.is_ready()  # type: ignore
+    datasource.is_ready()
 
     df_dict = _get_ds_head_and_dtypes(datasource_s3_path=datasource.path)
-    return df_dict["dtypes"]
+    return df_dict["dtypes"]  # type: ignore
 
 # %% ../../notebooks/DataSource_Router.ipynb 32
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_all(
     cls: DataSource,
     disabled: bool,
@@ -318,7 +318,7 @@ def get_all_datasources(
 ) -> List[DataSource]:
     """Get all datasources created by user"""
     user = session.merge(user)
-    return DataSource.get_all(  # type: ignore
+    return DataSource.get_all(
         disabled=disabled,
         completed=completed,
         offset=offset,
@@ -328,8 +328,8 @@ def get_all_datasources(
     )
 
 # %% ../../notebooks/DataSource_Router.ipynb 36
-@patch
-def tag(self: DataSource, tag_name: str, session: Session):
+@patch  # type: ignore
+def tag(self: DataSource, tag_name: str, session: Session) -> DataSource:
     """Tag an existing datasource
 
     Args:
@@ -337,7 +337,7 @@ def tag(self: DataSource, tag_name: str, session: Session):
         session: Sqlmodel session
     """
 
-    user_tag = Tag.get_by_name(name=tag_name, session=session)  # type: ignore
+    user_tag = Tag.get_by_name(name=tag_name, session=session)
 
     self.remove_tag_from_previous_datasources(tag_name=user_tag.name, session=session)  # type: ignore
     self.tags.append(user_tag)
@@ -357,12 +357,12 @@ def tag_datasource(
 ) -> DataSource:
     """Add tag to datasource"""
     user = session.merge(user)
-    datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
+    datasource: DataSource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
 
-    return datasource.tag(tag_name=tag_to_create.name, session=session)
+    return datasource.tag(tag_name=tag_to_create.name, session=session)  # type: ignore
 
 # %% ../../notebooks/DataSource_Router.ipynb 39
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def _create(
     cls: DataSource,
     *,

@@ -23,7 +23,7 @@ logger = get_logger(__name__)
 class AirflowExecutor:
     @classmethod
     def create_executor(
-        cls, steps: List[CLICommandBase], cloud_provider: str, **kwargs
+        cls, steps: List[CLICommandBase], cloud_provider: str, **kwargs: Any
     ) -> BaseAirflowExecutor:
         """
         Initialize and return airflow bash or batch executor based on env variable

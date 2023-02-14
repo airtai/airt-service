@@ -123,7 +123,7 @@ def _send_get_request_to_infobip(
         logger.exception(f"Unexpected response from infobip", exc_info=err)
         raise HTTPException(status_code=500, detail=f"Unexpected exception: {err}")
 
-    return response_json
+    return response_json  # type: ignore
 
 # %% ../notebooks/SMS_Utils.ipynb 14
 def _get_application_id(application_name: str) -> Optional[str]:
@@ -163,7 +163,7 @@ def _send_post_request_to_infobip(
     url = f"{os.environ['INFOBIP_BASE_URL']}{relative_url}"
 
     try:
-        response = requests.post(url, json=data, headers=headers).json()
+        response: Dict[str, Any] = requests.post(url, json=data, headers=headers).json()
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -242,7 +242,7 @@ def _send_put_request_to_infobip(
     url = f"{os.environ['INFOBIP_BASE_URL']}{relative_url}"
 
     try:
-        response = requests.put(url, json=data, headers=headers).json()
+        response: Dict[str, Any] = requests.put(url, json=data, headers=headers).json()
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -251,7 +251,7 @@ def _send_put_request_to_infobip(
     return response
 
 # %% ../notebooks/SMS_Utils.ipynb 22
-def _update_application_config(app_id: str, config: Dict[str, Any]):
+def _update_application_config(app_id: str, config: Dict[str, Any]) -> Dict[str, Any]:
     """Update an existing application configuration
 
     Args:
@@ -382,7 +382,7 @@ def validate_otp(
     otp: str,
     message_template_name: str,
     session: Session,
-):
+) -> None:
     """Validate the SMS OTP
 
     Args:
@@ -439,10 +439,10 @@ def validate_otp(
 
     if not pin_verification_status["verified"]:
         with commit_or_rollback(session):
-            sms_protocol.pin_verified = pin_verification_status["verified"]  # type: ignore
+            sms_protocol.pin_verified = pin_verification_status["verified"]
             sms_protocol.pin_attempts_remaining = pin_verification_status[
                 "attemptsRemaining"
-            ]  # type: ignore
+            ]
             session.add(sms_protocol)
 
         raise HTTPException(

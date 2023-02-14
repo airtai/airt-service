@@ -63,8 +63,8 @@ def sanitize_secrets(s: str) -> str:
 old_log = Logger._log
 
 # %% ../notebooks/Sanitize_Secrets.ipynb 18
-@patch
-def _log(self: Logger, level, msg, *args, **kwargs):
+@patch  # type: ignore
+def _log(self: Logger, level: int, msg: str, *args: Any, **kwargs: Any) -> None:
     return old_log(self, level, sanitize_secrets(msg), *args, **kwargs)
 
 # %% ../notebooks/Sanitize_Secrets.ipynb 23
@@ -72,18 +72,18 @@ old_publish_display_data = IPython.core.display_functions.publish_display_data
 
 # %% ../notebooks/Sanitize_Secrets.ipynb 24
 def new_publish_display_data(
-    data,
-    metadata=None,
-    source=IPython.core.display_functions._sentinel,
+    data: Dict[str, Any],
+    metadata: Optional[Dict[str, Any]] = None,
+    source: IPython.core.display_functions._sentinel = IPython.core.display_functions._sentinel,  # type: ignore
     *,
-    transient=None,
-    **kwargs,
-):
+    transient: Optional[Dict[str, Any]] = None,
+    **kwargs: Any,
+) -> None:
     sanitized_data = {
         k: sanitize_secrets(v.__repr__() if not isinstance(v, str) else v)
         for k, v in data.items()
     }
-    return old_publish_display_data(
+    return old_publish_display_data(  # type: ignore
         sanitized_data, metadata=metadata, source=source, transient=transient, **kwargs
     )
 
@@ -94,7 +94,9 @@ IPython.core.display_functions.publish_display_data = new_publish_display_data
 old_print = builtins.print
 
 # %% ../notebooks/Sanitize_Secrets.ipynb 28
-def sanitized_print(*objects, sep=" ", end="\n", file=sys.stdout, flush=False):
+def sanitized_print(  # type: ignore
+    *objects: Any, sep: str = " ", end: str = "\n", file=sys.stdout, flush: bool = False
+) -> None:
     new_objs = [
         sanitize_secrets(obj.__repr__() if not isinstance(obj, str) else obj)
         for obj in objects

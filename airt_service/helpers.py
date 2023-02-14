@@ -40,7 +40,8 @@ def get_password_hash(password: str) -> str:
     Returns:
         The hashed password as a string
     """
-    return pwd_context.hash(password)
+    pwd_hash: str = pwd_context.hash(password)
+    return pwd_hash
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -53,7 +54,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         True, if the hashed password is derived from the plain password else False
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    return pwd_context.verify(plain_password, hashed_password)  # type: ignore
 
 # %% ../notebooks/Helpers.ipynb 11
 def get_storage_path() -> Path:
@@ -240,4 +241,4 @@ def get_attr_by_name(xs: Dict[str, Any], attr_name: str) -> Union[str, None]:
         ret_val = next(
             (getattr(v, attr_name) for v in xs.values() if hasattr(v, attr_name)), None
         )
-    return ret_val
+    return ret_val  # type: ignore

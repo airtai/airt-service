@@ -30,7 +30,7 @@ from ..helpers import truncate
 logger = get_logger(__name__)
 
 # %% ../../notebooks/DataSource_CSV.ipynb 7
-@call_parse
+@call_parse  # type: ignore
 def process_csv(
     datablob_id: Param("datablob_id", int),  # type: ignore
     datasource_id: Param("datasource_id", int),  # type: ignore
@@ -40,7 +40,7 @@ def process_csv(
     sort_by: Param("sort_by", str),  # type: ignore
     blocksize: Param("blocksize", str) = "256MB",  # type: ignore
     kwargs_json: Param("kwargs_json", str) = "{}",  # type: ignore
-):
+) -> None:
     """Download the user uploaded CSV from S3, run import_csv against it and finally upload the processed parquet files to S3
 
     Args:
