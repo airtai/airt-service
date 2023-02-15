@@ -206,7 +206,7 @@ jobs:
       matrix:
         command:
           - test_aws_batch_executor --region eu-west-3
-          - test_azure_batch_executor --region northeurope
+          - test_azure_batch_executor --region westeurope
     steps:
       - uses: actions/checkout@v3
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989

@@ -41,8 +41,8 @@ class AzureBatchJobContext(BatchJobContext):
         logger.info(
             f"{self.__class__.__name__}.create_job({self=}, {command=}, {environment_vars=})"
         )
-        # ToDo: We have batch accounts available only in northeurope for now
-        region = "northeurope"
+        # ToDo: We have batch accounts available only in westeurope for now
+        region = "westeurope"
         (
             batch_account_name,
             batch_pool_name,

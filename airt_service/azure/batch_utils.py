@@ -10,6 +10,7 @@ import os
 import random
 import string
 from contextlib import ContextDecorator, contextmanager
+from datetime import timedelta
 from time import sleep
 from typing import *
 
@@ -49,11 +50,11 @@ def get_random_string(length: int = 6) -> str:
     )
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 9
-AUTO_SCALE_FORMULA = """// Get pending tasks for the past 15 minutes.
-$samples = $PendingTasks.GetSamplePercent(TimeInterval_Minute * 15);
+AUTO_SCALE_FORMULA = """// Get pending tasks for the past 5 minutes.
+$samples = $PendingTasks.GetSamplePercent(TimeInterval_Minute * 5);
 // If we have fewer than 70 percent data points, we use the last sample point,
 // otherwise we use the maximum of last sample point and the history average.
-$tasks = $samples < 70 ? max(0,$PendingTasks.GetSample(1)) : max( $PendingTasks.GetSample(1), avg($PendingTasks.GetSample(TimeInterval_Minute * 15)));
+$tasks = $samples < 70 ? max(0,$PendingTasks.GetSample(1)) : max( $PendingTasks.GetSample(1), avg($PendingTasks.GetSample(TimeInterval_Minute * 5)));
 // If number of pending tasks is not 0, set targetVM to pending tasks, otherwise
 // half of current dedicated.
 $targetVMs = $tasks > 0? $tasks:max(0, $TargetDedicatedNodes/2);
@@ -152,6 +153,7 @@ class BatchPool(ContextDecorator):
             vm_size=vm,
             enable_auto_scale=True,
             auto_scale_formula=auto_scale_formula,
+            auto_scale_evaluation_interval=timedelta(minutes=5),
         )
 
         batch_service_client.pool.add(new_pool)
@@ -512,8 +514,8 @@ def azure_batch_create_job(
     region: str,
     shared_key_credentials: Optional[SharedKeyCredentials] = None,
 ) -> BatchTask:
-    if region != "northeurope":
-        raise ValueError("Only northeurope region is supported for now")
+    if region != "westeurope":
+        raise ValueError("Only westeurope region is supported for now")
 
     if shared_key_credentials is None:
         shared_key_credentials = SharedKeyCredentials(
