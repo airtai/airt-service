@@ -266,7 +266,7 @@ def execute(
     return dag_file_path, run_id
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 23
-def _test_azure_batch_executor(region: str = "northeurope") -> None:
+def _test_azure_batch_executor(region: str = "westeurope") -> None:
     with tempfile.TemporaryDirectory() as d:
         data_path_url, model_path_url = setup_test_paths(d)
 
@@ -281,23 +281,23 @@ def _test_azure_batch_executor(region: str = "northeurope") -> None:
         created_azure_env_path = td / "azure_batch_environment.yml"
 
         shared_key_credentials = SharedKeyCredentials(
-            "testbatchnortheurope", os.environ["SHARED_KEY_CREDENTIALS"]
+            "airtbatchwesteurope", os.environ["SHARED_KEY_CREDENTIALS"]
         )
 
-        batch_account_name = "testbatchnortheurope"
-        region = "northeurope"
+        batch_account_name = "airtbatchwesteurope"
+        region = "westeurope"
 
         batch_pool = BatchPool.from_name(
-            name="test-cpu-pool",
+            name="cpu-pool",
             batch_account_name=batch_account_name,
             region=region,
             shared_key_credentials=shared_key_credentials,
         )
-        batch_job = BatchJob.from_name(name="test-cpu-job", batch_pool=batch_pool)
+        batch_job = BatchJob.from_name(name="cpu-job", batch_pool=batch_pool)
 
         sanitized_print(f"{batch_pool.name=}")
         sanitized_print(f"{batch_job.name=}")
-        region = "northeurope"
+        region = "westeurope"
         test_batch_environment_names = {
             region: {
                 task: {
@@ -340,7 +340,7 @@ def _test_azure_batch_executor(region: str = "northeurope") -> None:
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 24
 @call_parse  # type: ignore
-def test_azure_batch_executor(region: Param("region", str) = "northeurope"):  # type: ignore
+def test_azure_batch_executor(region: Param("region", str) = "westeurope"):  # type: ignore
     """
     Create throw away environment for azure batch and execute airflow batch executor
     """

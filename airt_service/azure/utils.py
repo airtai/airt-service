@@ -284,8 +284,8 @@ def get_azure_batch_environment_component_names(
     with open(batch_environment_path) as f:
         batch_environment_names = yaml.safe_load(f)
 
-    # ToDo: For now we have azure batch environment only for northeurope region. Fix this once we have more regions
-    return batch_environment_names["northeurope"]  # type: ignore
+    # ToDo: For now we have azure batch environment only for westeurope region. Fix this once we have more regions
+    return batch_environment_names["westeurope"]  # type: ignore
 
 # %% ../../notebooks/Azure_Utils.ipynb 25
 def get_batch_account_pool_job_names(
