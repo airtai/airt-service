@@ -10,9 +10,8 @@ from pathlib import Path
 from typing import *
 
 from aiokafka.helpers import create_ssl_context
-from confluent_kafka.admin import AdminClient, NewTopic
-
 from airt.logger import get_logger
+from confluent_kafka.admin import AdminClient, NewTopic
 
 # %% ../notebooks/Confluent.ipynb 5
 logger = get_logger(__name__)
@@ -72,7 +71,7 @@ def get_topic_names_to_create(username: str) -> List[str]:
     return [f"{username}_{topic_name}" for topic_name in topic_names]
 
 # %% ../notebooks/Confluent.ipynb 13
-def create_topics_for_user(username: str):
+def create_topics_for_user(username: str) -> None:
     """
     Create necessary topics for given user
 
@@ -107,7 +106,7 @@ def create_topics_for_user(username: str):
             raise e
 
 # %% ../notebooks/Confluent.ipynb 15
-def delete_topics_for_user(username: str):
+def delete_topics_for_user(username: str) -> None:
     """
     Delete necessary topics for given user
 

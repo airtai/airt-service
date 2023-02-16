@@ -8,8 +8,8 @@ __all__ = ['pwd_context', 'get_password_hash', 'verify_password', 'get_storage_p
 # %% ../notebooks/Helpers.ipynb 3
 import os
 import random
-import string
 import re
+import string
 from contextlib import contextmanager
 from os import environ
 from pathlib import Path
@@ -17,12 +17,12 @@ from typing import *
 
 import pandas as pd
 import requests
+from airt.logger import get_logger
 from fastcore.utils import *
 from passlib.context import CryptContext
 from sqlmodel import Session
 
 import airt_service.sanitizer
-from airt.logger import get_logger
 
 # %% ../notebooks/Helpers.ipynb 7
 logger = get_logger(__name__)
@@ -40,7 +40,8 @@ def get_password_hash(password: str) -> str:
     Returns:
         The hashed password as a string
     """
-    return pwd_context.hash(password)
+    pwd_hash: str = pwd_context.hash(password)
+    return pwd_hash
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -53,7 +54,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         True, if the hashed password is derived from the plain password else False
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    return pwd_context.verify(plain_password, hashed_password)  # type: ignore
 
 # %% ../notebooks/Helpers.ipynb 11
 def get_storage_path() -> Path:
@@ -120,7 +121,7 @@ def generate_random_string(length: int = 6) -> str:
 
 # %% ../notebooks/Helpers.ipynb 21
 @contextmanager
-def set_env_variable_context(variable: str, value: str):
+def set_env_variable_context(variable: str, value: str) -> Iterator[None]:
     old_value = environ[variable] if variable in environ else None
     environ[variable] = value
     yield
@@ -131,7 +132,7 @@ def set_env_variable_context(variable: str, value: str):
 
 # %% ../notebooks/Helpers.ipynb 23
 @contextmanager
-def commit_or_rollback(session: Session):
+def commit_or_rollback(session: Session) -> Iterator[None]:
     """A context manager to commit the changes to the database. In the case of an exception,
     the database will be rollback to the previous state.
 
@@ -206,7 +207,7 @@ def _detect_sql_code_injection(s: str) -> bool:
     return bool(re.search(regex_text, s))
 
 # %% ../notebooks/Helpers.ipynb 31
-def validate_user_inputs(xs: List[str]):
+def validate_user_inputs(xs: List[str]) -> None:
     """Validate the user input for SQL code injection
 
     Args:
@@ -240,4 +241,4 @@ def get_attr_by_name(xs: Dict[str, Any], attr_name: str) -> Union[str, None]:
         ret_val = next(
             (getattr(v, attr_name) for v in xs.values() if hasattr(v, attr_name)), None
         )
-    return ret_val
+    return ret_val  # type: ignore

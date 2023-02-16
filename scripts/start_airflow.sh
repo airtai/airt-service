@@ -29,7 +29,7 @@ else
     mysql --user="${DB_USERNAME}" --password="${DB_PASSWORD}" --host="${DB_HOST}" --port="${DB_PORT}" --execute="CREATE DATABASE IF NOT EXISTS airflow CHARACTER SET utf8 COLLATE utf8_unicode_ci; CREATE USER IF NOT EXISTS 'airflow' IDENTIFIED BY 'airflow'; GRANT ALL PRIVILEGES ON airflow.* TO 'airflow';"
     airflow db init
     airflow users  create --role Admin --username admin --email info@airt.ai --firstname admin --lastname admin --password "${AIRFLOW_PASSWORD}"
-    airflow connections add custom_azure_batch_default --conn-type azure_batch --conn-login testbatchnortheurope --conn-password ${SHARED_KEY_CREDENTIALS} --conn-extra '{"extra__azure_batch__account_url": "https://testbatchnortheurope.northeurope.batch.azure.com"}'
+    airflow connections add custom_azure_batch_default --conn-type azure_batch --conn-login airtbatchwesteurope --conn-password ${SHARED_KEY_CREDENTIALS} --conn-extra '{"extra__azure_batch__account_url": "https://airtbatchwesteurope.westeurope.batch.azure.com"}'
 
     echo "Starting airflow kerberos"
     airflow kerberos -D

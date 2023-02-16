@@ -8,24 +8,24 @@ import shutil
 from datetime import datetime
 from typing import *
 
+from airt.logger import get_logger
+from airt.remote_path import RemotePath
 from azure.identity import DefaultAzureCredential
 from fastcore.script import call_parse
 from fastcore.utils import *
 from sqlmodel import select
 
 import airt_service.sanitizer
-from airt.logger import get_logger
-from airt.remote_path import RemotePath
 from ..aws.utils import create_s3_datablob_path
 from ..azure.utils import create_azure_blob_storage_datablob_path
+from ..constants import METADATA_FOLDER_PATH
 from airt_service.data.utils import (
     calculate_data_object_folder_size_and_path,
     calculate_data_object_pulled_on,
     get_azure_blob_storage_connection_params_from_db_uri,
 )
-from ..db.models import get_session_with_context, DataBlob, PredictionPush
+from ..db.models import DataBlob, PredictionPush, get_session_with_context
 from ..helpers import truncate
-from ..constants import METADATA_FOLDER_PATH
 
 # %% ../../notebooks/DataBlob_Azure_Blob_Storage.ipynb 6
 logger = get_logger(__name__)
@@ -38,7 +38,7 @@ def copy_between_azure_blob_storage(
     destination_credential: Optional[Union[str, DefaultAzureCredential]] = None,
     datablob: Optional[DataBlob] = None,
     skip_metadata_dir: Optional[bool] = False,
-):
+) -> None:
     """Copy files from source azure blob storage path and to destination azure blob storage path
 
     By default, all files are copied to the destination_remote_url. In case
@@ -97,8 +97,8 @@ def copy_between_azure_blob_storage(
             )
 
 # %% ../../notebooks/DataBlob_Azure_Blob_Storage.ipynb 10
-@call_parse
-def azure_blob_storage_pull(datablob_id: int):  # type: ignore
+@call_parse  # type: ignore
+def azure_blob_storage_pull(datablob_id: int) -> None:
     """Pull the data from azure blob storage and updates progress in db
 
     Args:
@@ -179,8 +179,8 @@ def azure_blob_storage_pull(datablob_id: int):  # type: ignore
         session.commit()
 
 # %% ../../notebooks/DataBlob_Azure_Blob_Storage.ipynb 14
-@call_parse
-def azure_blob_storage_push(prediction_push_id: int):  # type: ignore
+@call_parse  # type: ignore
+def azure_blob_storage_push(prediction_push_id: int) -> None:
     """Push the data to azure blob storage and update its progress in db
 
     Args:

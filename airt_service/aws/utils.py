@@ -7,19 +7,19 @@ __all__ = ['get_available_aws_regions', 'verify_aws_region', 'get_s3_storage_buc
 
 # %% ../../notebooks/AWS_Utils.ipynb 3
 import os
-import yaml
 from pathlib import Path
 from typing import *
 
 import boto3
 import requests
+import yaml
+from airt.helpers import get_s3_bucket_name_and_folder_from_uri
+from airt.logger import get_logger
 from botocore.client import Config
-from fastapi import status, HTTPException
+from fastapi import HTTPException, status
 from mypy_boto3_s3.service_resource import Bucket
 
 from ..sanitizer import sanitized_print
-from airt.helpers import get_s3_bucket_name_and_folder_from_uri
-from airt.logger import get_logger
 
 # %% ../../notebooks/AWS_Utils.ipynb 6
 logger = get_logger(__name__)
@@ -59,7 +59,7 @@ def get_available_aws_regions() -> List[str]:
     ]
 
 # %% ../../notebooks/AWS_Utils.ipynb 9
-def verify_aws_region(region: str):
+def verify_aws_region(region: str) -> None:
     """
     Verify region is in available regions else raise an error
 
@@ -185,7 +185,7 @@ def get_batch_environment_arns(
     with open(batch_environment_arn_path) as f:
         batch_environment_arns = yaml.safe_load(f)
 
-    return batch_environment_arns[region]
+    return batch_environment_arns[region]  # type: ignore
 
 # %% ../../notebooks/AWS_Utils.ipynb 23
 def get_queue_definition_arns(
@@ -215,7 +215,7 @@ def upload_to_s3_with_retry(
     presigned_fields: Dict[str, Any],
     max_retry: int = 3,
     curr_iteration: int = 1,
-):
+) -> None:
     """
     Helper function to upload local files to s3 using presigned url; Used only in tests
 

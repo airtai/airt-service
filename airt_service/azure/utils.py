@@ -9,20 +9,20 @@ __all__ = ['get_available_azure_regions', 'verify_azure_region', 'create_azure_r
 # %% ../../notebooks/Azure_Utils.ipynb 3
 import logging
 import os
-import yaml
 from pathlib import Path
 from typing import *
 
+import yaml
+from airt.helpers import get_s3_bucket_name_and_folder_from_uri
+from airt.logger import get_logger
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.storage import StorageManagementClient
 from azure.storage.blob import BlobServiceClient
 from azure.storage.blob._container_client import ContainerClient
-from fastapi import status, HTTPException
+from fastapi import HTTPException, status
 
 import airt_service.sanitizer
-from airt.helpers import get_s3_bucket_name_and_folder_from_uri
-from airt.logger import get_logger
 
 # %% ../../notebooks/Azure_Utils.ipynb 6
 logger = get_logger(__name__)
@@ -88,7 +88,7 @@ def get_available_azure_regions() -> List[str]:
     ]
 
 # %% ../../notebooks/Azure_Utils.ipynb 10
-def verify_azure_region(region: str):
+def verify_azure_region(region: str) -> None:
     """
     Verify given region is in available azure regions else raise an error
 
@@ -284,8 +284,8 @@ def get_azure_batch_environment_component_names(
     with open(batch_environment_path) as f:
         batch_environment_names = yaml.safe_load(f)
 
-    # ToDo: For now we have azure batch environment only for northeurope region. Fix this once we have more regions
-    return batch_environment_names["northeurope"]
+    # ToDo: For now we have azure batch environment only for westeurope region. Fix this once we have more regions
+    return batch_environment_names["westeurope"]  # type: ignore
 
 # %% ../../notebooks/Azure_Utils.ipynb 25
 def get_batch_account_pool_job_names(

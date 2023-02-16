@@ -18,17 +18,17 @@ from typing import *
 import httpx
 import pandas as pd
 import pyotp
+from airt.remote_path import RemotePath
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.storage import StorageManagementClient
-from fastcore.script import call_parse, Param
+from fastcore.script import Param, call_parse
 from sqlmodel import select
 
-from .sanitizer import sanitized_print
 from .aws.utils import upload_to_s3_with_retry
-from airt.remote_path import RemotePath
+from .sanitizer import sanitized_print
 
 # %% ../notebooks/Integration_Test.ipynb 5
-def integration_scenario_docs(base_url: str = "http://127.0.0.1:6006"):
+def integration_scenario_docs(base_url: str = "http://127.0.0.1:6006") -> None:
     """Test fastapi docs
 
     Args:
@@ -61,7 +61,7 @@ def test_auth(base_url: str, username: str, password: str) -> str:
         timeout=30,
     )
     assert not r.is_error, r.text  # nosec B101
-    token = r.json()["access_token"]
+    token: str = r.json()["access_token"]
     return token
 
 # %% ../notebooks/Integration_Test.ipynb 7
@@ -125,7 +125,7 @@ def test_apikey(
         headers=headers,
     )
     assert not r.is_error, r.text  # nosec B101
-    apikey = r.json()["access_token"]
+    apikey: str = r.json()["access_token"]
     return apikey
 
 # %% ../notebooks/Integration_Test.ipynb 9
@@ -142,7 +142,7 @@ def check_steps_completed(url: str, headers: Dict[str, str]) -> Dict[str, Any]:
     while True:
         r = httpx.get(url, headers=headers)
         assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
-        obj = r.json()
+        obj: Dict[str, Any] = r.json()
         if obj["completed_steps"] == obj["total_steps"]:
             break
         time.sleep(5)
@@ -262,7 +262,7 @@ def test_azure_datablob(base_url: str, headers: Dict[str, str]) -> Dict[str, Any
         headers=headers,
     )
     assert not r.is_error, r.text  # nosec B101
-    datablob = r.json()
+    datablob: Dict[str, Any] = r.json()
 
     # Wait for pull to complete
     datablob = check_steps_completed(
@@ -299,7 +299,7 @@ def test_model(
         headers=headers,
     )
     assert not r.is_error, r.text  # nosec B101
-    model = r.json()
+    model: Dict[str, Any] = r.json()
 
     # Wait for model training to complete
     model = check_steps_completed(
@@ -335,7 +335,7 @@ def test_prediction(
         headers=headers,
     )
     assert not r.is_error, r.text  # nosec B101
-    prediction = r.json()
+    prediction: Dict[str, Any] = r.json()
 
     # Wait for prediction to complete
     prediction = check_steps_completed(
@@ -366,7 +366,8 @@ def test_generate_mfa_url(base_url: str, headers: Dict[str, str]) -> Dict[str, A
     r = httpx.get(f"{base_url}/user/mfa/generate", headers=headers)
     assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
     sanitized_print("Generating mfa url")
-    return r.json()
+    generated_mfa_url: Dict[str, Any] = r.json()
+    return generated_mfa_url
 
 # %% ../notebooks/Integration_Test.ipynb 15
 def get_valid_otp(mfa_url: str) -> str:
@@ -401,12 +402,13 @@ def test_activate_mfa(
     )
     assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
     sanitized_print("Activate mfa")
-    return r.json()
+    activated_mfa: Dict[str, Any] = r.json()
+    return activated_mfa
 
 # %% ../notebooks/Integration_Test.ipynb 17
 def reset_test_user_password(
     base_url: str, headers: Dict[str, str], username: str, password: str, otp: str
-):
+) -> None:
     """Reset the test user password"""
     sanitized_print(f"Resetting password for: {username}")
     r = httpx.post(
@@ -419,7 +421,7 @@ def reset_test_user_password(
 # %% ../notebooks/Integration_Test.ipynb 18
 def test_disable_mfa(
     base_url: str, headers: Dict[str, str], username: str, otp: Optional[str] = None
-):
+) -> None:
     """Disable MFA for the user"""
     current_active_user = httpx.get(
         f"{base_url}/user/details?user_id_or_name=None", headers=headers
@@ -470,11 +472,11 @@ def test_auth_with_otp(
             break
 
     assert not r.is_error, r.text  # nosec B101
-    token = r.json()["access_token"]
+    token: str = r.json()["access_token"]
     return token
 
 # %% ../notebooks/Integration_Test.ipynb 20
-def delete_test_user(base_url: str, test_username: str):
+def delete_test_user(base_url: str, test_username: str) -> None:
     """Delete the test user created for testing
 
     Args:
@@ -497,7 +499,7 @@ def delete_test_user(base_url: str, test_username: str):
     assert not r.is_error, r.text  # nosec B101
 
 # %% ../notebooks/Integration_Test.ipynb 21
-def integration_tests(base_url: str = "http://127.0.0.1:6006"):
+def integration_tests(base_url: str = "http://127.0.0.1:6006") -> None:
     """Integration tests
 
     Args:
@@ -571,12 +573,12 @@ def integration_tests(base_url: str = "http://127.0.0.1:6006"):
     sanitized_print("ok")
 
 # %% ../notebooks/Integration_Test.ipynb 23
-@call_parse
+@call_parse  # type: ignore
 def run_integration_tests(
     host: Param("hostname", str),  # type: ignore
     port: Param("port", int),  # type: ignore
     protocol: Param("http or https", str) = "https",  # type: ignore
-):
+) -> None:
     """Run integration tests against given host and port
 
     Args:

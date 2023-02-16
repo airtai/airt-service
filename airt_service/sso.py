@@ -5,19 +5,24 @@ __all__ = ['get_valid_sso_providers', 'SSOAuthURL', 'initiate_sso_flow', 'get_ss
 
 # %% ../notebooks/SSO.ipynb 2
 import os
-import requests
-from typing import *
 from datetime import datetime, timedelta
+from typing import *
 
-from requests_oauthlib import OAuth2Session
+import requests
+from fastapi import HTTPException, Request, status
 from pydantic import BaseModel
+from requests_oauthlib import OAuth2Session
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import select
-from fastapi import status, Request, HTTPException
 
 import airt_service.sanitizer
-from .db.models import SSOProvider, SSO, SSOProtocol, User
-from .db.models import get_session_with_context
+from airt_service.db.models import (
+    SSO,
+    SSOProtocol,
+    SSOProvider,
+    User,
+    get_session_with_context,
+)
 from .errors import ERRORS
 
 # %% ../notebooks/SSO.ipynb 4
@@ -78,7 +83,7 @@ def _get_google_provider_cfg(api_uri: Optional[str] = None) -> Union[str, dict]:
             detail=ERRORS["SERVICE_UNAVAILABLE"],
         )
 
-    return google_provider_cfg[api_uri] if api_uri is not None else google_provider_cfg
+    return google_provider_cfg[api_uri] if api_uri is not None else google_provider_cfg  # type: ignore
 
 # %% ../notebooks/SSO.ipynb 11
 def _get_authorization_url_and_nonce(
@@ -151,7 +156,7 @@ def get_sso_if_enabled_for_user(username: str, sso_provider: str) -> Optional[SS
         except NoResultFound:
             sso = None
 
-        return sso
+        return sso  # type: ignore
 
 # %% ../notebooks/SSO.ipynb 21
 class SSOAuthURL(BaseModel):
@@ -251,7 +256,7 @@ def get_email_from_provider(
 
     response = client.get(userinfo_endpoint).json()
 
-    email = (
+    email: str = (
         response["email"]
         if sso_provider == "google"
         else [email["email"] for email in response if email["primary"]][0]

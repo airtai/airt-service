@@ -5,40 +5,39 @@ __all__ = ['description', 'ModelType', 'ModelTrainingRequest', 'EventData', 'Rea
            'TrainingModelStatus', 'ModelMetrics', 'Prediction', 'create_ws_server']
 
 # %% ../notebooks/API_Web_Service.ipynb 2
+from datetime import datetime
+from enum import Enum
+from os import environ
 from pathlib import Path
 from typing import *
 
 import yaml
-from datetime import datetime
-from enum import Enum
-from os import environ
-
 from aiokafka.helpers import create_ssl_context
+from airt.logger import get_logger
 from asyncer import asyncify
-from fastapi import Request, FastAPI
-from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
-from fastapi.openapi.utils import get_openapi
-from fastapi.responses import FileResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
 from fast_kafka_api.application import FastKafkaAPI
-from pydantic import validator, BaseModel, Field, HttpUrl, EmailStr, NonNegativeInt
+from fastapi import FastAPI, Request, Response
+from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, NonNegativeInt, validator
 from sqlmodel import select
 
 import airt_service
-from .sanitizer import sanitized_print
 from .auth import auth_router
 from .confluent import aio_kafka_config
 from .data.datablob import datablob_router
 from .data.datasource import datasource_router
-from .db.models import get_session_with_context, User
-from .model.train import model_train_router
+from .db.models import User, get_session_with_context
 from .model.prediction import model_prediction_router
+from .model.train import model_train_router
+from .sanitizer import sanitized_print
 from airt_service.training_status_process import (
-    process_training_status,
     TrainingStreamStatus,
+    process_training_status,
 )
 from .users import user_router
-from airt.logger import get_logger
 
 # %% ../notebooks/API_Web_Service.ipynb 4
 logger = get_logger(__name__)
@@ -494,7 +493,7 @@ def create_ws_server(
         docs_url=None,
         redoc_url=None,
     )
-    app.mount("/assets", StaticFiles(directory=assets_path), name="assets")  # type: ignore
+    app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 
     # attaches /token to routes
     app.include_router(auth_router)
@@ -515,14 +514,16 @@ def create_ws_server(
     app.include_router(user_router)
 
     @app.middleware("http")
-    async def add_nosniff_x_content_type_options_header(request: Request, call_next):
-        response = await call_next(request)
+    async def add_nosniff_x_content_type_options_header(
+        request: Request, call_next: Callable[[Request], Response]
+    ) -> Response:
+        response: Response = await call_next(request)  # type: ignore
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Strict-Transport-Security"] = "max-age=31536000"
         return response
 
     @app.get("/version")
-    def get_versions():
+    def get_versions() -> Dict[str, str]:
         return {"airt_service": airt_service.__version__}
 
     #     @app.get("/", include_in_schema=False)
@@ -530,7 +531,7 @@ def create_ws_server(
     #         return RedirectResponse("/docs")
 
     @app.get("/docs", include_in_schema=False)
-    def overridden_swagger():
+    def overridden_swagger() -> HTMLResponse:
         return get_swagger_ui_html(
             openapi_url=openapi_url,
             title=title,
@@ -538,7 +539,7 @@ def create_ws_server(
         )
 
     @app.get("/redoc", include_in_schema=False)
-    def overridden_redoc():
+    def overridden_redoc() -> HTMLResponse:
         return get_redoc_html(
             openapi_url=openapi_url,
             title=title,
@@ -546,10 +547,10 @@ def create_ws_server(
         )
 
     @app.get("/favicon.ico", include_in_schema=False)
-    async def serve_favicon():
+    async def serve_favicon() -> FileResponse:
         return FileResponse(favicon_path)
 
-    def custom_openapi():
+    def custom_openapi() -> Dict[str, Any]:
         if app.openapi_schema:
             return app.openapi_schema
 
@@ -612,7 +613,9 @@ def create_ws_server(
         **aio_kafka_config,
     )
 
-    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_start_training_data")  # type: ignore
+    @fast_kafka_api_app.consumes(  # type: ignore
+        topic=f"{start_process_for_username}_start_training_data"
+    )
     async def on_infobip_start_training_data(msg: ModelTrainingRequest):
         logger.info(f"start training msg={msg}")
         with get_session_with_context() as session:
@@ -653,7 +656,9 @@ def create_ws_server(
     async def on_infobip_realtime_data(msg: RealtimeData):
         pass
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_training_data_status")  # type: ignore
+    @fast_kafka_api_app.produces(  # type: ignore
+        topic=f"{start_process_for_username}_training_data_status"
+    )
     async def to_infobip_training_data_status(
         account_id: int,
         *,
@@ -674,7 +679,9 @@ def create_ws_server(
         )
         return msg
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_training_model_status")  # type: ignore
+    @fast_kafka_api_app.produces(  # type: ignore
+        topic=f"{start_process_for_username}_training_model_status"
+    )
     async def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return TrainingModelStatus()
@@ -692,10 +699,10 @@ def create_ws_server(
     fast_kafka_api_app.to_infobip_training_data_status = to_infobip_training_data_status
     if start_process_for_username is not None:
 
-        @fast_kafka_api_app.run_in_background()
-        async def startup_event():
+        @fast_kafka_api_app.run_in_background()  # type: ignore
+        async def startup_event() -> None:
             await process_training_status(
-                username=start_process_for_username,
+                username=start_process_for_username,  # type: ignore
                 fast_kafka_api_app=fast_kafka_api_app,
             )
 

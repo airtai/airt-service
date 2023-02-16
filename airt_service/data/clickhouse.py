@@ -16,31 +16,29 @@ from urllib.parse import quote_plus as urlquote
 from urllib.parse import unquote_plus as urlunquote
 
 import pandas as pd
-from fastcore.script import call_parse, Param
-from pandas.api.types import is_datetime64_any_dtype
-from sqlalchemy import create_engine, select, column, Table, MetaData, and_
-
-# from sqlmodel import create_engine, select, column, Table, MetaData, and_
-from sqlalchemy.engine import Connection
-from sqlalchemy.sql.expression import func
-from sqlalchemy.orm import sessionmaker
-
-import airt_service.sanitizer
 from airt.engine.engine import get_default_engine, using_cluster
 from airt.helpers import ensure
 from airt.logger import get_logger
 from airt.remote_path import RemotePath
-from ..azure.utils import create_azure_blob_storage_datablob_path
+from fastcore.script import Param, call_parse
+from pandas.api.types import is_datetime64_any_dtype
+from sqlalchemy import MetaData, Table, and_, column, create_engine, select
+
+# from sqlmodel import create_engine, select, column, Table, MetaData, and_
+from sqlalchemy.engine import Connection
+from sqlalchemy.engine.cursor import CursorResult
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql.expression import func
+
+import airt_service.sanitizer
 from ..aws.utils import create_s3_datablob_path
+from ..azure.utils import create_azure_blob_storage_datablob_path
 from airt_service.data.utils import (
     calculate_data_object_folder_size_and_path,
     calculate_data_object_pulled_on,
 )
-from ..db.models import get_session_with_context, DataBlob, PredictionPush
-from airt_service.helpers import (
-    truncate,
-    validate_user_inputs,
-)
+from ..db.models import DataBlob, PredictionPush, get_session_with_context
+from ..helpers import truncate, validate_user_inputs
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 6
 logger = get_logger(__name__)
@@ -154,7 +152,7 @@ def get_clickhouse_connection(  # type: ignore
 def get_max_timestamp(
     timestamp_column: str,
     connection: Connection,
-    table,
+    table: str,
     verbose: bool = False,
 ) -> int:
     engine = connection.engine
@@ -169,7 +167,7 @@ def get_max_timestamp(
     query = func.max(sql_table.columns[timestamp_column])
     #     logger.info(f"query='{query}'")
 
-    result = session.query(query).scalar()
+    result: int = session.query(query).scalar()
     return result
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 18
@@ -247,8 +245,8 @@ def _download_from_clickhouse(
     timestamp_column: str,
     filters: Optional[Dict[str, str]] = None,
     output_path: Path,
-    db_download_size=50_000_000,
-):
+    db_download_size: int = 50_000_000,
+) -> None:
     """Downloads data from database and stores it as parquet files in output path
 
     Args:
@@ -333,7 +331,7 @@ def _download_from_clickhouse(
             ddf.to_parquet(output_path, engine="pyarrow")
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 26
-@call_parse
+@call_parse  # type: ignore
 def clickhouse_pull(
     datablob_id: Param("id of datablob in db", int),  # type: ignore
     index_column: Param("column to use to partition rows and to use as index", str),  # type: ignore
@@ -341,7 +339,7 @@ def clickhouse_pull(
     filters_json: Param(  # type: ignore
         "additional column filters as json string key, value pairs", str
     ) = "{}",
-):
+) -> None:
     """Pull datablob from a clickhouse database and update progress in the internal database
 
     Args:
@@ -483,7 +481,7 @@ def _insert_table(
     database: str,
     table: str,
     protocol: str,
-):
+) -> CursorResult:
     with get_clickhouse_connection(  # type: ignore
         username=username,
         password=password,
@@ -515,7 +513,7 @@ def _drop_table(
     database: str,
     table: str,
     protocol: str,
-):
+) -> CursorResult:
 
     with get_clickhouse_connection(  # type: ignore
         username=username,
@@ -557,7 +555,7 @@ def _insert_data(
     database: str,
     table: str,
     protocol: str,
-):
+) -> None:
     _insert_table(
         df,
         table_name,
@@ -585,8 +583,8 @@ def _insert_data(
         df.to_sql(table_name, connection, if_exists="append")
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 39
-@call_parse
-def clickhouse_push(prediction_push_id: int):  # type: ignore
+@call_parse  # type: ignore
+def clickhouse_push(prediction_push_id: int) -> None:
     """Push the data to a clickhouse database
 
     Args:
@@ -688,7 +686,8 @@ def get_count(
 
         # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query
         result = connection.execute(query)
-        return result.fetchall()[0][0]
+        count: int = result.fetchall()[0][0]
+        return count
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 44
 def get_count_for_account_ids(

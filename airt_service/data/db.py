@@ -10,7 +10,10 @@ from typing import *
 
 import dask.dataframe as dd
 import pandas as pd
-from fastcore.script import call_parse, Param
+from airt.engine.engine import using_cluster
+from airt.logger import get_logger
+from airt.remote_path import RemotePath
+from fastcore.script import Param, call_parse
 from fastcore.utils import *
 from sqlmodel import select
 
@@ -23,15 +26,12 @@ from airt_service.data.utils import (
     get_db_connection_params_from_db_uri,
 )
 from airt_service.db.models import (
-    create_connection_string,
-    get_session_with_context,
     DataBlob,
     PredictionPush,
+    create_connection_string,
+    get_session_with_context,
 )
 from ..helpers import truncate
-from airt.engine.engine import using_cluster
-from airt.logger import get_logger
-from airt.remote_path import RemotePath
 
 # %% ../../notebooks/DataBlob_DB.ipynb 6
 logger = get_logger(__name__)
@@ -48,7 +48,7 @@ def download_from_db(
     table: str,
     chunksize: Optional[int] = 1_000_000,
     output_path: Path,
-):
+) -> None:
     """Download data from database and stores it as parquet files in output path
 
     Args:
@@ -91,8 +91,8 @@ def download_from_db(
         ddf.to_parquet(output_path)
 
 # %% ../../notebooks/DataBlob_DB.ipynb 11
-@call_parse
-def db_pull(datablob_id: Param("id of datablob in db", int)):  # type: ignore
+@call_parse  # type: ignore
+def db_pull(datablob_id: Param("id of datablob in db", int)) -> None:  # type: ignore
     """Pull the datablob and update its progress in internal db
 
     Args:
@@ -173,8 +173,8 @@ def db_pull(datablob_id: Param("id of datablob in db", int)):  # type: ignore
         session.commit()
 
 # %% ../../notebooks/DataBlob_DB.ipynb 13
-@call_parse
-def db_push(prediction_push_id: int):  # type: ignore
+@call_parse  # type: ignore
+def db_push(prediction_push_id: int) -> None:
     """Push prediction data to a rdbms
 
     Params:

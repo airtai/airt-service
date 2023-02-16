@@ -4,17 +4,17 @@
 __all__ = ['AzureBatchJobContext']
 
 # %% ../../notebooks/Azure_Batch_Job_Context.ipynb 3
-from typing import *
 from os import environ
+from typing import *
 
 import azure.batch.models as batchmodels
 from airt.logger import get_logger
 
 import airt_service
 import airt_service.sanitizer
-from .base import BatchJobContext
-from ..azure.utils import get_batch_account_pool_job_names
 from ..azure.batch_utils import azure_batch_create_job
+from ..azure.utils import get_batch_account_pool_job_names
+from .base import BatchJobContext
 
 # %% ../../notebooks/Azure_Batch_Job_Context.ipynb 5
 logger = get_logger(__name__)
@@ -23,7 +23,7 @@ logger = get_logger(__name__)
 class AzureBatchJobContext(BatchJobContext):
     """A class for creating AzureBatchJobContext"""
 
-    def __init__(self, task: str, **kwargs):
+    def __init__(self, task: str, **kwargs: Any):
         """Azure Batch Job Context
 
         Do not use __init__, please use factory method `create` to initiate object
@@ -31,7 +31,7 @@ class AzureBatchJobContext(BatchJobContext):
         BatchJobContext.__init__(self, task=task)
         self.region = kwargs["region"]
 
-    def create_job(self, command: str, environment_vars: Dict[str, str]):
+    def create_job(self, command: str, environment_vars: Dict[str, str]) -> None:
         """Create a new job
 
         Args:
@@ -41,8 +41,8 @@ class AzureBatchJobContext(BatchJobContext):
         logger.info(
             f"{self.__class__.__name__}.create_job({self=}, {command=}, {environment_vars=})"
         )
-        # ToDo: We have batch accounts available only in northeurope for now
-        region = "northeurope"
+        # ToDo: We have batch accounts available only in westeurope for now
+        region = "westeurope"
         (
             batch_account_name,
             batch_pool_name,

@@ -6,23 +6,16 @@ __all__ = ['cleanup_predictions', 'cleanup_models', 'cleanup_datasources', 'clea
 # %% ../notebooks/Cleanup.ipynb 3
 from typing import *
 
+from airt.logger import get_logger
 from sqlmodel import Session, select
 
 import airt_service.sanitizer
-from airt.logger import get_logger
 from .auth import delete_apikey
-from .confluent import delete_topics_for_user
-from .data.datasource import delete_datasource
-from .data.datablob import delete_datablob
-from airt_service.db.models import (
-    User,
-    Prediction,
-    Model,
-    DataSource,
-    DataBlob,
-    APIKey,
-)
 from .aws.utils import get_s3_storage_bucket
+from .confluent import delete_topics_for_user
+from .data.datablob import delete_datablob
+from .data.datasource import delete_datasource
+from .db.models import APIKey, DataBlob, DataSource, Model, Prediction, User
 from .model.prediction import delete_prediction
 from .model.train import delete_model
 
@@ -30,7 +23,7 @@ from .model.train import delete_model
 logger = get_logger(__name__)
 
 # %% ../notebooks/Cleanup.ipynb 9
-def cleanup_predictions(user_to_cleanup: User, session: Session):
+def cleanup_predictions(user_to_cleanup: User, session: Session) -> None:
     """Cleanup predictions"""
     logger.info("deleting predictions")
     predictions = session.exec(
@@ -47,7 +40,7 @@ def cleanup_predictions(user_to_cleanup: User, session: Session):
     session.commit()
 
 # %% ../notebooks/Cleanup.ipynb 11
-def cleanup_models(user_to_cleanup: User, session: Session):
+def cleanup_models(user_to_cleanup: User, session: Session) -> None:
     """Cleanup models"""
     logger.info("deleting models")
     models = session.exec(select(Model).where(Model.user == user_to_cleanup)).all()
@@ -62,7 +55,7 @@ def cleanup_models(user_to_cleanup: User, session: Session):
     session.commit()
 
 # %% ../notebooks/Cleanup.ipynb 13
-def cleanup_datasources(user_to_cleanup: User, session: Session):
+def cleanup_datasources(user_to_cleanup: User, session: Session) -> None:
     """Cleanup datasources"""
     logger.info("deleting datasources")
     datasources = session.exec(
@@ -79,7 +72,7 @@ def cleanup_datasources(user_to_cleanup: User, session: Session):
     session.commit()
 
 # %% ../notebooks/Cleanup.ipynb 15
-def cleanup_datablobs(user_to_cleanup: User, session: Session):
+def cleanup_datablobs(user_to_cleanup: User, session: Session) -> None:
     """Cleanup datablobs"""
     logger.info("deleting datablobs")
     datablobs = session.exec(
@@ -96,15 +89,15 @@ def cleanup_datablobs(user_to_cleanup: User, session: Session):
     session.commit()
 
 # %% ../notebooks/Cleanup.ipynb 17
-def cleanup_apikeys(user_to_cleanup: User, session: Session):
+def cleanup_apikeys(user_to_cleanup: User, session: Session) -> None:
     """Cleanup apikeys"""
     logger.info("deleting apikeys")
     apikeys = session.exec(select(APIKey).where(APIKey.user == user_to_cleanup)).all()
 
     for apikey in apikeys:
         delete_apikey(
-            user_uuid_or_name=str(user_to_cleanup.uuid),  # type: ignore
-            key_uuid_or_name=str(apikey.uuid),  # type: ignore
+            user_uuid_or_name=str(user_to_cleanup.uuid),
+            key_uuid_or_name=str(apikey.uuid),
             user=user_to_cleanup,
             session=session,
         )
@@ -112,7 +105,7 @@ def cleanup_apikeys(user_to_cleanup: User, session: Session):
     session.commit()
 
 # %% ../notebooks/Cleanup.ipynb 19
-def cleanup_user(user_to_cleanup: User, session: Session):
+def cleanup_user(user_to_cleanup: User, session: Session) -> None:
     """Cleanup user"""
     cleanup_predictions(user_to_cleanup, session)
     cleanup_models(user_to_cleanup, session)
@@ -120,7 +113,7 @@ def cleanup_user(user_to_cleanup: User, session: Session):
     cleanup_datablobs(user_to_cleanup, session)
     cleanup_apikeys(user_to_cleanup, session)
 
-    bucket, base_path = get_s3_storage_bucket()  # type: ignore
+    bucket, base_path = get_s3_storage_bucket()
     s3_path = (
         f"{base_path}/{user_to_cleanup.id}" if base_path else str(user_to_cleanup.id)
     )

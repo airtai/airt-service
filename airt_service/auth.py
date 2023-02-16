@@ -9,42 +9,48 @@ __all__ = ['ALGORITHM', 'ACCESS_TOKEN_EXPIRE_MINUTES', 'oauth2_scheme', 'auth_ro
 
 # %% ../notebooks/Auth.ipynb 3
 import json
+import secrets
 import uuid
 from datetime import datetime, timedelta
 from os import environ
-import secrets
 from typing import *
-from urllib.parse import urlparse, parse_qs
-
-
-# from fastcore.foundation import patch
-from fastapi import APIRouter, Request
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi import Depends, HTTPException, status, Query
-from pydantic import BaseModel
-from jose import JWTError, jwt
-from sqlalchemy.exc import NoResultFound, MultipleResultsFound
-from sqlmodel import Session, select
+from urllib.parse import parse_qs, urlparse
 
 from airt.logger import get_logger
 from airt.patching import patch
 
+# from fastcore.foundation import patch
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from pydantic import BaseModel
+from sqlalchemy.exc import MultipleResultsFound, NoResultFound
+from sqlmodel import Session, select
+
 import airt_service.sanitizer
-from .db.models import get_session, get_session_with_context
-from .db.models import APIKeyCreate, APIKey, APIKeyRead, User, UserRead, SSO
-from .errors import HTTPError, ERRORS
+from airt_service.db.models import (
+    SSO,
+    APIKey,
+    APIKeyCreate,
+    APIKeyRead,
+    User,
+    UserRead,
+    get_session,
+    get_session_with_context,
+)
+from .errors import ERRORS, HTTPError
 from .helpers import commit_or_rollback, verify_password
-from .totp import validate_totp, require_otp_if_mfa_enabled
+from .sms_utils import validate_otp
 from airt_service.sso import (
+    SESSION_TIME_LIMIT,
     SSOAuthURL,
+    get_sso_if_enabled_for_user,
+    get_sso_protocol_and_email,
     get_valid_sso_providers,
     initiate_sso_flow,
-    get_sso_if_enabled_for_user,
     validate_sso_response,
-    get_sso_protocol_and_email,
-    SESSION_TIME_LIMIT,
 )
-from .sms_utils import validate_otp
+from .totp import require_otp_if_mfa_enabled, validate_totp
 
 # %% ../notebooks/Auth.ipynb 5
 logger = get_logger(__name__)
@@ -68,7 +74,9 @@ def get_user(username: str) -> Optional[User]:
     """
     with get_session_with_context() as session:
         try:
-            user = session.exec(select(User).where(User.username == username)).one()
+            user: Optional[User] = session.exec(
+                select(User).where(User.username == username)
+            ).one()
         except NoResultFound:
             user = None
     return user
@@ -155,7 +163,7 @@ def create_access_token(data: dict, expire: Optional[datetime] = None) -> str:
     if expire:
         to_encode.update({"exp": expire})
 
-    encoded_jwt = jwt.encode(
+    encoded_jwt: str = jwt.encode(
         to_encode,
         # nosemgrep: python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret
         environ["AIRT_TOKEN_SECRET_KEY"],
@@ -199,7 +207,7 @@ def generate_token(username: str) -> Token:
         minutes=ACCESS_TOKEN_EXPIRE_MINUTES
     )
     access_token = create_access_token(
-        data={"sub": username}, expire=access_token_expires  # type: ignore
+        data={"sub": username}, expire=access_token_expires
     )
 
     # Sast recongnizes "bearer" string as hardcoded password but it is not. So using nosec B106.
@@ -342,7 +350,7 @@ get_apikey_responses = {
 }
 
 
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get(cls: APIKey, key_uuid_or_name: str, user: User, session: Session) -> APIKey:
     """Function to get APIKey object
 
@@ -437,7 +445,7 @@ def get_current_active_user(token: str = Depends(oauth2_scheme)) -> User:
     return user  # type: ignore
 
 # %% ../notebooks/Auth.ipynb 54
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def _create(
     cls: APIKey, apikey_to_create: APIKeyCreate, user: User, session: Session
 ) -> APIKey:
@@ -483,7 +491,8 @@ def create_apikey(
     try:
         apikey = APIKey._create(apikey_to_create, user, session)  # type: ignore
         access_token = create_access_token(
-            data={"sub": user.username, "key_uuid": str(apikey.uuid)}, expire=apikey.expiry  # type: ignore
+            data={"sub": user.username, "key_uuid": str(apikey.uuid)},
+            expire=apikey.expiry,
         )
     except Exception as e:
         logger.exception(e)
@@ -553,7 +562,7 @@ def get_valid_user(user: User, session: Session, user_uuid_or_name: str) -> User
     return _user
 
 # %% ../notebooks/Auth.ipynb 67
-@patch
+@patch  # type: ignore
 def disable(self: APIKey, session: Session) -> APIKey:
     """Disable an APIKey
 
@@ -583,12 +592,12 @@ def delete_apikey(
     """Revoke apikey"""
     user = session.merge(user)
     # get details from the internal db for apikey_id
-    apikey = APIKey.get(key_uuid_or_name=key_uuid_or_name, user=get_valid_user(user, session, user_uuid_or_name), session=session)  # type: ignore
+    apikey: APIKey = APIKey.get(key_uuid_or_name=key_uuid_or_name, user=get_valid_user(user, session, user_uuid_or_name), session=session)  # type: ignore
 
     return apikey.disable(session)  # type: ignore
 
 # %% ../notebooks/Auth.ipynb 75
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_all(
     cls: APIKey,
     user: User,
@@ -639,7 +648,7 @@ def get_all_apikey(
 ) -> List[APIKey]:
     """Get all apikeys created by user"""
     user = session.merge(user)
-    return APIKey.get_all(  # type: ignore
+    return APIKey.get_all(
         user=get_valid_user(user, session, user_uuid_or_name),
         include_disabled=include_disabled,
         offset=offset,

@@ -5,18 +5,18 @@ __all__ = ['list_dags', 'list_dag_runs', 'create_dag', 'create_testing_dag_ctx',
            'trigger_dag', 'wait_for_run_to_complete']
 
 # %% ../../notebooks/Airflow_Utils.ipynb 2
-import subprocess  # nosec B404
-import shlex
-from typing import *
-import pandas as pd
-import os
 import json
-
+import os
+import shlex
+import subprocess  # nosec B404
+import tempfile
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
-from contextlib import contextmanager
-import tempfile
 from time import sleep
+from typing import *
+
+import pandas as pd
 
 from ..sanitizer import sanitized_print
 
@@ -24,14 +24,15 @@ from ..sanitizer import sanitized_print
 def list_dags(
     *,
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
-):
+) -> Dict[str, Any]:
     command = f"{airflow_command} dags list -o json"
     # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
     p = subprocess.run(  # nosec B603
         shlex.split(command), shell=False, capture_output=True, text=True, check=True
     )
     try:
-        return json.loads(p.stdout)
+        dags_list: Dict[str, Any] = json.loads(p.stdout)
+        return dags_list
     except Exception as e:
         sanitized_print(f"{p.stdout=}")
         raise e
@@ -41,7 +42,7 @@ def list_dag_runs(
     dag_id: str,
     *,
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
-):
+) -> Dict[str, Any]:
     command = f"{airflow_command} dags list-runs -d {dag_id} -o json"
 
     # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
@@ -53,7 +54,8 @@ def list_dag_runs(
         check=True,
     )
 
-    return json.loads(p.stdout)
+    dag_runs: Dict[str, Any] = json.loads(p.stdout)
+    return dag_runs
 
 # %% ../../notebooks/Airflow_Utils.ipynb 17
 def create_dag(
@@ -61,8 +63,8 @@ def create_dag(
     dag_definition_template: str,
     *,
     root_path: Path = Path(f"{os.environ['HOME']}/airflow/dags"),
-    **kwargs,
-):
+    **kwargs: Any,
+) -> Path:
     root_path.mkdir(exist_ok=True, parents=True)
     tmp_file_path = root_path / f'{dag_id.replace(":", "_")}.py'
     with open(tmp_file_path, "w") as temp_file:
@@ -82,8 +84,8 @@ def create_testing_dag_ctx(
     dag_definition_template: str,
     *,
     root_path: Path = Path(f"{os.environ['HOME']}/airflow/dags"),
-    **kwargs,
-):
+    **kwargs: Any,
+) -> Iterator[str]:
     tmp_file_path = None
     try:
         dag_id = f"test-{datetime.now().isoformat()}".replace(":", "_")
@@ -102,7 +104,7 @@ def create_testing_dag_ctx(
 # %% ../../notebooks/Airflow_Utils.ipynb 20
 def run_subprocess_with_retry(
     command: str, *, no_retries: int = 12, sleep_for: int = 5
-):
+) -> subprocess.CompletedProcess:
     for i in range(no_retries):
         # nosemgrep: python.lang.security.audit.dangerous-subprocess-use.dangerous-subprocess-use
         p = subprocess.run(  # nosec B603
@@ -123,7 +125,7 @@ def unpause_dag(
     *,
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
     no_retries: int = 12,
-):
+) -> None:
     unpause_command = f"{airflow_command} dags unpause {dag_id}"
     p = run_subprocess_with_retry(unpause_command, no_retries=no_retries)
 
@@ -135,7 +137,7 @@ def trigger_dag(
     airflow_command: str = f"{os.environ['HOME']}/airflow_venv/bin/airflow",
     no_retries: int = 12,
     unpause_if_needed: bool = True,
-):
+) -> str:
     if unpause_if_needed:
         unpause_dag(
             dag_id=dag_id, airflow_command=airflow_command, no_retries=no_retries
@@ -156,7 +158,7 @@ def wait_for_run_to_complete(dag_id: str, run_id: str, timeout: int = 60) -> str
     t0 = datetime.now()
     while (datetime.now() - t0) < timedelta(seconds=timeout):
         runs = pd.DataFrame(list_dag_runs(dag_id=dag_id))
-        state = runs.loc[runs["run_id"] == run_id, "state"].iloc[0]
+        state: str = runs.loc[runs["run_id"] == run_id, "state"].iloc[0]
         if state in ["success", "failed"]:
             return state
         sleep(5)

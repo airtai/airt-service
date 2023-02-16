@@ -9,11 +9,13 @@ import logging
 import os
 import random
 import string
-from contextlib import contextmanager, ContextDecorator
+from contextlib import ContextDecorator, contextmanager
+from datetime import timedelta
 from time import sleep
 from typing import *
 
 import azure.batch.models as batchmodels
+from airt.logger import get_logger
 from azure.batch import BatchServiceClient
 from azure.batch.batch_auth import SharedKeyCredentials
 from azure.batch.models import BatchErrorException
@@ -21,7 +23,6 @@ from azure.identity import DefaultAzureCredential
 from azure.mgmt.batch import BatchManagementClient
 
 import airt_service.sanitizer
-from airt.logger import get_logger
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 5
 logger = get_logger(__name__)
@@ -49,11 +50,11 @@ def get_random_string(length: int = 6) -> str:
     )
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 9
-AUTO_SCALE_FORMULA = """// Get pending tasks for the past 15 minutes.
-$samples = $PendingTasks.GetSamplePercent(TimeInterval_Minute * 15);
+AUTO_SCALE_FORMULA = """// Get pending tasks for the past 5 minutes.
+$samples = $PendingTasks.GetSamplePercent(TimeInterval_Minute * 5);
 // If we have fewer than 70 percent data points, we use the last sample point,
 // otherwise we use the maximum of last sample point and the history average.
-$tasks = $samples < 70 ? max(0,$PendingTasks.GetSample(1)) : max( $PendingTasks.GetSample(1), avg($PendingTasks.GetSample(TimeInterval_Minute * 15)));
+$tasks = $samples < 70 ? max(0,$PendingTasks.GetSample(1)) : max( $PendingTasks.GetSample(1), avg($PendingTasks.GetSample(TimeInterval_Minute * 5)));
 // If number of pending tasks is not 0, set targetVM to pending tasks, otherwise
 // half of current dedicated.
 $targetVMs = $tasks > 0? $tasks:max(0, $TargetDedicatedNodes/2);
@@ -106,6 +107,7 @@ class BatchPool(ContextDecorator):
         image_sku: str = "20-04-lts",
         image_version: str = "latest",
         container_image: str = "ghcr.io/airtai/airt-service:dev",
+        docker_compatible: bool = False,
         vm: str = "standard_d2s_v3",
         auto_scale_formula: Optional[str] = None,
     ) -> "BatchPool":
@@ -136,6 +138,9 @@ class BatchPool(ContextDecorator):
         #             container_image_names=[container_image],
         #             container_registries=[container_registry],
         #         )
+        container_configuration = (
+            batchmodels.ContainerConfiguration() if docker_compatible else None
+        )
 
         new_pool = batchmodels.PoolAddParameter(
             id=name,
@@ -147,11 +152,12 @@ class BatchPool(ContextDecorator):
                     version=image_version,
                 ),
                 node_agent_sku_id="batch.node.ubuntu 20.04",
-                #                 container_configuration=container_configuration,
+                container_configuration=container_configuration,
             ),
             vm_size=vm,
             enable_auto_scale=True,
             auto_scale_formula=auto_scale_formula,
+            auto_scale_evaluation_interval=timedelta(minutes=5),
         )
 
         batch_service_client.pool.add(new_pool)
@@ -164,7 +170,7 @@ class BatchPool(ContextDecorator):
         state: str,
         timeout: int = 0,
         sleep_step: int = 5,
-    ):
+    ) -> None:
         """Wait until the batch pool reaches the given state
 
         Args:
@@ -196,7 +202,7 @@ class BatchPool(ContextDecorator):
             sleep(sleep_step)
             i = i + sleep_step
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete Batch Pool"""
         batch_service_client = BatchServiceClient(
             self.shared_key_credentials,
@@ -206,7 +212,7 @@ class BatchPool(ContextDecorator):
             batch_service_client.pool.delete(self.name)
         except BatchErrorException as e:
             if hasattr(e, "message"):
-                error_message = e.message.as_dict()
+                error_message = e.message.as_dict()  # type: ignore
                 if (
                     "value" in error_message
                     and "marked for deletion" in error_message["value"]
@@ -214,13 +220,12 @@ class BatchPool(ContextDecorator):
                     return
             raise e
 
-    def __enter__(self):
+    def __enter__(self) -> "BatchPool":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         self.delete()
         self.wait(state="deleting")
-        return False
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 13
 class BatchJob(ContextDecorator):
@@ -281,7 +286,7 @@ class BatchJob(ContextDecorator):
         state: str,
         timeout: int = 0,
         sleep_step: int = 5,
-    ):
+    ) -> None:
         """Wait until the batch job reaches the given state
 
         Args:
@@ -313,7 +318,7 @@ class BatchJob(ContextDecorator):
             sleep(sleep_step)
             i = i + sleep_step
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete Batch Pool"""
         batch_service_client = BatchServiceClient(
             self.shared_key_credentials,
@@ -323,7 +328,7 @@ class BatchJob(ContextDecorator):
             batch_service_client.job.delete(self.name)
         except BatchErrorException as e:
             if hasattr(e, "message"):
-                error_message = e.message.as_dict()
+                error_message = e.message.as_dict()  # type: ignore
                 if (
                     "value" in error_message
                     and "job does not exist" in error_message["value"]
@@ -331,13 +336,12 @@ class BatchJob(ContextDecorator):
                     return
             raise e
 
-    def __enter__(self):
+    def __enter__(self) -> "BatchJob":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         self.delete()
         #         self.wait(state="deleting")
-        return False
 
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 15
 class BatchTask(ContextDecorator):
@@ -416,7 +420,7 @@ class BatchTask(ContextDecorator):
         state: str,
         timeout: int = 0,
         sleep_step: int = 5,
-    ):
+    ) -> None:
         """Wait until the batch job reaches the given state
 
         Args:
@@ -448,7 +452,7 @@ class BatchTask(ContextDecorator):
             sleep(sleep_step)
             i = i + sleep_step
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete Batch task"""
         batch_service_client = BatchServiceClient(
             self.shared_key_credentials,
@@ -466,7 +470,7 @@ class BatchTask(ContextDecorator):
             #                     return
             raise e
 
-    def output(self):
+    def output(self) -> None:
         batch_service_client = BatchServiceClient(
             self.shared_key_credentials,
             batch_url=f"https://{self.batch_account_name}.{self.region}.batch.azure.com",
@@ -493,18 +497,16 @@ class BatchTask(ContextDecorator):
 
         logger.info(f"task output is: {file_text}")
 
-    def __enter__(self):
+    def __enter__(self) -> "BatchTask":
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc: Any) -> None:
         self.wait(state="completed")
         self.output()
         self.delete()
 
-        return False
-
 # %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 19
-def azure_batch_create_job(  # type: ignore
+def azure_batch_create_job(
     *,
     name: Optional[str] = None,
     command: str,
@@ -516,8 +518,8 @@ def azure_batch_create_job(  # type: ignore
     region: str,
     shared_key_credentials: Optional[SharedKeyCredentials] = None,
 ) -> BatchTask:
-    if region != "northeurope":
-        raise ValueError("Only northeurope region is supported for now")
+    if region != "westeurope":
+        raise ValueError("Only westeurope region is supported for now")
 
     if shared_key_credentials is None:
         shared_key_credentials = SharedKeyCredentials(

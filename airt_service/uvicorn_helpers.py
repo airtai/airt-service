@@ -4,24 +4,23 @@
 __all__ = ['run_uvicorn']
 
 # %% ../notebooks/Uvicorn_Helpers.ipynb 1
+import multiprocessing
+from contextlib import contextmanager
 from time import sleep
 from typing import *
-from contextlib import contextmanager
-
-import multiprocessing
 
 from fastapi import FastAPI
 from uvicorn import Config, Server
 
 # %% ../notebooks/Uvicorn_Helpers.ipynb 3
 @contextmanager
-def run_uvicorn(arg: Union[Config, FastAPI]):
+def run_uvicorn(arg: Union[Config, FastAPI]) -> Iterator[None]:
     if isinstance(arg, Config):
         config: Config = arg
     else:
         config = Config(app=arg)
 
-    def run(config=config):
+    def run(config: Config = config) -> None:
         server = Server(config=config)
         server.run()
 

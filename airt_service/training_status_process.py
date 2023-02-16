@@ -5,39 +5,39 @@ __all__ = ['update_mysql', 'create_sqlalchemy_engine', 'get_recent_events_for_us
            'get_user', 'get_new_update_table', 'update_kafka', 'process_training_status']
 
 # %% ../notebooks/Training_Status_Process.ipynb 2
+import asyncio
 import random
 import traceback
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from os import environ
 from time import sleep
 from typing import *
 
-import asyncio
 import numpy as np
 import pandas as pd
+from airt.logger import get_logger
+from airt.patching import patch
 from asyncer import asyncify, create_task_group
-from contextlib import contextmanager
+from fast_kafka_api.application import FastKafkaAPI
 from fastapi import FastAPI
 from fastcore.meta import delegates
-from fast_kafka_api.application import FastKafkaAPI
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy import create_engine as sqlalchemy_create_engine
 from sqlalchemy.engine import Engine
-from sqlmodel import Session, select, func
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session, func, select
 
 import airt_service
-from .users import User
 from .data.clickhouse import get_count_for_account_ids
 from airt_service.db.models import (
+    TrainingStreamStatus,
+    User,
     create_connection_string,
     get_db_params_from_env_vars,
     get_engine,
     get_session_with_context,
-    User,
-    TrainingStreamStatus,
 )
-from airt.logger import get_logger
-from airt.patching import patch
+from .users import User
 
 # %% ../notebooks/Training_Status_Process.ipynb 5
 logger = get_logger(__name__)
@@ -160,7 +160,7 @@ def get_user(username: str) -> User:
         The user object
     """
     with get_session_with_context() as session:
-        user = session.exec(select(User).where(User.username == username)).one()
+        user: User = session.exec(select(User).where(User.username == username)).one()
 
     return user
 
@@ -215,7 +215,7 @@ async def process_training_status(
     sleep_min: int = 5,
     sleep_max: int = 20,
     end_timedelta: int = 120,
-):
+) -> None:
     """
     An infinite loop to keep track of training_data uploads from user
 

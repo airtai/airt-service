@@ -5,27 +5,26 @@ __all__ = ['DEFAULT_EXEC_ENVIRONMENT', 'AirflowAzureBatchExecutor', 'test_azure_
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 2
 import os
-import tempfile
 import shlex
-import yaml
+import tempfile
 from pathlib import Path
 from typing import *
 
-from azure.batch.batch_auth import SharedKeyCredentials
-from fastcore.script import call_parse, Param
-
-from ..sanitizer import sanitized_print
-from airt.executor.subcommand import CLICommandBase, ClassCLICommand
+import yaml
+from airt.executor.subcommand import ClassCLICommand, CLICommandBase
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
+from azure.batch.batch_auth import SharedKeyCredentials
+from fastcore.script import Param, call_parse
+
 from .base_executor import BaseAirflowExecutor, dag_template
 from .utils import trigger_dag, wait_for_run_to_complete
 from airt_service.azure.batch_utils import (
-    get_random_string,
-    BatchPool,
-    BatchJob,
     AUTO_SCALE_FORMULA,
+    BatchJob,
+    BatchPool,
+    get_random_string,
 )
 from airt_service.azure.utils import (
     get_azure_batch_environment_component_names,
@@ -33,6 +32,7 @@ from airt_service.azure.utils import (
 )
 from ..batch_job import get_environment_vars_for_batch_job
 from ..helpers import generate_random_string
+from ..sanitizer import sanitized_print
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 5
 logger = get_logger(__name__)
@@ -112,7 +112,7 @@ class AirflowAzureBatchExecutor(BaseAirflowExecutor):
         tags: Union[str, List[str]],
         on_step_start: Optional[CLICommandBase] = None,
         on_step_end: Optional[CLICommandBase] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Tuple[Path, str]:
         """Create DAG and execute steps in airflow
 
@@ -128,13 +128,13 @@ class AirflowAzureBatchExecutor(BaseAirflowExecutor):
         raise NotImplementedError("Need to implement")
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 15
-@patch
+@patch  # type: ignore
 def _create_step_template(
     self: AirflowAzureBatchExecutor,
     step: CLICommandBase,
     exec_environment: str,
-    **kwargs,
-):
+    **kwargs: Any,
+) -> str:
     """
     Create template for step
 
@@ -187,12 +187,12 @@ def _create_step_template(
     return task
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 17
-@patch
+@patch  # type: ignore
 def _create_dag_template(
     self: AirflowAzureBatchExecutor,
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> str:
     """
     Create DAG template with steps as tasks
@@ -231,7 +231,7 @@ def _create_dag_template(
     return curr_dag_template
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 21
-@patch
+@patch  # type: ignore
 def execute(
     self: AirflowAzureBatchExecutor,
     *,
@@ -239,7 +239,7 @@ def execute(
     tags: Union[str, List[str]],
     on_step_start: Optional[CLICommandBase] = None,
     on_step_end: Optional[CLICommandBase] = None,
-    **kwargs
+    **kwargs: Any,
 ) -> Tuple[Path, str]:
     """Create DAG and execute steps in airflow
 
@@ -259,14 +259,14 @@ def execute(
         tags=tags,
         on_step_start=on_step_start,
         on_step_end=on_step_end,
-        **kwargs
+        **kwargs,
     )
 
     run_id = trigger_dag(dag_id=dag_id, conf={})
     return dag_file_path, run_id
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 23
-def _test_azure_batch_executor(region: str = "northeurope"):  # type: ignore
+def _test_azure_batch_executor(region: str = "westeurope") -> None:
     with tempfile.TemporaryDirectory() as d:
         data_path_url, model_path_url = setup_test_paths(d)
 
@@ -281,23 +281,23 @@ def _test_azure_batch_executor(region: str = "northeurope"):  # type: ignore
         created_azure_env_path = td / "azure_batch_environment.yml"
 
         shared_key_credentials = SharedKeyCredentials(
-            "testbatchnortheurope", os.environ["SHARED_KEY_CREDENTIALS"]
+            "airtbatchwesteurope", os.environ["SHARED_KEY_CREDENTIALS"]
         )
 
-        batch_account_name = "testbatchnortheurope"
-        region = "northeurope"
+        batch_account_name = "airtbatchwesteurope"
+        region = "westeurope"
 
         batch_pool = BatchPool.from_name(
-            name="test-cpu-pool",
+            name="cpu-pool",
             batch_account_name=batch_account_name,
             region=region,
             shared_key_credentials=shared_key_credentials,
         )
-        batch_job = BatchJob.from_name(name="test-cpu-job", batch_pool=batch_pool)
+        batch_job = BatchJob.from_name(name="cpu-job", batch_pool=batch_pool)
 
         sanitized_print(f"{batch_pool.name=}")
         sanitized_print(f"{batch_job.name=}")
-        region = "northeurope"
+        region = "westeurope"
         test_batch_environment_names = {
             region: {
                 task: {
@@ -339,8 +339,8 @@ def _test_azure_batch_executor(region: str = "northeurope"):  # type: ignore
         dag_file_path.unlink()
 
 # %% ../../notebooks/AirflowAzureBatchExecutor.ipynb 24
-@call_parse
-def test_azure_batch_executor(region: Param("region", str) = "northeurope"):  # type: ignore
+@call_parse  # type: ignore
+def test_azure_batch_executor(region: Param("region", str) = "westeurope"):  # type: ignore
     """
     Create throw away environment for azure batch and execute airflow batch executor
     """

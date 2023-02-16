@@ -4,22 +4,20 @@
 __all__ = ['execute_cli']
 
 # %% ../notebooks/Background_Task.ipynb 3
+import asyncio
 import os
-import yaml
+import shlex
+import subprocess  # nosec B404
 from pathlib import Path
+from subprocess import Popen  # nosec B404
 from time import sleep
 from typing import *
 
-import shlex
-import subprocess  # nosec B404
-from subprocess import Popen  # nosec B404
-
-import asyncio
-
+import yaml
+from airt.logger import get_logger
 
 import airt_service
 import airt_service.sanitizer
-from airt.logger import get_logger
 
 # %% ../notebooks/Background_Task.ipynb 5
 logger = get_logger(__name__)
@@ -32,7 +30,7 @@ async def execute_cli(
     on_timeout: Optional[Callable[[], None]] = None,
     on_success: Optional[Callable[[], None]] = None,
     on_error: Optional[Callable[[], None]] = None,
-):
+) -> None:
     """Execute CLI command
 
     Args:

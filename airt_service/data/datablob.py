@@ -10,24 +10,23 @@ __all__ = ['datablob_router', 'S3Request', 'CloudProvider', 'FromS3Request', 'fr
 # %% ../../notebooks/DataBlob_Router.ipynb 3
 import json
 import shlex
+import uuid as uuid_pkg
 from enum import Enum
 from time import sleep
 from typing import *
-import uuid as uuid_pkg
 
-import numpy as np
 import boto3
-from botocore.client import Config
-from pydantic import BaseModel
-from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
-from sqlalchemy.exc import NoResultFound
-from sqlalchemy.orm.exc import StaleDataError
-from sqlmodel import Session, select
-
+import numpy as np
 from airt.executor.subcommand import SimpleCLICommand
 from airt.helpers import get_s3_bucket_name_and_folder_from_uri
 from airt.logger import get_logger
 from airt.patching import patch
+from botocore.client import Config
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+from pydantic import BaseModel
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm.exc import StaleDataError
+from sqlmodel import Session, select
 
 import airt_service
 import airt_service.sanitizer
@@ -44,21 +43,21 @@ from .clickhouse import create_db_uri_for_clickhouse_datablob
 from .datasource import DataSource
 from airt_service.data.utils import (
     create_db_uri_for_azure_blob_storage_datablob,
-    create_db_uri_for_s3_datablob,
     create_db_uri_for_db_datablob,
     create_db_uri_for_local_datablob,
+    create_db_uri_for_s3_datablob,
     delete_data_object_files_in_cloud,
 )
 from airt_service.db.models import (
-    User,
     DataBlob,
     DataBlobRead,
     DataSourceRead,
-    TagCreate,
-    get_session,
     Tag,
+    TagCreate,
+    User,
+    get_session,
 )
-from ..errors import HTTPError, ERRORS
+from ..errors import ERRORS, HTTPError
 from ..helpers import commit_or_rollback
 
 # %% ../../notebooks/DataBlob_Router.ipynb 6
@@ -80,15 +79,17 @@ datablob_router = APIRouter(
 )
 
 # %% ../../notebooks/DataBlob_Router.ipynb 9
-@patch
-def remove_tag_from_previous_datablobs(self: DataBlob, tag_name: str, session: Session):
+@patch  # type: ignore
+def remove_tag_from_previous_datablobs(
+    self: DataBlob, tag_name: str, session: Session
+) -> None:
     """Remove tag_name associated with other/previous datablobs
 
     Args:
         tag_name: Tag name to remove from other datablobs
         session: Sqlmodel session
     """
-    tag_to_remove = Tag.get_by_name(name=tag_name, session=session)  # type: ignore
+    tag_to_remove = Tag.get_by_name(name=tag_name, session=session)
     try:
         datablobs = session.exec(
             select(DataBlob).where(
@@ -115,7 +116,7 @@ create_datablob_responses = {
 }
 
 
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def _create(
     cls: DataBlob,
     *,
@@ -127,7 +128,7 @@ def _create(
     total_steps: int,
     user_tag: Optional[str] = None,
     user: User,
-    session: Session
+    session: Session,
 ) -> DataBlob:
     """Function to create new datablob based on given params
 
@@ -162,7 +163,7 @@ def _create(
             datablob.remove_tag_from_previous_datablobs(  # type: ignore
                 tag_name=tag_name, session=session
             )
-            datablob.tags.append(Tag.get_by_name(name=tag_name, session=session))  # type: ignore
+            datablob.tags.append(Tag.get_by_name(name=tag_name, session=session))
 
         session.add(datablob)
         session.commit()
@@ -211,7 +212,7 @@ class FromS3Request(S3Request):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 16
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_s3(
     cls: DataBlob,
     *,
@@ -262,7 +263,7 @@ def from_s3(
     for i in range(no_retries):
         e: Optional[Exception] = None
         try:
-            datablob = DataBlob._create(  # type: ignore
+            datablob: DataBlob = DataBlob._create(  # type: ignore
                 type="s3",
                 uri=uri,
                 source=source,
@@ -313,7 +314,7 @@ def from_s3_route(
 ) -> DataBlob:
     """Create a datablob from csv/parquet files in s3 bucket"""
     user = session.merge(user)
-    return DataBlob.from_s3(  # type: ignore
+    return DataBlob.from_s3(
         from_s3_request=from_s3_request,
         user=user,
         session=session,
@@ -348,7 +349,7 @@ class FromAzureBlobStorageRequest(AzureBlobStorageRequest):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 22
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_azure_blob_storage(
     cls: DataBlob,
     *,
@@ -393,7 +394,7 @@ def from_azure_blob_storage(
     )
     source = from_azure_blob_storage_request.uri
 
-    datablob = DataBlob._create(  # type: ignore
+    datablob: DataBlob = DataBlob._create(  # type: ignore
         type="azure_blob_storage",
         uri=uri,
         source=source,
@@ -471,7 +472,7 @@ class FromDBRequest(DBRequest):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 28
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_rdbms(
     cls: DataBlob,
     *,
@@ -516,7 +517,7 @@ def from_rdbms(
     )
 
     with commit_or_rollback(session):
-        datablob = DataBlob._create(  # type: ignore
+        datablob: DataBlob = DataBlob._create(  # type: ignore
             type="db",
             uri=uri,
             source=source,
@@ -558,7 +559,7 @@ def from_mysql_route(
 ) -> DataBlob:
     """Create a datablob from a database"""
     user = session.merge(user)
-    return DataBlob.from_rdbms(  # type: ignore
+    return DataBlob.from_rdbms(
         from_db_request=from_db_request,
         database_server="mysql",
         user=user,
@@ -603,7 +604,7 @@ class FromClickHouseRequest(ClickHouseRequest):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 34
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_clickhouse(
     cls: DataBlob,
     *,
@@ -648,7 +649,7 @@ def from_clickhouse(
     )
 
     with commit_or_rollback(session):
-        datablob = DataBlob._create(  # type: ignore
+        datablob: DataBlob = DataBlob._create(  # type: ignore
             type="db",
             uri=uri,
             source=source,
@@ -689,7 +690,7 @@ def from_clickhouse_route(
 ) -> DataBlob:
     """Create a datablob from a database"""
     user = session.merge(user)
-    return DataBlob.from_clickhouse(  # type: ignore
+    return DataBlob.from_clickhouse(
         from_clickhouse_request=from_clickhouse_request,
         user=user,
         session=session,
@@ -730,7 +731,7 @@ class FromLocalResponse(BaseModel):
     presigned: Dict[str, Any]
 
 # %% ../../notebooks/DataBlob_Router.ipynb 38
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def from_local(
     cls: DataBlob,
     *,
@@ -824,7 +825,7 @@ get_datablob_responses = {
 }
 
 
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get(cls: DataBlob, uuid: str, user: User, session: Session) -> DataBlob:
     """Get datablob based on uuid
 
@@ -863,12 +864,12 @@ def get(cls: DataBlob, uuid: str, user: User, session: Session) -> DataBlob:
     return datablob
 
 # %% ../../notebooks/DataBlob_Router.ipynb 44
-@patch
-def is_ready(self: DataBlob):
+@patch  # type: ignore
+def is_ready(self: DataBlob) -> None:
     """Check if the datablob's completed steps equal to total steps, else raise HTTPException"""
     if self.completed_steps != self.total_steps:
         if self.path:
-            bucket, s3_path = get_s3_bucket_and_path_from_uri(self.path)  # type: ignore
+            bucket, s3_path = get_s3_bucket_and_path_from_uri(self.path)
         else:
             bucket, s3_path = create_s3_datablob_path(user_id=self.user.id, datablob_id=self.id, region=self.region)  # type: ignore
 
@@ -909,7 +910,7 @@ class ToDataSourceRequest(BaseModel):
         use_enum_values = True
 
 # %% ../../notebooks/DataBlob_Router.ipynb 46
-@patch
+@patch  # type: ignore
 def to_datasource(
     self: DataBlob,
     to_datasource_request: ToDataSourceRequest,
@@ -927,7 +928,7 @@ def to_datasource(
     """
 
     self.is_ready()  # type: ignore
-    datasource = DataSource._create(datablob=self, user=user, session=session)  # type: ignore
+    datasource: DataSource = DataSource._create(datablob=self, user=user, session=session)  # type: ignore
 
     if to_datasource_request.file_type == "csv":
         process_command = "process_csv"
@@ -978,9 +979,10 @@ def to_datasource_route(
     user = session.merge(user)
     datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
 
-    return datablob.to_datasource(
+    datasource: DataSource = datablob.to_datasource(
         to_datasource_request, user, session, background_tasks
     )
+    return datasource
 
 # %% ../../notebooks/DataBlob_Router.ipynb 50
 @datablob_router.get(
@@ -993,12 +995,12 @@ def get_details_of_datablob(
 ) -> DataBlob:
     """Get details of the datablob"""
     user = session.merge(user)
-    datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
+    datablob: DataBlob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
     return datablob
 
 # %% ../../notebooks/DataBlob_Router.ipynb 53
-@patch
-def delete(self: DataBlob, user: User, session: Session):
+@patch  # type: ignore
+def delete(self: DataBlob, user: User, session: Session) -> DataBlob:
     """Delete a datablob
 
     Args:
@@ -1027,12 +1029,12 @@ def delete_datablob(
 ) -> DataBlob:
     """Delete datablob"""
     user = session.merge(user)
-    datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
+    datablob: DataBlob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
 
-    return datablob.delete(user, session)
+    return datablob.delete(user, session)  # type: ignore
 
 # %% ../../notebooks/DataBlob_Router.ipynb 56
-@patch(cls_method=True)
+@patch(cls_method=True)  # type: ignore
 def get_all(
     cls: DataBlob,
     disabled: bool,
@@ -1076,7 +1078,7 @@ def get_all_datablobs(
     Get all datablobs created by user
     """
     user = session.merge(user)
-    return DataBlob.get_all(  # type: ignore
+    return DataBlob.get_all(
         disabled=disabled,
         completed=completed,
         offset=offset,
@@ -1086,15 +1088,15 @@ def get_all_datablobs(
     )
 
 # %% ../../notebooks/DataBlob_Router.ipynb 60
-@patch
-def tag(self: DataBlob, tag_name: str, session: Session):
+@patch  # type: ignore
+def tag(self: DataBlob, tag_name: str, session: Session) -> DataBlob:
     """Tag an existing datablob
 
     Args:
         tag_name: A string to tag the datablob
         session: Sqlmodel session
     """
-    user_tag = Tag.get_by_name(name=tag_name, session=session)  # type: ignore
+    user_tag = Tag.get_by_name(name=tag_name, session=session)
 
     self.remove_tag_from_previous_datablobs(tag_name=user_tag.name, session=session)  # type: ignore
     self.tags.append(user_tag)
@@ -1114,6 +1116,6 @@ def tag_datablob(
 ) -> DataBlob:
     """Add tag to datablob"""
     user = session.merge(user)
-    datablob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
+    datablob: DataBlob = DataBlob.get(uuid=datablob_uuid, user=user, session=session)  # type: ignore
 
-    return datablob.tag(tag_name=tag_to_create.name, session=session)
+    return datablob.tag(tag_name=tag_to_create.name, session=session)  # type: ignore
