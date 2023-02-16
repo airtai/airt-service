@@ -107,6 +107,7 @@ class BatchPool(ContextDecorator):
         image_sku: str = "20-04-lts",
         image_version: str = "latest",
         container_image: str = "ghcr.io/airtai/airt-service:dev",
+        docker_compatible: bool = False,
         vm: str = "standard_d2s_v3",
         auto_scale_formula: Optional[str] = None,
     ) -> "BatchPool":
@@ -137,6 +138,9 @@ class BatchPool(ContextDecorator):
         #             container_image_names=[container_image],
         #             container_registries=[container_registry],
         #         )
+        container_configuration = (
+            batchmodels.ContainerConfiguration() if docker_compatible else None
+        )
 
         new_pool = batchmodels.PoolAddParameter(
             id=name,
@@ -148,7 +152,7 @@ class BatchPool(ContextDecorator):
                     version=image_version,
                 ),
                 node_agent_sku_id="batch.node.ubuntu 20.04",
-                #                 container_configuration=container_configuration,
+                container_configuration=container_configuration,
             ),
             vm_size=vm,
             enable_auto_scale=True,
