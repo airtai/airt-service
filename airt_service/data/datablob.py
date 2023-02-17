@@ -464,8 +464,8 @@ class FromDBRequest(DBRequest):
         tag: Tag to add to the datablob
     """
 
-    cloud_provider: CloudProvider = "aws"  # type: ignore
-    region: str = "eu-west-1"
+    cloud_provider: CloudProvider = "azure"  # type: ignore
+    region: str = "westeurope"
     tag: Optional[str] = None
 
     class Config:
@@ -596,8 +596,8 @@ class FromClickHouseRequest(ClickHouseRequest):
     index_column: str
     timestamp_column: str
     filters: Optional[Dict[str, Any]] = None
-    cloud_provider: CloudProvider = "aws"  # type: ignore
-    region: str = "eu-west-1"
+    cloud_provider: CloudProvider = "azure"  # type: ignore
+    region: str = "westeurope"
     tag: Optional[str] = None
 
     class Config:
