@@ -373,8 +373,7 @@ def validate_sso_response(request: Request, sso_provider: str) -> str:
             nonce_with_username=state,
             sso_provider=sso_provider,
         )
-
-        if email_from_provider != sso_email:
+        if email_from_provider != sso_email and "captn_trial" not in username:
             sso_protocol_error = ERRORS["SSO_EMAIL_NOT_SAME"]
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
