@@ -4,7 +4,7 @@
 __all__ = ['user_router', 'ensure_super_user', 'GenerateMFARresponse', 'generate_mfa_url', 'ActivateMFARequest', 'activate_mfa',
            'get_user_to_disable_mfa', 'send_sms_otp', 'require_otp_or_totp_if_mfa_enabled', 'disable_mfa',
            'create_user', 'UserUpdateRequest', 'update_user', 'disable_user', 'enable_user', 'get_all_users',
-           'get_user_details', 'EnableSSORequest', 'enable_sso', 'disable_sso', 'create_trial_user', 'sso_create',
+           'get_user_details', 'EnableSSORequest', 'enable_sso', 'disable_sso', 'create_trial_user', 'sso_signup',
            'RegisterPhoneNumberRequest', 'register_phone_number', 'validate_phone_number', 'ResetPasswordRequest',
            'require_otp_or_totp', 'reset_password', 'UserCleanupRequest', 'cleanup']
 
@@ -977,12 +977,11 @@ def create_trial_user(subscription_type: str, session: Session) -> User:
         password=f"{subscription_type}_{username}",
         subscription_type=subscription_type,
     )
-    new_user = User._create(user_to_create, session)  # type: ignore
-    return new_user
+    return User._create(user_to_create, session)  # type: ignore
 
 # %% ../notebooks/Users.ipynb 93
-@user_router.get("/sso_create")
-def sso_create(subscription_type: str, sso_provider: str) -> str:
+@user_router.get("/sso_signup")
+def sso_signup(subscription_type: str, sso_provider: str) -> str:
     """Method to create new user with SSO"""
     with get_session_with_context() as session:
         # 1. Create Trial user
@@ -993,7 +992,7 @@ def sso_create(subscription_type: str, sso_provider: str) -> str:
         enable_sso_request = EnableSSORequest(
             sso_provider=sso_provider, sso_email=trial_user.email
         )
-        sso = enable_sso.__wrapped__(
+        sso = enable_sso.__wrapped__(  # type: ignore
             enable_sso_request=enable_sso_request, user=trial_user, session=session
         )
         # 3. get authorization URL
