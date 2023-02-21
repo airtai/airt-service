@@ -967,7 +967,10 @@ def disable_sso(
 # %% ../notebooks/Users.ipynb 91
 def create_trial_user(subscription_type: str, session: Session) -> User:
     """Create a trial user for the given subscription_type"""
-    username = "".join(random.choice(string.ascii_lowercase) for _ in range(10))
+
+    username = "".join(
+        random.choice(string.ascii_lowercase) for _ in range(10)  # nosec B311
+    )
 
     user_to_create = UserCreate(
         username=f"{subscription_type}_{username}",
