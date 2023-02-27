@@ -4,15 +4,18 @@
 __all__ = ['user_router', 'ensure_super_user', 'GenerateMFARresponse', 'generate_mfa_url', 'ActivateMFARequest', 'activate_mfa',
            'get_user_to_disable_mfa', 'send_sms_otp', 'require_otp_or_totp_if_mfa_enabled', 'disable_mfa',
            'create_user', 'UserUpdateRequest', 'update_user', 'disable_user', 'enable_user', 'get_all_users',
-           'get_user_details', 'EnableSSORequest', 'enable_sso', 'disable_sso', 'RegisterPhoneNumberRequest',
-           'register_phone_number', 'validate_phone_number', 'ResetPasswordRequest', 'require_otp_or_totp',
-           'reset_password', 'UserCleanupRequest', 'cleanup']
+           'get_user_details', 'EnableSSORequest', 'enable_sso', 'disable_sso', 'create_trial_user', 'sso_signup',
+           'RegisterPhoneNumberRequest', 'register_phone_number', 'validate_phone_number', 'ResetPasswordRequest',
+           'require_otp_or_totp', 'reset_password', 'UserCleanupRequest', 'cleanup']
 
 # %% ../notebooks/Users.ipynb 3
 import functools
 import re
 import uuid
 from typing import *
+import secrets
+import random
+import string
 
 from airt.logger import get_logger
 from airt.patching import patch
@@ -37,6 +40,7 @@ from airt_service.db.models import (
     UserCreate,
     UserRead,
     get_session,
+    get_session_with_context,
 )
 from .errors import ERRORS, HTTPError
 from .helpers import commit_or_rollback, get_attr_by_name, get_password_hash
@@ -53,6 +57,7 @@ from airt_service.totp import (
     require_otp_if_mfa_enabled,
     validate_totp,
 )
+from .sso import initiate_sso_flow
 
 # %% ../notebooks/Users.ipynb 5
 logger = get_logger(__name__)
@@ -887,7 +892,7 @@ def enable_sso(
 
     return _sso
 
-# %% ../notebooks/Users.ipynb 85
+# %% ../notebooks/Users.ipynb 86
 @patch  # type: ignore
 def disable(self: SSO, session: Session):
     """Disable SSO for a particular service
@@ -913,7 +918,7 @@ def disable(self: SSO, session: Session):
 
     return self
 
-# %% ../notebooks/Users.ipynb 86
+# %% ../notebooks/Users.ipynb 87
 @user_router.delete(
     "/sso/{user_uuid_or_name}/disable/{sso_provider}",
     response_model=SSORead,
@@ -959,7 +964,49 @@ def disable_sso(
 
     return sso_provider_to_disable.disable(session)  # type: ignore
 
-# %% ../notebooks/Users.ipynb 90
+# %% ../notebooks/Users.ipynb 91
+def create_trial_user(subscription_type: str, session: Session) -> User:
+    """Create a trial user for the given subscription_type"""
+
+    username = "".join(
+        random.choice(string.ascii_lowercase) for _ in range(10)  # nosec B311
+    )
+
+    user_to_create = UserCreate(
+        username=f"{subscription_type}_{username}",
+        first_name=f"{subscription_type}_first_name",
+        last_name=f"{subscription_type}_last_name",
+        email=f"{subscription_type}_{username}@email.com",
+        password=f"{subscription_type}_{username}",
+        subscription_type=subscription_type,
+    )
+    return User._create(user_to_create, session)  # type: ignore
+
+# %% ../notebooks/Users.ipynb 93
+@user_router.get("/sso_signup")
+def sso_signup(subscription_type: str, sso_provider: str) -> str:
+    """Method to create new user with SSO"""
+    with get_session_with_context() as session:
+        # 1. Create Trial user
+        trial_user = create_trial_user(
+            subscription_type=subscription_type, session=session
+        )
+        # 2. Enable SSO for the Trial user
+        enable_sso_request = EnableSSORequest(
+            sso_provider=sso_provider, sso_email=trial_user.email
+        )
+        sso = enable_sso.__wrapped__(  # type: ignore
+            enable_sso_request=enable_sso_request, user=trial_user, session=session
+        )
+        # 3. get authorization URL
+        return initiate_sso_flow(
+            username=trial_user.username,
+            sso_provider=sso_provider,
+            nonce=secrets.token_hex(),
+            sso=sso,
+        ).authorization_url
+
+# %% ../notebooks/Users.ipynb 95
 class RegisterPhoneNumberRequest(BaseModel):
     """A base class for registering a new phone number
 
@@ -971,7 +1018,7 @@ class RegisterPhoneNumberRequest(BaseModel):
     phone_number: Optional[str] = None
     otp: Optional[str] = None
 
-# %% ../notebooks/Users.ipynb 91
+# %% ../notebooks/Users.ipynb 96
 @user_router.post(
     "/register_phone_number",
     response_model=UserRead,
@@ -1013,7 +1060,7 @@ def register_phone_number(
 
     return user
 
-# %% ../notebooks/Users.ipynb 96
+# %% ../notebooks/Users.ipynb 101
 @user_router.get(
     "/validate_phone_number",
     response_model=UserRead,
@@ -1048,7 +1095,7 @@ def validate_phone_number(
 
     return user
 
-# %% ../notebooks/Users.ipynb 100
+# %% ../notebooks/Users.ipynb 105
 class ResetPasswordRequest(BaseModel):
     """Request object to reset user's password
 
@@ -1062,7 +1109,7 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
     otp: str
 
-# %% ../notebooks/Users.ipynb 101
+# %% ../notebooks/Users.ipynb 106
 def require_otp_or_totp(message_template_name: str) -> Callable[..., Any]:
     """A decorator function to validate the totp/otp
 
@@ -1113,7 +1160,7 @@ def require_otp_or_totp(message_template_name: str) -> Callable[..., Any]:
 
     return outer_wrapper
 
-# %% ../notebooks/Users.ipynb 105
+# %% ../notebooks/Users.ipynb 110
 @user_router.post(
     "/reset_password",
     responses={
@@ -1138,7 +1185,7 @@ def reset_password(
 
     return PASSWORD_RESET_MSG
 
-# %% ../notebooks/Users.ipynb 118
+# %% ../notebooks/Users.ipynb 123
 class UserCleanupRequest(BaseModel):
     """Request object to cleanup user
 
@@ -1150,7 +1197,7 @@ class UserCleanupRequest(BaseModel):
     username: str
     otp: Optional[str] = None
 
-# %% ../notebooks/Users.ipynb 119
+# %% ../notebooks/Users.ipynb 124
 @user_router.post(
     "/cleanup",
     response_model=UserRead,

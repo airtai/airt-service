@@ -64,6 +64,7 @@ class SubscriptionType(str, enum.Enum):
     captn = "captn"
     test = "test"
     superuser = "superuser"
+    captn_trial = "captn_trial"
 
 
 class UserBase(SQLModel):
