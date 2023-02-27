@@ -274,6 +274,7 @@ def _download_from_clickhouse(
         table=table,
         protocol=protocol,
     ) as connection:
+
         max_timestamp = get_max_timestamp(
             timestamp_column=timestamp_column,
             connection=connection,
@@ -513,6 +514,7 @@ def _drop_table(
     table: str,
     protocol: str,
 ) -> CursorResult:
+
     with get_clickhouse_connection(  # type: ignore
         username=username,
         password=password,

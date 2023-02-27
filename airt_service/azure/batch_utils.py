@@ -17,24 +17,24 @@ from typing import *
 import azure.batch.models as batchmodels
 from airt.logger import get_logger
 from azure.batch import BatchServiceClient
-from azure.batch.batch_auth import SharedKeyCredentials
 from azure.batch.models import BatchErrorException
+from azure.common.credentials import ServicePrincipalCredentials
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.batch import BatchManagementClient
 
 import airt_service.sanitizer
 
-# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 5
+# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 4
 logger = get_logger(__name__)
 
-# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 6
+# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 5
 # This is needed to disable excessive logging from azure-storage-blob library
 
 (logging.getLogger("azure.core.pipeline.policies.http_logging_policy")).setLevel(
     logging.WARNING
 )
 
-# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 7
+# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 6
 def get_random_string(length: int = 6) -> str:
     """Generate random string
 
@@ -49,7 +49,7 @@ def get_random_string(length: int = 6) -> str:
         for _ in range(length)
     )
 
-# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 9
+# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 8
 AUTO_SCALE_FORMULA = """// Get pending tasks for the past 5 minutes.
 $samples = $PendingTasks.GetSamplePercent(TimeInterval_Minute * 5);
 // If we have fewer than 70 percent data points, we use the last sample point,
@@ -64,19 +64,19 @@ $TargetDedicatedNodes = max(0, min($targetVMs, 5));
 // Set node deallocation mode - let running tasks finish before removing a node
 $NodeDeallocationOption = taskcompletion;"""
 
-# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 11
+# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 10
 class BatchPool(ContextDecorator):
     def __init__(
         self,
         name: str,
         batch_account_name: str,
         region: str,
-        shared_key_credentials: SharedKeyCredentials,
+        service_principal_credentials: ServicePrincipalCredentials,
     ):
         self.name = name
         self.batch_account_name = batch_account_name
         self.region = region
-        self.shared_key_credentials = shared_key_credentials
+        self.service_principal_credentials = service_principal_credentials
 
     @classmethod
     def from_name(
@@ -84,15 +84,17 @@ class BatchPool(ContextDecorator):
         name: str,
         batch_account_name: str,
         region: str,
-        shared_key_credentials: SharedKeyCredentials,
+        service_principal_credentials: ServicePrincipalCredentials,
     ) -> "BatchPool":
         batch_service_client = BatchServiceClient(
-            shared_key_credentials,
+            service_principal_credentials,
             batch_url=f"https://{batch_account_name}.{region}.batch.azure.com",
         )
         pool = batch_service_client.pool.get(name)
 
-        return BatchPool(name, batch_account_name, region, shared_key_credentials)
+        return BatchPool(
+            name, batch_account_name, region, service_principal_credentials
+        )
 
     @classmethod
     def create(
@@ -101,7 +103,7 @@ class BatchPool(ContextDecorator):
         name: Optional[str] = None,
         batch_account_name: str,
         region: str,
-        shared_key_credentials: SharedKeyCredentials,
+        service_principal_credentials: ServicePrincipalCredentials,
         image_publisher: str = "microsoft-azure-batch",
         image_offer: str = "ubuntu-server-container",
         image_sku: str = "20-04-lts",
@@ -118,14 +120,16 @@ class BatchPool(ContextDecorator):
             auto_scale_formula = AUTO_SCALE_FORMULA
 
         batch_service_client = BatchServiceClient(
-            shared_key_credentials,
+            service_principal_credentials,
             batch_url=f"https://{batch_account_name}.{region}.batch.azure.com",
         )
 
         try:
             pool = batch_service_client.pool.get(name)
             pool_dict = pool.as_dict()
-            return BatchPool(name, batch_account_name, region, shared_key_credentials)
+            return BatchPool(
+                name, batch_account_name, region, service_principal_credentials
+            )
         except BatchErrorException:
             pass
 
@@ -161,7 +165,9 @@ class BatchPool(ContextDecorator):
         )
 
         batch_service_client.pool.add(new_pool)
-        batch_pool = BatchPool(name, batch_account_name, region, shared_key_credentials)
+        batch_pool = BatchPool(
+            name, batch_account_name, region, service_principal_credentials
+        )
         batch_pool.wait(state="active")
         return batch_pool
 
@@ -183,7 +189,7 @@ class BatchPool(ContextDecorator):
             The response of describe compute environment
         """
         batch_service_client = BatchServiceClient(
-            self.shared_key_credentials,
+            self.service_principal_credentials,
             batch_url=f"https://{self.batch_account_name}.{self.region}.batch.azure.com",
         )
 
@@ -205,7 +211,7 @@ class BatchPool(ContextDecorator):
     def delete(self) -> None:
         """Delete Batch Pool"""
         batch_service_client = BatchServiceClient(
-            self.shared_key_credentials,
+            self.service_principal_credentials,
             batch_url=f"https://{self.batch_account_name}.{self.region}.batch.azure.com",
         )
         try:
@@ -227,23 +233,23 @@ class BatchPool(ContextDecorator):
         self.delete()
         self.wait(state="deleting")
 
-# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 13
+# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 12
 class BatchJob(ContextDecorator):
     def __init__(self, name: str, batch_pool: BatchPool):
         self.name = name
         self.batch_account_name = batch_pool.batch_account_name
         self.region = batch_pool.region
-        self.shared_key_credentials = batch_pool.shared_key_credentials
+        self.service_principal_credentials = batch_pool.service_principal_credentials
         self.batch_pool = batch_pool
 
     @classmethod
     def from_name(cls, name: str, batch_pool: BatchPool) -> "BatchJob":
         batch_account_name = batch_pool.batch_account_name
         region = batch_pool.region
-        shared_key_credentials = batch_pool.shared_key_credentials
+        service_principal_credentials = batch_pool.service_principal_credentials
 
         batch_service_client = BatchServiceClient(
-            shared_key_credentials,
+            service_principal_credentials,
             batch_url=f"https://{batch_account_name}.{region}.batch.azure.com",
         )
         job = batch_service_client.job.get(name)
@@ -257,10 +263,10 @@ class BatchJob(ContextDecorator):
 
         batch_account_name = batch_pool.batch_account_name
         region = batch_pool.region
-        shared_key_credentials = batch_pool.shared_key_credentials
+        service_principal_credentials = batch_pool.service_principal_credentials
 
         batch_service_client = BatchServiceClient(
-            shared_key_credentials,
+            service_principal_credentials,
             batch_url=f"https://{batch_account_name}.{region}.batch.azure.com",
         )
 
@@ -299,7 +305,7 @@ class BatchJob(ContextDecorator):
             The response of describe compute environment
         """
         batch_service_client = BatchServiceClient(
-            self.shared_key_credentials,
+            self.service_principal_credentials,
             batch_url=f"https://{self.batch_account_name}.{self.region}.batch.azure.com",
         )
 
@@ -321,7 +327,7 @@ class BatchJob(ContextDecorator):
     def delete(self) -> None:
         """Delete Batch Pool"""
         batch_service_client = BatchServiceClient(
-            self.shared_key_credentials,
+            self.service_principal_credentials,
             batch_url=f"https://{self.batch_account_name}.{self.region}.batch.azure.com",
         )
         try:
@@ -343,23 +349,23 @@ class BatchJob(ContextDecorator):
         self.delete()
         #         self.wait(state="deleting")
 
-# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 15
+# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 14
 class BatchTask(ContextDecorator):
     def __init__(self, name: str, batch_job: BatchJob):
         self.name = name
         self.batch_account_name = batch_job.batch_account_name
         self.region = batch_job.region
-        self.shared_key_credentials = batch_job.shared_key_credentials
+        self.service_principal_credentials = batch_job.service_principal_credentials
         self.batch_job = batch_job
 
     @classmethod
     def from_name(cls, name: str, batch_job: BatchJob) -> "BatchTask":
         batch_account_name = batch_job.batch_account_name
         region = batch_job.region
-        shared_key_credentials = batch_job.shared_key_credentials
+        service_principal_credentials = batch_job.service_principal_credentials
 
         batch_service_client = BatchServiceClient(
-            shared_key_credentials,
+            service_principal_credentials,
             batch_url=f"https://{batch_account_name}.{region}.batch.azure.com",
         )
         task = batch_service_client.task.get(batch_job.name, name)
@@ -381,10 +387,10 @@ class BatchTask(ContextDecorator):
 
         batch_account_name = batch_job.batch_account_name
         region = batch_job.region
-        shared_key_credentials = batch_job.shared_key_credentials
+        service_principal_credentials = batch_job.service_principal_credentials
 
         batch_service_client = BatchServiceClient(
-            shared_key_credentials,
+            service_principal_credentials,
             batch_url=f"https://{batch_account_name}.{region}.batch.azure.com",
         )
 
@@ -433,7 +439,7 @@ class BatchTask(ContextDecorator):
             The response of describe compute environment
         """
         batch_service_client = BatchServiceClient(
-            self.shared_key_credentials,
+            self.service_principal_credentials,
             batch_url=f"https://{self.batch_account_name}.{self.region}.batch.azure.com",
         )
 
@@ -455,7 +461,7 @@ class BatchTask(ContextDecorator):
     def delete(self) -> None:
         """Delete Batch task"""
         batch_service_client = BatchServiceClient(
-            self.shared_key_credentials,
+            self.service_principal_credentials,
             batch_url=f"https://{self.batch_account_name}.{self.region}.batch.azure.com",
         )
         try:
@@ -472,7 +478,7 @@ class BatchTask(ContextDecorator):
 
     def output(self) -> None:
         batch_service_client = BatchServiceClient(
-            self.shared_key_credentials,
+            self.service_principal_credentials,
             batch_url=f"https://{self.batch_account_name}.{self.region}.batch.azure.com",
         )
 
@@ -505,7 +511,7 @@ class BatchTask(ContextDecorator):
         self.output()
         self.delete()
 
-# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 19
+# %% ../../notebooks/Azure_Batch_Job_Utils.ipynb 16
 def azure_batch_create_job(
     *,
     name: Optional[str] = None,
@@ -516,22 +522,24 @@ def azure_batch_create_job(
     batch_pool_name: str,
     batch_account_name: str,
     region: str,
-    shared_key_credentials: Optional[SharedKeyCredentials] = None,
+    service_principal_credentials: Optional[ServicePrincipalCredentials] = None,
 ) -> BatchTask:
     if region != "westeurope":
         raise ValueError("Only westeurope region is supported for now")
 
-    if shared_key_credentials is None:
-        shared_key_credentials = SharedKeyCredentials(
-            batch_account_name,
-            os.environ["SHARED_KEY_CREDENTIALS"],
+    if service_principal_credentials is None:
+        service_principal_credentials = ServicePrincipalCredentials(
+            client_id=os.environ["AZURE_CLIENT_ID"],
+            secret=os.environ["AZURE_CLIENT_SECRET"],
+            tenant=os.environ["AZURE_TENANT_ID"],
+            resource="https://batch.core.windows.net/",
         )
 
     batch_pool = BatchPool.from_name(
         name=batch_pool_name,
         batch_account_name=batch_account_name,
         region=region,
-        shared_key_credentials=shared_key_credentials,
+        service_principal_credentials=service_principal_credentials,
     )
 
     batch_job = BatchJob.from_name(name=batch_job_name, batch_pool=batch_pool)

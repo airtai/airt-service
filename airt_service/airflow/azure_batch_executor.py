@@ -15,7 +15,7 @@ from airt.executor.subcommand import ClassCLICommand, CLICommandBase
 from airt.helpers import slugify
 from airt.logger import get_logger
 from airt.patching import patch
-from azure.batch.batch_auth import SharedKeyCredentials
+from azure.common.credentials import ServicePrincipalCredentials
 from fastcore.script import Param, call_parse
 
 from .base_executor import BaseAirflowExecutor, dag_template
@@ -280,8 +280,11 @@ def _test_azure_batch_executor(region: str = "westeurope") -> None:
         td = Path(d)
         created_azure_env_path = td / "azure_batch_environment.yml"
 
-        shared_key_credentials = SharedKeyCredentials(
-            "airtbatchwesteurope", os.environ["SHARED_KEY_CREDENTIALS"]
+        service_principal_credentials = ServicePrincipalCredentials(
+            client_id=os.environ["AZURE_CLIENT_ID"],
+            secret=os.environ["AZURE_CLIENT_SECRET"],
+            tenant=os.environ["AZURE_TENANT_ID"],
+            resource="https://batch.core.windows.net/",
         )
 
         batch_account_name = "airtbatchwesteurope"
@@ -291,7 +294,7 @@ def _test_azure_batch_executor(region: str = "westeurope") -> None:
             name="cpu-pool",
             batch_account_name=batch_account_name,
             region=region,
-            shared_key_credentials=shared_key_credentials,
+            service_principal_credentials=service_principal_credentials,
         )
         batch_job = BatchJob.from_name(name="cpu-job", batch_pool=batch_pool)
 
