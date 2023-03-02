@@ -1,12 +1,11 @@
 name: Cleanup Untagged Images
-on: [push]
 
-# on:
-#   # every sunday at 00:00
-#   schedule:
-#     - cron: "0 0 * * SUN"
-#   # or manually
-  # workflow_dispatch:
+on:
+  # every sunday at 00:00
+  schedule:
+    - cron: "0 0 * * SUN"
+  # or manually
+  workflow_dispatch:
 
 jobs:
   delete-untagged-images:
@@ -18,7 +17,7 @@ jobs:
           # NOTE: at now only orgs is supported
           owner: airtai
           name: airt-service
-          # NOTE: using Personal Access Token
+
           token: ${{ secrets.GITHUB_TOKEN }}
           # Keep latest N untagged images
-          # untagged-keep-latest: 3
+          untagged-keep-latest: 1
