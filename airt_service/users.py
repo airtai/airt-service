@@ -10,12 +10,12 @@ __all__ = ['user_router', 'ensure_super_user', 'GenerateMFARresponse', 'generate
 
 # %% ../notebooks/Users.ipynb 3
 import functools
+import random
 import re
+import secrets
+import string
 import uuid
 from typing import *
-import secrets
-import random
-import string
 
 from airt.logger import get_logger
 from airt.patching import patch
@@ -51,13 +51,13 @@ from airt_service.sms_utils import (
     validate_otp,
     verify_pin,
 )
+from .sso import initiate_sso_flow
 from airt_service.totp import (
     generate_mfa_provisioning_url,
     generate_mfa_secret,
     require_otp_if_mfa_enabled,
     validate_totp,
 )
-from .sso import initiate_sso_flow
 
 # %% ../notebooks/Users.ipynb 5
 logger = get_logger(__name__)
