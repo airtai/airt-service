@@ -242,7 +242,7 @@ def datasource_head_route(
     datasource_uuid: str,
     user: User = Depends(get_current_active_user),
     session: Session = Depends(get_session),
-) -> Dict[str, List[Any]]:
+) -> Dict[str, Dict[str, Any]]:
     """Get head of the datasource"""
     user = session.merge(user)
     datasource = DataSource.get(uuid=datasource_uuid, user=user, session=session)  # type: ignore
