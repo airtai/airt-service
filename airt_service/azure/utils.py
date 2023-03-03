@@ -306,7 +306,7 @@ def get_batch_account_pool_job_names(
     batch_environment_component_names = get_azure_batch_environment_component_names(
         region=region, batch_environment_path=batch_environment_path
     )
-    batch_account_name = batch_environment_component_names[task]["batch_account_name"]
+    batch_account_name = os.environ["AZURE_BATCH_ACCOUNT"]
     batch_pool_name = batch_environment_component_names[task]["batch_pool_name"]
     batch_job_name = batch_environment_component_names[task]["batch_job_name"]
 
