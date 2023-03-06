@@ -260,8 +260,8 @@ class ModelTrainingRequest(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -288,8 +288,8 @@ class EventData(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -316,9 +316,7 @@ class EventData(BaseModel):
 
 
 class RealtimeData(EventData):
-    make_prediction: bool = Field(
-        ..., example=True, description="trigger prediction message in prediction topic"
-    )
+    pass
 
 
 class TrainingDataStatus(BaseModel):
@@ -330,8 +328,8 @@ class TrainingDataStatus(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -357,8 +355,8 @@ class TrainingModelStatus(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -396,8 +394,8 @@ class ModelMetrics(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -433,8 +431,8 @@ class Prediction(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
