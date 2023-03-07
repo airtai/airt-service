@@ -171,9 +171,9 @@ def get_new_update_table(
     merged = recent_events_df.merge(right=ch_df, how="left", on="AccountId")
 
     updated = merged["curr_count"] > merged["prev_count"]
-    not_update_for_30s = merged["curr_check_on"] - merged["created"] > timedelta(
-        seconds=end_timedelta
-    )
+    not_update_for_30s = merged["curr_check_on"].subtract(
+        merged["created"]
+    ) > timedelta(seconds=end_timedelta)
 
     df = merged[updated | not_update_for_30s]
     df = df.assign(action="end")
