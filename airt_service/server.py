@@ -15,7 +15,7 @@ import yaml
 from aiokafka.helpers import create_ssl_context
 from airt.logger import get_logger
 from asyncer import asyncify
-from fast_kafka_api.application import FastKafkaAPI
+from fastkafka import FastKafka
 from fastapi import FastAPI, Request, Response
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
@@ -466,14 +466,14 @@ _no_of_records_received = 0
 def create_ws_server(
     assets_path: Path = Path("./assets"),
     start_process_for_username: Optional[str] = "infobip",
-) -> Tuple[FastAPI, FastKafkaAPI]:
-    """Create a FastKafkaAPI based web service
+) -> Tuple[FastAPI, FastKafka]:
+    """Create a FastKafka based web service
 
     Args:
         assets_path: Path to assets (should include favicon.ico)
 
     Returns:
-        A FastKafkaAPI server
+        A FastKafka server
     """
     global description
     title = "airt service"
@@ -601,8 +601,7 @@ def create_ws_server(
 
     logger.info(f"kafka_config={aio_kafka_config}")
 
-    fast_kafka_api_app = FastKafkaAPI(
-        fast_api_app=app,
+    fast_kafka_api_app = FastKafka(
         title="airt service kafka api",
         description="kafka api for airt service",
         kafka_brokers=kafka_brokers,

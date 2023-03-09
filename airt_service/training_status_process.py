@@ -19,7 +19,7 @@ import pandas as pd
 from airt.logger import get_logger
 from airt.patching import patch
 from asyncer import asyncify, create_task_group
-from fast_kafka_api.application import FastKafkaAPI
+from fastkafka import FastKafka
 from fastapi import FastAPI
 from fastcore.meta import delegates
 from sqlalchemy import create_engine as sqlalchemy_create_engine
@@ -190,7 +190,7 @@ def get_new_update_table(
     return df
 
 # %% ../notebooks/Training_Status_Process.ipynb 20
-async def update_kafka(update_table: pd.DataFrame, kafka_app: FastKafkaAPI) -> None:
+async def update_kafka(update_table: pd.DataFrame, kafka_app: FastKafka) -> None:
     async with create_task_group() as task_group:
         to_infobip_training_data_status = task_group.soonify(
             kafka_app.to_infobip_training_data_status
@@ -209,7 +209,7 @@ async def update_kafka(update_table: pd.DataFrame, kafka_app: FastKafkaAPI) -> N
 # %% ../notebooks/Training_Status_Process.ipynb 23
 async def process_training_status(
     username: str,
-    fast_kafka_api_app: FastKafkaAPI,
+    fast_kafka_api_app: FastKafka,
     *,
     should_exit_f: Optional[Callable[[], bool]] = None,
     sleep_min: int = 5,
