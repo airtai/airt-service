@@ -286,7 +286,7 @@ def login_for_sso_access_token(
             detail=f'{ERRORS["INVALID_SSO_PROVIDER"]}: {valid_sso_providers}',
         )
 
-    sso = get_sso_if_enabled_for_user(user.id, sso_provider)
+    sso = get_sso_if_enabled_for_user(user.id, sso_provider)  # type: ignore
     if sso is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
