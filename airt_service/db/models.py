@@ -108,6 +108,7 @@ class User(UserBase, table=True):
     models: List["Model"] = Relationship(back_populates="user")
     ssos: List["SSO"] = Relationship(back_populates="user")
     smss: List["SMS"] = Relationship(back_populates="user")
+    sso_signup_trial_username: Optional[str] = Field(default=None)
 
     def __repr__(self: "User") -> str:
         """Return custom string representation of the User class objects"""
