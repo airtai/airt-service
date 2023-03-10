@@ -434,6 +434,7 @@ def _create(cls: User, user_to_create: UserCreate, session: Session) -> User:
     try:
         session.add(new_user)
         session.commit()
+        session.refresh(new_user)
     except IntegrityError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
