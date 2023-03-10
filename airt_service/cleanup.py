@@ -12,7 +12,6 @@ from sqlmodel import Session, select
 import airt_service.sanitizer
 from .auth import delete_apikey
 from .aws.utils import get_s3_storage_bucket
-from .confluent import delete_topics_for_user
 from .data.datablob import delete_datablob
 from .data.datasource import delete_datasource
 from .db.models import APIKey, DataBlob, DataSource, Model, Prediction, User
@@ -120,7 +119,7 @@ def cleanup_user(user_to_cleanup: User, session: Session) -> None:
     logger.info(f"Deleting user files in s3://{bucket.name}/{s3_path}")
     bucket.objects.filter(Prefix=s3_path + "/").delete()
 
-    delete_topics_for_user(username=user_to_cleanup.username)
+    #     delete_topics_for_user(username=user_to_cleanup.username)
 
     logger.info("deleting user")
     session.delete(user_to_cleanup)
