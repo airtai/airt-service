@@ -1,7 +1,7 @@
 """Add sso_signup_trial_username column in User model
 
 Revision ID: 8d2270ef4466
-Revises: d3b684b143d2
+Revises: 63e05f56db5f
 Create Date: 2023-03-09 01:03:23.985360
 
 """
@@ -12,7 +12,7 @@ from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
 revision = '8d2270ef4466'
-down_revision = 'd3b684b143d2'
+down_revision = '63e05f56db5f'
 branch_labels = None
 depends_on = None
 

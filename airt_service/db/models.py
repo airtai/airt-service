@@ -969,7 +969,7 @@ class SSO(SSOBase, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    username: str = Field(default=None, foreign_key="user.username")
+    user_id: int = Field(default=None, foreign_key="user.id")
     user: User = Relationship(back_populates="ssos")
 
     ssoprotocols: List["SSOProtocol"] = Relationship(back_populates="sso")
