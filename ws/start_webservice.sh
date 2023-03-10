@@ -24,6 +24,6 @@ make start_airflow
 # ToDo: Use the following line once the topic processing loop commands are added
 # uvicorn webservice:app --port 6006 --host 0.0.0.0 --workers=3 --proxy-headers &
 
-fastkafka run --num-workers 4 webservice:fast_kafka_api_app & 
+fastkafka run --num-workers 4 webservice:fast_kafka_api_app > ./fastkafka.log & 
 
 uvicorn webservice:app --port 6006 --host 0.0.0.0 --workers=3 --proxy-headers
