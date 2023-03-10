@@ -19,9 +19,9 @@ import pandas as pd
 from airt.logger import get_logger
 from airt.patching import patch
 from asyncer import asyncify, create_task_group
-from fastkafka import FastKafka
 from fastapi import FastAPI
 from fastcore.meta import delegates
+from fastkafka import FastKafka
 from sqlalchemy import create_engine as sqlalchemy_create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import NoResultFound

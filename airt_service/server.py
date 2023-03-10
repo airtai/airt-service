@@ -15,12 +15,12 @@ import yaml
 from aiokafka.helpers import create_ssl_context
 from airt.logger import get_logger
 from asyncer import asyncify
-from fastkafka import FastKafka
 from fastapi import FastAPI, Request, Response
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastkafka import FastKafka
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, NonNegativeInt, validator
 from sqlmodel import select
 
