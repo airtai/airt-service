@@ -132,11 +132,11 @@ def get_valid_sso_providers() -> List[str]:
     return [e.value for e in SSOProvider]
 
 # %% ../notebooks/SSO.ipynb 16
-def get_sso_if_enabled_for_user(username: str, sso_provider: str) -> Optional[SSO]:
+def get_sso_if_enabled_for_user(user_id: int, sso_provider: str) -> Optional[SSO]:
     """Check if the given sso provider is enabled for the user
 
     Args:
-        username: username as string
+        user_id: The user_id for whom the SSO provider status needs be checked
         sso_provider: The name of the SSO provider
 
     Returns:
@@ -146,7 +146,7 @@ def get_sso_if_enabled_for_user(username: str, sso_provider: str) -> Optional[SS
         try:
             sso = session.exec(
                 select(SSO)
-                .where(SSO.username == username)
+                .where(SSO.user_id == user_id)
                 .where(SSO.sso_provider == sso_provider)
             ).one()
 
@@ -295,7 +295,7 @@ def get_sso_protocol_and_email(
                 detail=ERRORS["INCORRECT_USERNAME"],
             )
     # Step 2: Check if the sso provider is enabled for the user
-    sso = get_sso_if_enabled_for_user(username, sso_provider)
+    sso = get_sso_if_enabled_for_user(user.id, sso_provider)
     if sso is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
