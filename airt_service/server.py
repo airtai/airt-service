@@ -494,9 +494,13 @@ def create_ws_server(
     app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 
     asyncapi_path = Path("./asyncapi/docs").resolve()
-    app.mount(
-        "/asyncapi", StaticFiles(directory=asyncapi_path, html=True), name="asyncapi"
-    )
+
+    if asyncapi_path.exists():
+        app.mount(
+            "/asyncapi",
+            StaticFiles(directory=asyncapi_path, html=True),
+            name="asyncapi",
+        )
 
     # attaches /token to routes
     app.include_router(auth_router)
