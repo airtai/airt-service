@@ -530,7 +530,7 @@ def create_ws_server(
         return {"airt_service": airt_service.__version__}
 
     @app.get("/", include_in_schema=False)
-    def redirect_root():
+    def redirect_root() -> RedirectResponse:
         return RedirectResponse("/docs")
 
     @app.get("/docs", include_in_schema=False)
