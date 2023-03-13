@@ -2,7 +2,8 @@
 
 # %% auto 0
 __all__ = ['get_valid_sso_providers', 'SSOAuthURL', 'initiate_sso_flow', 'get_sso_protocol_and_email',
-           'update_user_id_in_sso_table', 'disable_trial_user', 'update_user_info_in_db', 'validate_sso_response']
+           'delete_existing_sso_entries', 'swap_user_id_in_sso_table', 'disable_trial_user', 'update_user_info_in_db',
+           'validate_sso_response']
 
 # %% ../notebooks/SSO.ipynb 2
 import os
@@ -330,14 +331,32 @@ def get_sso_protocol_and_email(
     return sso_protocol, sso.sso_email
 
 # %% ../notebooks/SSO.ipynb 35
-def update_user_id_in_sso_table(
-    trial_sso_username: str, user_id_to_update: int
+def delete_existing_sso_entries(user_id: int, sso_provider: str) -> None:
+    """Delete the existing SSO entries for the given user id
+
+    Args:
+        user_id: The id of the user whose records needs be deleted from the SSO table
+        sso_provider: Name of the SSO provider
+    """
+    with get_session_with_context() as session:
+        sso = session.exec(
+            select(SSO)
+            .where(SSO.user_id == user_id)
+            .where(SSO.sso_provider == sso_provider)
+        ).one()
+        with commit_or_rollback(session):
+            session.delete(sso)
+
+# %% ../notebooks/SSO.ipynb 37
+def swap_user_id_in_sso_table(
+    trial_sso_username: str, user_id: int, sso_provider: str
 ) -> None:
-    """Update the user_id in the SSO table
+    """Swap trial user's id with the given user_id in the SSO table
 
     Args:
         trial_sso_username: Name of the trial SSO user
-        user_id_to_update: User id to update in the SSO table
+        user_id: User id to swap in the SSO table
+        sso_provider: Name of the SSO provider
 
     Raises:
         HTTPException: If the username is incorrect or no records found for the user in the SSO table
@@ -350,18 +369,18 @@ def update_user_id_in_sso_table(
             sso = session.exec(
                 select(SSO).where(SSO.user_id == trial_sso_user.id)
             ).one()
-
+            delete_existing_sso_entries(user_id, sso_provider)
         except NoResultFound:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=ERRORS["SSO_GENERIC_ERROR"],
             )
 
-        sso.user_id = user_id_to_update
+        sso.user_id = user_id
         with commit_or_rollback(session):
             session.add(sso)
 
-# %% ../notebooks/SSO.ipynb 38
+# %% ../notebooks/SSO.ipynb 40
 def disable_trial_user(username: str) -> None:
     """Disable the trial user
 
@@ -374,16 +393,18 @@ def disable_trial_user(username: str) -> None:
         with commit_or_rollback(session):
             session.add(user)
 
-# %% ../notebooks/SSO.ipynb 40
+# %% ../notebooks/SSO.ipynb 42
 def update_user_info_in_db(
     sso_signup_trial_username: str,
     user_info_from_provider: Dict[str, str],
+    sso_provider: str,
 ) -> None:
     """Update user information retrived from an external SSO provider in the database.
 
     Args:
         sso_signup_trial_username: The username of the SSO signup trial user.
         user_info_from_provider: User information retrieved from an external SSO provider.
+        sso_provider: Name of the SSO provider.
     """
     existing_user = False
     with get_session_with_context() as session:
@@ -393,7 +414,7 @@ def update_user_info_in_db(
             ).one()
 
             existing_user = True
-            update_user_id_in_sso_table(sso_signup_trial_username, user.id)
+            swap_user_id_in_sso_table(sso_signup_trial_username, user.id, sso_provider)
 
         except NoResultFound:
             user = session.exec(
@@ -417,7 +438,7 @@ def update_user_info_in_db(
         if existing_user:
             disable_trial_user(sso_signup_trial_username)
 
-# %% ../notebooks/SSO.ipynb 43
+# %% ../notebooks/SSO.ipynb 45
 def validate_sso_response(request: Request, sso_provider: str) -> str:
     """Validate the response from the SSO provider
 
@@ -490,6 +511,6 @@ def validate_sso_response(request: Request, sso_provider: str) -> str:
             session.commit()
 
     if "captn_trial" in username:
-        update_user_info_in_db(username, user_info_from_provider)  # type: ignore
+        update_user_info_in_db(username, user_info_from_provider, sso_provider)  # type: ignore
 
     return SSO_SUCCESS_MSG
