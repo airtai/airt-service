@@ -287,7 +287,7 @@ def _test_azure_batch_executor(region: str = "westeurope") -> None:
             resource="https://batch.core.windows.net/",
         )
 
-        batch_account_name = "airtbatchwesteurope"
+        batch_account_name = os.environ["AZURE_BATCH_ACCOUNT"]
         region = "westeurope"
 
         batch_pool = BatchPool.from_name(

@@ -13,10 +13,10 @@ fi
 
 if [ ! -f "${AIRFLOW_VENV}/bin/airflow" ]; then
     source "${AIRFLOW_VENV}/bin/activate"
-    pip install mysqlclient==2.1.0
-    pip install "apache-airflow==2.4.0" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.4.0/constraints-3.8.txt"
-    pip install apache-airflow-providers-amazon==5.1.0
-    pip install apache-airflow-providers-microsoft-azure==4.2.0
+    pip install mysqlclient==2.1.1
+    pip install "apache-airflow==2.5.1" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.5.1/constraints-3.9.txt"
+    pip install apache-airflow-providers-amazon==7.2.1
+    pip install apache-airflow-providers-microsoft-azure==5.2.1
     deactivate
     mkdir -p $HOME/airflow
     mkdir -p $HOME/airflow/dags

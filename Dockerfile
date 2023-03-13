@@ -51,6 +51,9 @@ COPY webservice.py dist/airt_service-*-py3-none-any.whl ws/* settings.ini alembi
 RUN pip install -e '.[dev]'
 RUN pip install airt_service-*-py3-none-any.whl
 
+RUN fastkafka docs install_deps
+RUN fastkafka docs generate webservice:fast_kafka_api_app
+
 # RUN groupadd -r airt
 # RUN useradd -r -g airt airt
 RUN touch /var/run/nginx.pid && \

@@ -15,12 +15,12 @@ import yaml
 from aiokafka.helpers import create_ssl_context
 from airt.logger import get_logger
 from asyncer import asyncify
-from fast_kafka_api.application import FastKafkaAPI
 from fastapi import FastAPI, Request, Response
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastkafka import FastKafka
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, NonNegativeInt, validator
 from sqlmodel import select
 
@@ -260,8 +260,8 @@ class ModelTrainingRequest(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -288,8 +288,8 @@ class EventData(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -316,9 +316,7 @@ class EventData(BaseModel):
 
 
 class RealtimeData(EventData):
-    make_prediction: bool = Field(
-        ..., example=True, description="trigger prediction message in prediction topic"
-    )
+    pass
 
 
 class TrainingDataStatus(BaseModel):
@@ -330,8 +328,8 @@ class TrainingDataStatus(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -357,8 +355,8 @@ class TrainingModelStatus(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -396,8 +394,8 @@ class ModelMetrics(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -433,8 +431,8 @@ class Prediction(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: str = Field(
-        default=...,
+    ModelId: Optional[str] = Field(
+        default=None,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -468,14 +466,14 @@ _no_of_records_received = 0
 def create_ws_server(
     assets_path: Path = Path("./assets"),
     start_process_for_username: Optional[str] = "infobip",
-) -> Tuple[FastAPI, FastKafkaAPI]:
-    """Create a FastKafkaAPI based web service
+) -> Tuple[FastAPI, FastKafka]:
+    """Create a FastKafka based web service
 
     Args:
         assets_path: Path to assets (should include favicon.ico)
 
     Returns:
-        A FastKafkaAPI server
+        A FastKafka server
     """
     global description
     title = "airt service"
@@ -494,6 +492,15 @@ def create_ws_server(
         redoc_url=None,
     )
     app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
+
+    asyncapi_path = Path("./asyncapi/docs").resolve()
+
+    if asyncapi_path.exists():
+        app.mount(
+            "/asyncapi",
+            StaticFiles(directory=asyncapi_path, html=True),
+            name="asyncapi",
+        )
 
     # attaches /token to routes
     app.include_router(auth_router)
@@ -526,9 +533,9 @@ def create_ws_server(
     def get_versions() -> Dict[str, str]:
         return {"airt_service": airt_service.__version__}
 
-    #     @app.get("/", include_in_schema=False)
-    #     def redirect_root():
-    #         return RedirectResponse("/docs")
+    @app.get("/", include_in_schema=False)
+    def redirect_root() -> RedirectResponse:
+        return RedirectResponse("/docs")
 
     @app.get("/docs", include_in_schema=False)
     def overridden_swagger() -> HTMLResponse:
@@ -603,8 +610,7 @@ def create_ws_server(
 
     logger.info(f"kafka_config={aio_kafka_config}")
 
-    fast_kafka_api_app = FastKafkaAPI(
-        fast_api_app=app,
+    fast_kafka_api_app = FastKafka(
         title="airt service kafka api",
         description="kafka api for airt service",
         kafka_brokers=kafka_brokers,

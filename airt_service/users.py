@@ -10,12 +10,12 @@ __all__ = ['user_router', 'ensure_super_user', 'GenerateMFARresponse', 'generate
 
 # %% ../notebooks/Users.ipynb 3
 import functools
+import random
 import re
+import secrets
+import string
 import uuid
 from typing import *
-import secrets
-import random
-import string
 
 from airt.logger import get_logger
 from airt.patching import patch
@@ -28,7 +28,6 @@ import airt_service
 import airt_service.sanitizer
 from .auth import get_current_active_user, get_user, get_valid_user
 from .cleanup import cleanup_user
-from .confluent import create_topics_for_user
 from airt_service.db.models import (
     SMS,
     SSO,
@@ -51,13 +50,13 @@ from airt_service.sms_utils import (
     validate_otp,
     verify_pin,
 )
+from .sso import initiate_sso_flow
 from airt_service.totp import (
     generate_mfa_provisioning_url,
     generate_mfa_secret,
     require_otp_if_mfa_enabled,
     validate_totp,
 )
-from .sso import initiate_sso_flow
 
 # %% ../notebooks/Users.ipynb 5
 logger = get_logger(__name__)
@@ -435,12 +434,13 @@ def _create(cls: User, user_to_create: UserCreate, session: Session) -> User:
     try:
         session.add(new_user)
         session.commit()
+        session.refresh(new_user)
     except IntegrityError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ERRORS["USERNAME_OR_EMAIL_ALREADY_EXISTS"],
         )
-    create_topics_for_user(username=new_user.username)
+    #     create_topics_for_user(username=new_user.username)
     return new_user
 
 # %% ../notebooks/Users.ipynb 42

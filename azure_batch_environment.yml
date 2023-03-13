@@ -1,17 +1,13 @@
 westeurope:
   csv_processing:
-    batch_account_name: airtbatchwesteurope
     batch_job_name: cpu-job
     batch_pool_name: cpu-pool
   predictions:
-    batch_account_name: airtbatchwesteurope
     batch_job_name: gpu-job
     batch_pool_name: gpu-pool
   preprocessing:
-    batch_account_name: airtbatchwesteurope
     batch_job_name: cpu-job
     batch_pool_name: cpu-pool
   training:
-    batch_account_name: airtbatchwesteurope
     batch_job_name: gpu-job
     batch_pool_name: gpu-pool
