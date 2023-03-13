@@ -493,6 +493,11 @@ def create_ws_server(
     )
     app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 
+    asyncapi_path = Path("./asyncapi/docs").resolve()
+    app.mount(
+        "/asyncapi", StaticFiles(directory=asyncapi_path, html=True), name="asyncapi"
+    )
+
     # attaches /token to routes
     app.include_router(auth_router)
 
@@ -524,9 +529,9 @@ def create_ws_server(
     def get_versions() -> Dict[str, str]:
         return {"airt_service": airt_service.__version__}
 
-    #     @app.get("/", include_in_schema=False)
-    #     def redirect_root():
-    #         return RedirectResponse("/docs")
+    @app.get("/", include_in_schema=False)
+    def redirect_root():
+        return RedirectResponse("/docs")
 
     @app.get("/docs", include_in_schema=False)
     def overridden_swagger() -> HTMLResponse:
