@@ -28,7 +28,6 @@ import airt_service
 import airt_service.sanitizer
 from .auth import get_current_active_user, get_user, get_valid_user
 from .cleanup import cleanup_user
-from .confluent import create_topics_for_user
 from airt_service.db.models import (
     SMS,
     SSO,
@@ -435,12 +434,13 @@ def _create(cls: User, user_to_create: UserCreate, session: Session) -> User:
     try:
         session.add(new_user)
         session.commit()
+        session.refresh(new_user)
     except IntegrityError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ERRORS["USERNAME_OR_EMAIL_ALREADY_EXISTS"],
         )
-    create_topics_for_user(username=new_user.username)
+    #     create_topics_for_user(username=new_user.username)
     return new_user
 
 # %% ../notebooks/Users.ipynb 42
