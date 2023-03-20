@@ -533,11 +533,10 @@ def _drop_table(
         # User input is validated for SQL code injection
         validate_user_inputs([table_name])
 
-        # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         query = f"DROP TABLE {if_exists_str}{table_name};"
         logger.info(f"Dropping table with query={query}")
 
-        # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query
+        # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query, python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         return connection.execute(query)
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 37
@@ -678,11 +677,10 @@ def get_count(
         if not type(connection) == Connection:
             raise ValueError(f"{type(connection)=} != Connection")
 
-        # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         query = f"SELECT count() FROM {database}.{table} where AccountId={account_id}"  # nosec B608
         logger.info(f"Getting count with query={query}")
 
-        # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query
+        # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query, python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         result = connection.execute(query)
         count: int = result.fetchall()[0][0]
         return count
