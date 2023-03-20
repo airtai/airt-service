@@ -81,6 +81,7 @@ class UserBase(SQLModel):
     phone_number: str = Field(
         sa_column=Column("phone_number", VARCHAR(15)), default=None
     )
+    sso_profile_pic_url: Optional[str] = Field(default=None)
 
 
 class User(UserBase, table=True):

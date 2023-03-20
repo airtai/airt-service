@@ -428,6 +428,7 @@ def update_user_info_in_db(
             user.first_name = user_info_from_provider["given_name"]
             user.last_name = user_info_from_provider["family_name"]
             user.email = user_info_from_provider["email"]
+            user.sso_profile_pic_url = user_info_from_provider["picture"]
 
         user.sso_signup_trial_username = sso_signup_trial_username
 

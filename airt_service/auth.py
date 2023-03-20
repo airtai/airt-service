@@ -315,15 +315,6 @@ def get_sso_trial_user(sso_signup_trial_username: str) -> User:
     """
     with get_session_with_context() as session:
         try:
-            session.exec(
-                select(User).where(User.username == sso_signup_trial_username)
-            ).one()
-        except NoResultFound:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=ERRORS["INCORRECT_USERNAME"],
-            )
-        try:
             user: User = session.exec(
                 select(User).where(
                     User.sso_signup_trial_username == sso_signup_trial_username
@@ -336,7 +327,7 @@ def get_sso_trial_user(sso_signup_trial_username: str) -> User:
             )
         return user
 
-# %% ../notebooks/Auth.ipynb 46
+# %% ../notebooks/Auth.ipynb 45
 @auth_router.get("/sso/callback")
 def sso_google_callback(request: Request) -> str:
     """SSO callback route"""
@@ -344,7 +335,7 @@ def sso_google_callback(request: Request) -> str:
     sso_provider = "google" if "googleapis" in str(request.url) else "github"
     return validate_sso_response(request=request, sso_provider=sso_provider)
 
-# %% ../notebooks/Auth.ipynb 47
+# %% ../notebooks/Auth.ipynb 46
 @auth_router.get(
     "/sso/token",
     responses={
@@ -383,7 +374,7 @@ def finish_sso_flow(authorization_url: str) -> Token:
         token = generate_token(username)
         return token
 
-# %% ../notebooks/Auth.ipynb 54
+# %% ../notebooks/Auth.ipynb 53
 get_apikey_responses = {
     400: {"model": HTTPError, "description": ERRORS["APIKEY_REVOKED"]},
     401: {"model": HTTPError, "description": ERRORS["INCORRECT_APIKEY"]},
@@ -441,7 +432,7 @@ def get(cls: APIKey, key_uuid_or_name: str, user: User, session: Session) -> API
         )
     return apikey
 
-# %% ../notebooks/Auth.ipynb 58
+# %% ../notebooks/Auth.ipynb 57
 def get_current_active_user(token: str = Depends(oauth2_scheme)) -> User:
     """Get active user details
 
@@ -484,7 +475,7 @@ def get_current_active_user(token: str = Depends(oauth2_scheme)) -> User:
             apikey = APIKey.get(key_uuid_or_name=payload["key_uuid"], user=user, session=session)  # type: ignore
     return user  # type: ignore
 
-# %% ../notebooks/Auth.ipynb 60
+# %% ../notebooks/Auth.ipynb 59
 @patch(cls_method=True)  # type: ignore
 def _create(
     cls: APIKey, apikey_to_create: APIKeyCreate, user: User, session: Session
@@ -504,7 +495,7 @@ def _create(
         session.add(apikey)
     return apikey
 
-# %% ../notebooks/Auth.ipynb 61
+# %% ../notebooks/Auth.ipynb 60
 @auth_router.post("/apikey", response_model=Token)
 @require_otp_if_mfa_enabled
 def create_apikey(
@@ -547,7 +538,7 @@ def create_apikey(
     # Sast recongnizes "bearer" string as hardcoded password but it is not. So using nosec B106.
     return Token(access_token=access_token, token_type="bearer")  # nosec B106
 
-# %% ../notebooks/Auth.ipynb 68
+# %% ../notebooks/Auth.ipynb 67
 @auth_router.get(
     "/apikey/{key_uuid_or_name}", response_model=APIKeyRead, responses=get_apikey_responses  # type: ignore
 )
@@ -561,7 +552,7 @@ def get_details_of_apikey(
     # get details from the internal db for apikey_id
     return APIKey.get(key_uuid_or_name=key_uuid_or_name, user=user, session=session)  # type: ignore
 
-# %% ../notebooks/Auth.ipynb 71
+# %% ../notebooks/Auth.ipynb 70
 def get_valid_user(user: User, session: Session, user_uuid_or_name: str) -> User:
     """Get valid user object to perform the operation
 
@@ -601,7 +592,7 @@ def get_valid_user(user: User, session: Session, user_uuid_or_name: str) -> User
 
     return _user
 
-# %% ../notebooks/Auth.ipynb 73
+# %% ../notebooks/Auth.ipynb 72
 @patch  # type: ignore
 def disable(self: APIKey, session: Session) -> APIKey:
     """Disable an APIKey
@@ -617,7 +608,7 @@ def disable(self: APIKey, session: Session) -> APIKey:
         session.add(self)
     return self
 
-# %% ../notebooks/Auth.ipynb 74
+# %% ../notebooks/Auth.ipynb 73
 @auth_router.delete(
     "/{user_uuid_or_name}/apikey/{key_uuid_or_name}", response_model=APIKeyRead, responses=get_apikey_responses  # type: ignore
 )
@@ -636,7 +627,7 @@ def delete_apikey(
 
     return apikey.disable(session)  # type: ignore
 
-# %% ../notebooks/Auth.ipynb 81
+# %% ../notebooks/Auth.ipynb 80
 @patch(cls_method=True)  # type: ignore
 def get_all(
     cls: APIKey,
@@ -663,7 +654,7 @@ def get_all(
         statement = statement.where(APIKey.disabled == False)
     return session.exec(statement.offset(offset).limit(limit)).all()
 
-# %% ../notebooks/Auth.ipynb 82
+# %% ../notebooks/Auth.ipynb 81
 @auth_router.get(
     "/{user_uuid_or_name}/apikey",
     response_model=List[APIKeyRead],
