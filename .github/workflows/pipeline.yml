@@ -104,7 +104,7 @@ jobs:
       CLICKHOUSE_PORT: ${{ secrets.CLICKHOUSE_PORT }}
       CLICKHOUSE_PROTOCOL: ${{ secrets.CLICKHOUSE_PROTOCOL }}
       CLICKHOUSE_EVENTS_TABLE: ${{ secrets.CLICKHOUSE_EVENTS_TABLE }}
-      KAFKA_HOSTNAME: redpanda
+      KAFKA_HOSTNAME: kafka
       KAFKA_PORT: 9092
     services:
       mysql:
@@ -127,14 +127,6 @@ jobs:
           KAFKA_ADVERTISED_HOST_NAME: "kafka"
         ports:
             - 9092:9092
-      # redpanda:
-      #   image: docker.redpanda.com/redpandadata/redpanda:v23.1.2
-      #   ports:
-      #   - 9092:9092
-      #   - 18081:18081
-      #   - 18082:18082
-      #   - 19092:19092
-      #   - 19644:9644
     steps:
       - uses: actions/checkout@v3
       - run: chown -R $(id -u):$(id -g) $PWD
