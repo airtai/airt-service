@@ -144,9 +144,9 @@ jobs:
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=ghubairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
       - name: Install Redpanda
-        run: curl -1sLf 'https://dl.redpanda.com/nzc4ZYQK3WRGd9sy/redpanda/cfg/setup/bash.deb.sh' | sudo -E bash && \
-              sudo apt install redpanda -y && \
-              sudo systemctl start redpanda
+        run: curl -1sLf 'https://dl.redpanda.com/nzc4ZYQK3WRGd9sy/redpanda/cfg/setup/bash.deb.sh' | bash && \
+              apt-get install redpanda -y && \
+              systemctl start redpanda
 
       - name: Run test without failing
         id: run_test
