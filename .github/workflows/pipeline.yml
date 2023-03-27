@@ -145,7 +145,7 @@ jobs:
 
       - name: Install Redpanda
         run: curl -1sLf 'https://dl.redpanda.com/nzc4ZYQK3WRGd9sy/redpanda/cfg/setup/bash.deb.sh' | bash && \
-              apt-get install redpanda -y && \
+              apt install redpanda -y && \
               systemctl start redpanda
 
       - name: Run test without failing
