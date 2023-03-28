@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['description', 'ModelType', 'ModelTrainingRequest', 'EventData', 'RealtimeData', 'TrainingDataStatus',
-           'TrainingModelStatus', 'ModelMetrics', 'Prediction', 'create_ws_server']
+           'TrainingModelStatus', 'ModelMetrics', 'Prediction', 'create_fastkafka_application', 'create_ws_server']
 
 # %% ../notebooks/API_Web_Service.ipynb 2
 from datetime import datetime
@@ -462,7 +462,159 @@ class Prediction(BaseModel):
 _total_no_of_records = 1000000
 _no_of_records_received = 0
 
-# %% ../notebooks/API_Web_Service.ipynb 9
+# %% ../notebooks/API_Web_Service.ipynb 8
+def create_fastkafka_application(
+    start_process_for_username: Optional[str] = "infobip",
+) -> FastKafka:
+    """Create a FastKafka service
+
+    Args:
+        start_process_for_username: prefix for topics used
+
+    Returns:
+        A FastKafka application
+    """
+
+    kafka_brokers = {
+        "staging": {
+            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
+            "description": "Staging Kafka broker",
+            "port": 9092,
+            "protocol": "kafka-secure",
+            "security": {"type": "plain"},
+        },
+        "production": {
+            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
+            "description": "Production Kafka broker",
+            "port": 9092,
+            "protocol": "kafka-secure",
+            "security": {"type": "plain"},
+        },
+    }
+
+    # add development bootstrap servers if needed
+    url, port = aio_kafka_config["bootstrap_servers"].split(":")
+    if (url != kafka_brokers["staging"]["url"]) and (
+        url != kafka_brokers["production"]["url"]
+    ):
+        kafka_brokers["dev"] = {
+            "url": url,
+            "description": "Development Kafka broker",
+            "port": port,
+        }
+
+    # global description
+    version = airt_service.__version__
+    contact = dict(name="airt.ai", url="https://airt.ai", email="info@airt.ai")
+
+    fastkafka_app = FastKafka(
+        title="airt service kafka api",
+        description="kafka api for airt service",
+        kafka_brokers=kafka_brokers,
+        version=version,
+        contact=contact,
+        group_id="airt-service-kafka-group",
+        auto_offset_reset="earliest",
+    )
+
+    @fastkafka_app.consumes(  # type: ignore
+        topic=f"{start_process_for_username}_start_training_data"
+    )
+    async def on_infobip_start_training_data(msg: ModelTrainingRequest):
+        logger.info(f"start training msg={msg}")
+        with get_session_with_context() as session:
+            user = session.exec(
+                select(User).where(User.username == start_process_for_username)
+            ).one()
+            start_event = TrainingStreamStatus(
+                event="start",
+                account_id=msg.AccountId,
+                application_id=msg.ApplicationId,
+                model_id=msg.ModelId,
+                model_type=msg.model_type,
+                count=0,
+                total=msg.total_no_of_records,
+                user=user,
+            )
+            session.add(start_event)
+            session.commit()
+
+    @fastkafka_app.consumes(topic=f"{start_process_for_username}_training_data")  # type: ignore
+    async def on_infobip_training_data(msg: EventData):
+        pass
+        # ToDo: this is not showing up in logs
+
+    #         logger.debug(f"msg={msg}")
+
+    #         global _total_no_of_records
+    #         global _no_of_records_received
+    #         _no_of_records_received = _no_of_records_received + 1
+
+    #         if _no_of_records_received % 100 == 0:
+    #             training_data_status = TrainingDataStatus(
+    #                 AccountId=msg.AccountId,
+    #                 no_of_records=_no_of_records_received,
+    #                 total_no_of_records=_total_no_of_records,
+    #             )
+    #             await to_infobip_training_data_status(msg=training_data_status)
+
+    @fastkafka_app.consumes(topic=f"{start_process_for_username}_realtime_data")  # type: ignore
+    async def on_infobip_realtime_data(msg: RealtimeData):
+        pass
+
+    @fastkafka_app.produces(  # type: ignore
+        topic=f"{start_process_for_username}_training_data_status"
+    )
+    async def to_infobip_training_data_status(
+        account_id: int,
+        *,
+        application_id: Optional[str] = None,
+        model_id: str,
+        no_of_records: int,
+        total_no_of_records: int,
+    ) -> TrainingDataStatus:
+        logger.debug(
+            f"on_infobip_training_data_status({account_id=}, {no_of_records=}, {total_no_of_records=})"
+        )
+        msg = TrainingDataStatus(
+            AccountId=account_id,
+            ApplicationId=application_id,
+            ModelId=model_id,
+            no_of_records=no_of_records,
+            total_no_of_records=total_no_of_records,
+        )
+        return msg
+
+    @fastkafka_app.produces(  # type: ignore
+        topic=f"{start_process_for_username}_training_model_status"
+    )
+    async def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
+        logger.debug(f"on_infobip_training_model_status(msg={msg})")
+        return TrainingModelStatus()
+
+    @fastkafka_app.produces(topic=f"{start_process_for_username}_model_metrics")  # type: ignore
+    async def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
+        logger.debug(f"on_infobip_training_model_status(msg={msg})")
+        return msg
+
+    @fastkafka_app.produces(topic=f"{start_process_for_username}_prediction")  # type: ignore
+    async def to_infobip_prediction(msg: Prediction) -> Prediction:
+        logger.debug(f"on_infobip_realtime_data_status(msg={msg})")
+        return msg
+
+    fastkafka_app.to_infobip_training_data_status = to_infobip_training_data_status
+    if start_process_for_username is not None:
+
+        @fastkafka_app.run_in_background()  # type: ignore
+        async def startup_event(fastkafka_app: FastKafka = fastkafka_app) -> None:
+            await process_training_status(
+                username=start_process_for_username,  # type: ignore
+                fast_kafka_api_app=fastkafka_app,
+            )
+
+    return fastkafka_app
+
+# %% ../notebooks/API_Web_Service.ipynb 22
 def create_ws_server(
     assets_path: Path = Path("./assets"),
     start_process_for_username: Optional[str] = "infobip",
@@ -616,7 +768,7 @@ def create_ws_server(
             "port": port,
         }
 
-    fast_kafka_api_app = FastKafka(
+    fastkafka_app = FastKafka(
         title="airt service kafka api",
         description="kafka api for airt service",
         kafka_brokers=kafka_brokers,
@@ -626,7 +778,7 @@ def create_ws_server(
         auto_offset_reset="earliest",
     )
 
-    @fast_kafka_api_app.consumes(  # type: ignore
+    @fastkafka_app.consumes(  # type: ignore
         topic=f"{start_process_for_username}_start_training_data"
     )
     async def on_infobip_start_training_data(msg: ModelTrainingRequest):
@@ -648,7 +800,7 @@ def create_ws_server(
             session.add(start_event)
             session.commit()
 
-    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_training_data")  # type: ignore
+    @fastkafka_app.consumes(topic=f"{start_process_for_username}_training_data")  # type: ignore
     async def on_infobip_training_data(msg: EventData):
         pass
         # ToDo: this is not showing up in logs
@@ -667,11 +819,11 @@ def create_ws_server(
     #             )
     #             await to_infobip_training_data_status(msg=training_data_status)
 
-    @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_realtime_data")  # type: ignore
+    @fastkafka_app.consumes(topic=f"{start_process_for_username}_realtime_data")  # type: ignore
     async def on_infobip_realtime_data(msg: RealtimeData):
         pass
 
-    @fast_kafka_api_app.produces(  # type: ignore
+    @fastkafka_app.produces(  # type: ignore
         topic=f"{start_process_for_username}_training_data_status"
     )
     async def to_infobip_training_data_status(
@@ -694,31 +846,31 @@ def create_ws_server(
         )
         return msg
 
-    @fast_kafka_api_app.produces(  # type: ignore
+    @fastkafka_app.produces(  # type: ignore
         topic=f"{start_process_for_username}_training_model_status"
     )
     async def to_infobip_training_model_status(msg: str) -> TrainingModelStatus:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return TrainingModelStatus()
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_model_metrics")  # type: ignore
+    @fastkafka_app.produces(topic=f"{start_process_for_username}_model_metrics")  # type: ignore
     async def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
         logger.debug(f"on_infobip_training_model_status(msg={msg})")
         return msg
 
-    @fast_kafka_api_app.produces(topic=f"{start_process_for_username}_prediction")  # type: ignore
+    @fastkafka_app.produces(topic=f"{start_process_for_username}_prediction")  # type: ignore
     async def to_infobip_prediction(msg: Prediction) -> Prediction:
         logger.debug(f"on_infobip_realtime_data_status(msg={msg})")
         return msg
 
-    fast_kafka_api_app.to_infobip_training_data_status = to_infobip_training_data_status
+    fastkafka_app.to_infobip_training_data_status = to_infobip_training_data_status
     if start_process_for_username is not None:
 
-        @fast_kafka_api_app.run_in_background()  # type: ignore
+        @fastkafka_app.run_in_background()  # type: ignore
         async def startup_event() -> None:
             await process_training_status(
                 username=start_process_for_username,  # type: ignore
-                fast_kafka_api_app=fast_kafka_api_app,
+                fastkafka_app=fastkafka_app,
             )
 
-    return app, fast_kafka_api_app
+    return app, fastkafka_app
