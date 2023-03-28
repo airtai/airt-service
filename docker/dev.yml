@@ -3,10 +3,7 @@ services:
     mysql:
         networks:
             - airt-service-network
-    zookeeper:
-        networks:
-            - airt-service-network
-    kafka:
+    redpanda:
         networks:
             - airt-service-network
 
