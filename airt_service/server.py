@@ -462,7 +462,39 @@ class Prediction(BaseModel):
 _total_no_of_records = 1000000
 _no_of_records_received = 0
 
-# %% ../notebooks/API_Web_Service.ipynb 9
+# %% ../notebooks/API_Web_Service.ipynb 8
+def _construct_kafka_brokers() -> Dict[str, Dict[str, Any]]:
+    url, port = aio_kafka_config["bootstrap_servers"].split(":")
+
+    kafka_brokers = {
+        "staging": {
+            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
+            "description": "Staging Kafka broker",
+            "port": 9092,
+            "protocol": "kafka-secure",
+            "security": {"type": "plain"},
+        },
+        "production": {
+            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
+            "description": "Production Kafka broker",
+            "port": 9092,
+            "protocol": "kafka-secure",
+            "security": {"type": "plain"},
+        },
+    }
+
+    if (url != kafka_brokers["staging"]["url"]) and (
+        url != kafka_brokers["production"]["url"]
+    ):
+        kafka_brokers["dev"] = {
+            "url": url,
+            "description": "Development Kafka broker",
+            "port": port,
+        }
+
+    return kafka_brokers
+
+# %% ../notebooks/API_Web_Service.ipynb 10
 def create_ws_server(
     assets_path: Path = Path("./assets"),
     start_process_for_username: Optional[str] = "infobip",
@@ -588,33 +620,13 @@ def create_ws_server(
 
     #     logger.info(f"kafka_config={aio_kafka_config}")
 
-    url, port = aio_kafka_config["bootstrap_servers"].split(":")
+    kafka_brokers = _construct_kafka_brokers()
 
-    kafka_brokers = {
-        "staging": {
-            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
-            "description": "Staging Kafka broker",
-            "port": 9092,
-            "protocol": "kafka-secure",
-            "security": {"type": "plain"},
-        },
-        "production": {
-            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
-            "description": "Production Kafka broker",
-            "port": 9092,
-            "protocol": "kafka-secure",
-            "security": {"type": "plain"},
-        },
+    exclude_keys = ["bootstrap_servers"]
+    kafka_config = {
+        k: aio_kafka_config[k]
+        for k in set(list(aio_kafka_config.keys())) - set(exclude_keys)
     }
-
-    if (url != kafka_brokers["staging"]["url"]) and (
-        url != kafka_brokers["production"]["url"]
-    ):
-        kafka_brokers["dev"] = {
-            "url": url,
-            "description": "Development Kafka broker",
-            "port": port,
-        }
 
     fast_kafka_api_app = FastKafka(
         title="airt service kafka api",
@@ -622,8 +634,9 @@ def create_ws_server(
         kafka_brokers=kafka_brokers,
         version=version,
         contact=contact,
-        group_id="airt-service-kafka-group",
-        auto_offset_reset="earliest",
+        #         group_id="airt-service-kafka-group",
+        #         auto_offset_reset="earliest",
+        **kafka_config,
     )
 
     @fast_kafka_api_app.consumes(  # type: ignore
