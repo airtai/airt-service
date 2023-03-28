@@ -26,6 +26,8 @@ class HTTPError(BaseModel):
 # %% ../notebooks/Errors.ipynb 7
 if Path("../errors.yml").is_file():
     errors_path = Path("../errors.yml")
+elif Path("../../errors.yml").is_file():
+    errors_path = Path("../../errors.yml")
 elif Path("./errors.yml").is_file():
     errors_path = Path("./errors.yml")
 elif Path("/errors.yml").is_file():

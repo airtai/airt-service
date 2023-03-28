@@ -26,6 +26,16 @@ make start_airflow
 
 fastkafka docs install_deps
 fastkafka docs generate webservice:fast_kafka_api_app
-fastkafka run --num-workers 4 webservice:fast_kafka_api_app > ./fastkafka.log & 
+
+if [[ $DOMAIN == "api.airt.ai" ]]; then
+    KAFKA_BROKER="production"
+elif [[ $DOMAIN == "api.staging.airt.ai" ]]; then
+    KAFKA_BROKER="staging"
+else
+    KAFKA_BROKER="dev"
+fi
+echo KAFKA_BROKER value set to $KAFKA_BROKER
+
+fastkafka run --num-workers 4 --kafka-broker $KAFKA_BROKER webservice:fast_kafka_api_app > ./fastkafka.log & 
 
 uvicorn webservice:app --port 6006 --host 0.0.0.0 --workers=3 --proxy-headers

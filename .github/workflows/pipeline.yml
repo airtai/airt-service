@@ -135,6 +135,9 @@ jobs:
       - run: echo "STORAGE_BUCKET_PREFIX=github-airt-service-testing-$(echo $RANDOM | md5sum | head -c 20)" >> $GITHUB_ENV
       - run: echo "AZURE_STORAGE_ACCOUNT_PREFIX=ghubairts$(echo $RANDOM | md5sum | head -c 5)" >> $GITHUB_ENV
 
+      - run: make install
+      - run: fastkafka testing install_deps
+
       - name: Run test without failing
         id: run_test
         run: make test

@@ -462,7 +462,7 @@ class Prediction(BaseModel):
 _total_no_of_records = 1000000
 _no_of_records_received = 0
 
-# %% ../notebooks/API_Web_Service.ipynb 8
+# %% ../notebooks/API_Web_Service.ipynb 9
 def create_ws_server(
     assets_path: Path = Path("./assets"),
     start_process_for_username: Optional[str] = "infobip",
@@ -586,12 +586,11 @@ def create_ws_server(
 
     app.openapi = custom_openapi  # type: ignore
 
+    #     logger.info(f"kafka_config={aio_kafka_config}")
+
+    url, port = aio_kafka_config["bootstrap_servers"].split(":")
+
     kafka_brokers = {
-        "localhost": {
-            "url": "kafka",
-            "description": "local development kafka",
-            "port": 9092,
-        },
         "staging": {
             "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
             "description": "Staging Kafka broker",
@@ -608,7 +607,14 @@ def create_ws_server(
         },
     }
 
-    logger.info(f"kafka_config={aio_kafka_config}")
+    if (url != kafka_brokers["staging"]["url"]) and (
+        url != kafka_brokers["production"]["url"]
+    ):
+        kafka_brokers["dev"] = {
+            "url": url,
+            "description": "Development Kafka broker",
+            "port": port,
+        }
 
     fast_kafka_api_app = FastKafka(
         title="airt service kafka api",
@@ -616,7 +622,8 @@ def create_ws_server(
         kafka_brokers=kafka_brokers,
         version=version,
         contact=contact,
-        **aio_kafka_config,
+        group_id="airt-service-kafka-group",
+        auto_offset_reset="earliest",
     )
 
     @fast_kafka_api_app.consumes(  # type: ignore
@@ -643,8 +650,10 @@ def create_ws_server(
 
     @fast_kafka_api_app.consumes(topic=f"{start_process_for_username}_training_data")  # type: ignore
     async def on_infobip_training_data(msg: EventData):
+        pass
         # ToDo: this is not showing up in logs
-        logger.debug(f"msg={msg}")
+
+    #         logger.debug(f"msg={msg}")
 
     #         global _total_no_of_records
     #         global _no_of_records_received
