@@ -492,16 +492,6 @@ def _construct_kafka_brokers() -> Dict[str, Dict[str, Any]]:
             "port": port,
         }
 
-    if environ["DOMAIN"] == "api.airt.ai":
-        kafka_brokers["production"] = {
-            **kafka_brokers["production"],
-            **aio_kafka_config,
-        }
-    elif environ["DOMAIN"] == "api.staging.airt.ai":
-        kafka_brokers["staging"] = {**kafka_brokers["staging"], **aio_kafka_config}
-    else:
-        kafka_brokers["dev"] = {**kafka_brokers["dev"], **aio_kafka_config}
-
     return kafka_brokers
 
 # %% ../notebooks/API_Web_Service.ipynb 10
@@ -632,14 +622,21 @@ def create_ws_server(
 
     kafka_brokers = _construct_kafka_brokers()
 
+    exclude_keys = ["bootstrap_servers"]
+    kafka_config = {
+        k: aio_kafka_config[k]
+        for k in set(list(aio_kafka_config.keys())) - set(exclude_keys)
+    }
+
     fast_kafka_api_app = FastKafka(
         title="airt service kafka api",
         description="kafka api for airt service",
         kafka_brokers=kafka_brokers,
         version=version,
         contact=contact,
-        group_id="airt-service-kafka-group",
-        auto_offset_reset="earliest",
+        #         group_id="airt-service-kafka-group",
+        #         auto_offset_reset="earliest",
+        **kafka_config,
     )
 
     @fast_kafka_api_app.consumes(  # type: ignore
