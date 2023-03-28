@@ -226,9 +226,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: 
-      - if: github.ref == 'refs/heads/main'
-        then: [unit_test, test_cloud_provider_batch_executor]
+    # needs: [unit_test, test_cloud_provider_batch_executor]
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
     steps:
