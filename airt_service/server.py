@@ -13,10 +13,12 @@ from pathlib import Path
 from typing import *
 
 import asyncio
+import numpy as np
+import pandas as pd
 import yaml
 from aiokafka.helpers import create_ssl_context
 from airt.logger import get_logger
-from asyncer import asyncify
+from asyncer import asyncify, create_task_group
 from fastapi import FastAPI, Request, Response
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
@@ -40,6 +42,7 @@ from airt_service.training_status_process import (
     process_training_status,
 )
 from .users import user_router
+from .data.clickhouse import get_all_person_ids_for_account_ids
 
 # %% ../notebooks/API_Web_Service.ipynb 4
 logger = get_logger(__name__)
@@ -574,21 +577,6 @@ def create_fastkafka_application(
     @fastkafka_app.consumes(topic=f"{start_process_for_username}_training_data")  # type: ignore
     async def on_infobip_training_data(msg: EventData):
         pass
-        # ToDo: this is not showing up in logs
-
-    #         logger.debug(f"msg={msg}")
-
-    #         global _total_no_of_records
-    #         global _no_of_records_received
-    #         _no_of_records_received = _no_of_records_received + 1
-
-    #         if _no_of_records_received % 100 == 0:
-    #             training_data_status = TrainingDataStatus(
-    #                 AccountId=msg.AccountId,
-    #                 no_of_records=_no_of_records_received,
-    #                 total_no_of_records=_total_no_of_records,
-    #             )
-    #             await to_infobip_training_data_status(msg=training_data_status)
 
     @fastkafka_app.consumes(topic=f"{start_process_for_username}_realtime_data")  # type: ignore
     async def on_infobip_realtime_data(msg: RealtimeData):
@@ -638,6 +626,7 @@ def create_fastkafka_application(
 
     @fastkafka_app.consumes(topic=f"{start_process_for_username}_start_training")  # type: ignore
     async def on_infobip_start_training(msg: TrainingModelStart):
+        # update progress
         total_no_of_steps = 5
         for i in range(total_no_of_steps + 1):
             for j in range(3):
@@ -655,22 +644,52 @@ def create_fastkafka_application(
                 )
             await asyncio.sleep(1)
 
-            await to_infobip_model_metrics(
-                ModelMetrics(
-                    AccountId=msg.AccountId,
-                    ApplicationId=msg.ApplicationId,
-                    ModelId=msg.ModelId,
-                    timestamp=datetime.now(),
-                    model_type="churn",
-                    auc=0.946,
-                    f1=0.934,
-                    precission=0.976,
-                    recall=0.987,
-                    accuracy=0.992,
-                )
+        # send metrics
+        await to_infobip_model_metrics(
+            ModelMetrics(
+                AccountId=msg.AccountId,
+                ApplicationId=msg.ApplicationId,
+                ModelId=msg.ModelId,
+                timestamp=datetime.now(),
+                model_type="churn",
+                auc=0.946,
+                f1=0.934,
+                precission=0.976,
+                recall=0.987,
+                accuracy=0.992,
             )
+        )
 
-            # todo: make predictions
+        # send predictions
+        df = get_all_person_ids_for_account_ids(msg.AccountId).reset_index()
+        df["score"] = np.random.uniform(size=df.shape[0])
+        prediction_time = datetime.now()
+
+        async with create_task_group() as tg:
+            s_to_infobip_prediction = tg.soonify(to_infobip_prediction)
+
+            def _f(
+                xs: pd.Series,
+                msg: TrainingModelStart = msg,
+                prediction_time: datetime = prediction_time,
+                s_to_infobip_prediction: Callable[
+                    [Prediction], Any
+                ] = s_to_infobip_prediction,
+            ) -> None:
+                #                 display(xs)
+                s_to_infobip_prediction(
+                    Prediction(
+                        AccountId=msg.AccountId,
+                        ApplicationId=msg.ApplicationId,
+                        ModelId=msg.ModelId,
+                        PersonId=xs["PersonId"],
+                        prediction_time=prediction_time,
+                        model_type="churn",
+                        score=xs["score"],
+                    )
+                )
+
+            df.apply(_f, axis=1)  # type: ignore
 
     @fastkafka_app.produces(  # type: ignore
         topic=f"{start_process_for_username}_training_model_status"
@@ -687,7 +706,7 @@ def create_fastkafka_application(
 
     @fastkafka_app.consumes(topic=f"{start_process_for_username}_model_metrics")  # type: ignore
     async def on_infobip_model_metrics(msg: ModelMetrics):
-        return msg
+        pass
 
     @fastkafka_app.produces(topic=f"{start_process_for_username}_prediction")  # type: ignore
     async def to_infobip_prediction(msg: Prediction) -> Prediction:
@@ -697,6 +716,7 @@ def create_fastkafka_application(
     fastkafka_app.to_infobip_training_data_status = to_infobip_training_data_status
     fastkafka_app.to_infobip_start_training = to_infobip_start_training
     fastkafka_app.to_infobip_training_model_status = to_infobip_training_model_status
+    fastkafka_app.to_infobip_prediction = to_infobip_prediction
 
     if start_process_for_username is not None:
 
@@ -711,7 +731,7 @@ def create_fastkafka_application(
 
     return fastkafka_app
 
-# %% ../notebooks/API_Web_Service.ipynb 15
+# %% ../notebooks/API_Web_Service.ipynb 16
 def create_ws_server(
     assets_path: Path = Path("./assets"),
     start_process_for_username: Optional[str] = "infobip",
