@@ -183,6 +183,7 @@ def get_new_update_table(
     drop_columns = ["event", "id", "uuid", "prev_count", "created", "curr_check_on"]
     df = df.drop(columns=drop_columns)
     df = df.rename(columns=dict(curr_count="count", action="event"))
+    df = df.astype({"count": "int"})
     df.index = df.index.rename("account_id")
 
     df = df.replace({np.nan: None})
@@ -195,6 +196,26 @@ async def update_kafka(update_table: pd.DataFrame, kafka_app: FastKafka) -> None
         to_infobip_training_data_status = task_group.soonify(
             kafka_app.to_infobip_training_data_status
         )
+        to_infobip_start_training = task_group.soonify(
+            kafka_app.to_infobip_start_training
+        )
+        # start training when necessary
+        ready_df = update_table[
+            (update_table["event"] == "end")
+            | (update_table["count"] >= update_table["total"])
+        ]
+        rename_dict = dict(count="no_of_records")
+        drop_columns = ["model_type", "user_id", "event", "total"]
+        msgs = (
+            ready_df.drop(columns=drop_columns)
+            .rename(columns=rename_dict)
+            .reset_index()
+            .to_dict(orient="records")
+        )
+        for kwargs in msgs:
+            to_infobip_start_training(**kwargs)  # type: ignore
+
+        # send status
         drop_columns = ["model_type", "user_id", "event"]
         rename_dict = dict(count="no_of_records", total="total_no_of_records")
         msgs = (
@@ -222,14 +243,16 @@ async def process_training_status(
     Args:
         username: username of user to track training data uploads
     """
-    async_get_user = asyncify(get_user)
-    async_get_recent_events_for_user = asyncify(get_recent_events_for_user)
-    async_get_count_from_training_data_ch_table = asyncify(
-        get_count_from_training_data_ch_table
-    )
-    async_update_mysql = asyncify(update_mysql)
 
     while should_exit_f is None or not should_exit_f():
+        # moved here to allow for dynamic mocking up underlying functions
+        async_get_user = asyncify(get_user)
+        async_get_recent_events_for_user = asyncify(get_recent_events_for_user)
+        async_get_count_from_training_data_ch_table = asyncify(
+            get_count_from_training_data_ch_table
+        )
+        async_update_mysql = asyncify(update_mysql)
+
         #         logger.info(f"Starting the process loop")
         try:
             user = await async_get_user(username)

@@ -249,7 +249,7 @@ class TrainingStreamStatus(SQLModel, table=True):
     )
     account_id: int
     application_id: Optional[str] = Field(default=None, nullable=True)
-    model_id: str
+    model_id: Optional[str] = Field(default=None, nullable=True)
     model_type: str
     event: TrainingEvent = Field(sa_column=Column(Enum(TrainingEvent)), nullable=False)
     count: int
