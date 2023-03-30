@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['create_db_uri_for_clickhouse_datablob', 'get_clickhouse_connection', 'get_max_timestamp',
            'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push', 'get_count',
-           'get_count_for_account_ids', 'get_all_person_ids_for_account_id']
+           'get_count_for_account_ids', 'get_all_person_ids_for_account_ids']
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 3
 import json
@@ -735,7 +735,7 @@ def get_count_for_account_ids(
     return df.set_index("AccountId")
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 46
-def _get_all_person_ids_for_account_id(
+def _get_all_person_ids_for_account_ids(
     account_ids: Union[Union[int, str], List[Union[int, str]]],
     username: str,
     password: str,
@@ -785,7 +785,7 @@ def _get_all_person_ids_for_account_id(
     return df.set_index("AccountId")
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 48
-def get_all_person_ids_for_account_id(
+def get_all_person_ids_for_account_ids(
     account_ids: Union[Union[int, str], List[Union[int, str]]],
 ) -> pd.DataFrame:
     """
@@ -797,7 +797,7 @@ def get_all_person_ids_for_account_id(
     Returns:
         A pandas dataframe which contains all person ids
     """
-    return _get_all_person_ids_for_account_id(
+    return _get_all_person_ids_for_account_ids(
         account_ids=account_ids,
         username=environ["KAFKA_CH_USERNAME"],
         password=environ["KAFKA_CH_PASSWORD"],
