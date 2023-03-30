@@ -6,13 +6,13 @@ __all__ = ['description', 'ModelType', 'ModelTrainingRequest', 'EventData', 'Rea
            'create_ws_server']
 
 # %% ../notebooks/API_Web_Service.ipynb 2
+import asyncio
 from datetime import datetime
 from enum import Enum
 from os import environ
 from pathlib import Path
 from typing import *
 
-import asyncio
 import numpy as np
 import pandas as pd
 import yaml
@@ -31,6 +31,7 @@ from sqlmodel import select
 import airt_service
 from .auth import auth_router
 from .confluent import aio_kafka_config
+from .data.clickhouse import get_all_person_ids_for_account_ids
 from .data.datablob import datablob_router
 from .data.datasource import datasource_router
 from .db.models import User, get_session_with_context
@@ -42,7 +43,6 @@ from airt_service.training_status_process import (
     process_training_status,
 )
 from .users import user_router
-from .data.clickhouse import get_all_person_ids_for_account_ids
 
 # %% ../notebooks/API_Web_Service.ipynb 4
 logger = get_logger(__name__)
@@ -538,6 +538,12 @@ def create_fastkafka_application(
 
     kafka_brokers = _construct_kafka_brokers()
 
+    exclude_keys = ["bootstrap_servers"]
+    kafka_config = {
+        k: aio_kafka_config[k]
+        for k in set(list(aio_kafka_config.keys())) - set(exclude_keys)
+    }
+
     # global description
     version = airt_service.__version__
     contact = dict(name="airt.ai", url="https://airt.ai", email="info@airt.ai")
@@ -548,8 +554,9 @@ def create_fastkafka_application(
         kafka_brokers=kafka_brokers,
         version=version,
         contact=contact,
-        group_id="airt-service-kafka-group",
-        auto_offset_reset="earliest",
+        #         group_id="airt-service-kafka-group",
+        #         auto_offset_reset="earliest",
+        **kafka_config,
     )
 
     @fastkafka_app.consumes(  # type: ignore
