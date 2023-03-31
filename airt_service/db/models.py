@@ -81,6 +81,7 @@ class UserBase(SQLModel):
     phone_number: str = Field(
         sa_column=Column("phone_number", VARCHAR(15)), default=None
     )
+    sso_profile_pic_url: Optional[str] = Field(default=None)
 
 
 class User(UserBase, table=True):
@@ -108,6 +109,7 @@ class User(UserBase, table=True):
     models: List["Model"] = Relationship(back_populates="user")
     ssos: List["SSO"] = Relationship(back_populates="user")
     smss: List["SMS"] = Relationship(back_populates="user")
+    sso_signup_trial_username: Optional[str] = Field(default=None)
 
     def __repr__(self: "User") -> str:
         """Return custom string representation of the User class objects"""
@@ -247,7 +249,7 @@ class TrainingStreamStatus(SQLModel, table=True):
     )
     account_id: int
     application_id: Optional[str] = Field(default=None, nullable=True)
-    model_id: str
+    model_id: Optional[str] = Field(default=None, nullable=True)
     model_type: str
     event: TrainingEvent = Field(sa_column=Column(Enum(TrainingEvent)), nullable=False)
     count: int

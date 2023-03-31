@@ -383,23 +383,29 @@ def get_valid_otp(mfa_url: str) -> str:
 
 # %% ../notebooks/Integration_Test.ipynb 16
 def test_activate_mfa(
-    base_url: str, mfa_url: str, headers: Dict[str, str]
+    base_url: str, mfa_url: str, headers: Dict[str, str], retry_limit: int
 ) -> Dict[str, Any]:
     """Activate mfa
 
     Args:
-        base_url: Base url
+        base_url: Host server base url
         mfa_url: mfa provisioning url
-        headers: Headers dict with authorization header
+        headers: Headers dictionary with authorization header
+        retry_limit: The number of times to retry the API call if OTP validation fails
 
     Returns:
         The provisioning uri generated from the secret
     """
-    r = httpx.post(
-        f"{base_url}/user/mfa/activate",
-        json=dict(user_otp=get_valid_otp(mfa_url)),
-        headers=headers,
-    )
+    for i in range(retry_limit):
+        r = httpx.post(
+            f"{base_url}/user/mfa/activate",
+            json=dict(user_otp=get_valid_otp(mfa_url)),
+            headers=headers,
+        )
+        if not r.is_error:
+            break
+        time.sleep(2)
+
     assert not r.is_error, f"{r.text=} {r.status_code=}"  # nosec B101
     sanitized_print("Activate mfa")
     activated_mfa: Dict[str, Any] = r.json()
@@ -470,6 +476,7 @@ def test_auth_with_otp(
 
         if not r.is_error:
             break
+        time.sleep(2)
 
     assert not r.is_error, r.text  # nosec B101
     token: str = r.json()["access_token"]
@@ -520,7 +527,9 @@ def integration_tests(base_url: str = "http://127.0.0.1:6006") -> None:
     # enable mfa for the user
     mfa_url = test_generate_mfa_url(base_url, headers)
     # activate mfa
-    test_activate_mfa(base_url, mfa_url["mfa_url"], headers)
+    test_activate_mfa(
+        base_url=base_url, mfa_url=mfa_url["mfa_url"], headers=headers, retry_limit=3
+    )
 
     # Get token by passing password and otp as json encoded dict
     token = test_auth_with_otp(

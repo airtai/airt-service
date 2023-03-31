@@ -1,7 +1,7 @@
 SRC = $(wildcard notebooks/*.ipynb)
 
 .PHONY: all
-all: clean dist install .install_pre_commit_hooks alembic_migrate webservice.py site
+all: clean dist install .install_pre_commit_hooks alembic_migrate webservice.py # site
 
 airt_service: $(SRC)
 	nbdev_export

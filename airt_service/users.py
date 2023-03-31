@@ -969,7 +969,7 @@ def create_trial_user(subscription_type: str, session: Session) -> User:
     """Create a trial user for the given subscription_type"""
 
     username = "".join(
-        random.choice(string.ascii_lowercase) for _ in range(10)  # nosec B311
+        random.choice(string.ascii_lowercase) for _ in range(50)  # nosec B311
     )
 
     user_to_create = UserCreate(
@@ -983,7 +983,7 @@ def create_trial_user(subscription_type: str, session: Session) -> User:
     return User._create(user_to_create, session)  # type: ignore
 
 # %% ../notebooks/Users.ipynb 93
-@user_router.get("/sso_signup")
+@user_router.get("/sso/signup")
 def sso_signup(subscription_type: str, sso_provider: str) -> str:
     """Method to create new user with SSO"""
     with get_session_with_context() as session:
