@@ -20,9 +20,11 @@ create_initial_users
 
 make start_airflow
 
-# set WORKERS (math 1'*'(getconf _NPROCESSORS_ONLN))
-# ToDo: Use the following line once the topic processing loop commands are added
-# uvicorn webservice:app --port 6006 --host 0.0.0.0 --workers=3 --proxy-headers &
+if [[ -z "${NUM_WORKERS}" ]]; then
+  NUM_WORKERS=3
+fi
+
+echo NUM_WORKERS set to $NUM_WORKERS
 
 fastkafka docs install_deps
 fastkafka docs generate webservice:fast_kafka_api_app
@@ -36,6 +38,6 @@ else
 fi
 echo KAFKA_BROKER value set to $KAFKA_BROKER
 
-fastkafka run --num-workers 4 --kafka-broker $KAFKA_BROKER webservice:fast_kafka_api_app > ./fastkafka.log & 
+fastkafka run --num-workers $NUM_WORKERS --kafka-broker $KAFKA_BROKER webservice:fast_kafka_api_app > ./fastkafka.log & 
 
-uvicorn webservice:app --port 6006 --host 0.0.0.0 --workers=3 --proxy-headers
+uvicorn webservice:app --port 6006 --host 0.0.0.0 --workers=$NUM_WORKERS --proxy-headers
