@@ -8,6 +8,10 @@ on:
 jobs:
   deploy_asyncapi_docs:
     runs-on: ubuntu-22.04
+    env:
+      ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
+      KAFKA_HOSTNAME: kafka
+      KAFKA_PORT: 9092
     defaults:
       run:
         shell: bash
