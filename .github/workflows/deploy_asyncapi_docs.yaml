@@ -25,15 +25,13 @@ jobs:
     #   - run: sed 's/\"//g' .env >> $GITHUB_ENV
       - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
-      - name: Build nbdev docs
+      - name: Build asyncapi docs using FastKafka
         shell: bash
         run: |
-          nbdev_docs --n_workers 1
-      - name: Build mkdocs docs
-        shell: bash
-        run: nbdev_mkdocs docs
+            fastkafka docs install_deps
+            fastkafka docs generate webservice:fast_kafka_api_app
       - name: Enable GitHub Pages
-        shell: python
+        shell: python3
         run: |
           import ghapi.core,nbdev.config,sys
           msg="Please ensure GitHub Pages can publish from the root of the `gh-pages` branch per these instructions - https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-from-a-branch"
@@ -47,7 +45,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           force_orphan: true
-          publish_dir: ./mkdocs/site
+          publish_dir: ./asyncapi/docs
           # The following lines assign commit authorship to the official GH-Actions bot for deploys to `gh-pages` branch.
           # You can swap them out with your own user credentials.
           user_name: github-actions[bot]
