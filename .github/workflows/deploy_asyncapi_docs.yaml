@@ -2,7 +2,7 @@ name: Deploy asyncapi docs generated using FastKafka to GitHub Pages
 
 on:
   push:
-    branches: ["main", "master", "37-move-asyncapi-docs-to-github-pages"]
+    branches: ["dev", "37-move-asyncapi-docs-to-github-pages"]
   workflow_dispatch:
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
       # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
       - run: chown -R $(id -u):$(id -g) $PWD
 
-      - run: sed 's/\"//g' .env >> $GITHUB_ENV
+    #   - run: sed 's/\"//g' .env >> $GITHUB_ENV
       - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
       - run: make webservice.py
       - name: Build nbdev docs
