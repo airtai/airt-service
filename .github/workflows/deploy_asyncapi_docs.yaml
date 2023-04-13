@@ -1,0 +1,41 @@
+name: Deploy asyncapi docs generated using FastKafka to GitHub Pages
+
+on:
+  push:
+    branches: ["dev"]
+  workflow_dispatch:
+
+jobs:
+  deploy_asyncapi_docs:
+    runs-on: ubuntu-22.04
+    env:
+      ACCESS_REP_TOKEN: ${{ secrets.ACCESS_REP_TOKEN }}
+      KAFKA_HOSTNAME: kafka
+      KAFKA_PORT: 9092
+    defaults:
+      run:
+        shell: bash
+    container:
+      image: ghcr.io/airtai/airt-service-dev:latest
+    steps:
+      - uses: actions/checkout@v3
+      # This is to fix GIT not liking owner of the checkout dir - https://github.com/actions/runner/issues/2033#issuecomment-1204205989
+      - run: chown -R $(id -u):$(id -g) $PWD
+
+      - run: echo "PATH=$PATH:/github/home/.local/bin" >> $GITHUB_ENV
+      - run: make webservice.py
+      - name: Build asyncapi docs using FastKafka
+        shell: bash
+        run: |
+            fastkafka docs install_deps
+            fastkafka docs generate webservice:fast_kafka_api_app
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force_orphan: true
+          publish_dir: ./asyncapi/docs
+          # The following lines assign commit authorship to the official GH-Actions bot for deploys to `gh-pages` branch.
+          # You can swap them out with your own user credentials.
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
