@@ -578,6 +578,7 @@ def create_fastkafka_application(
     )
     async def on_infobip_start_training_data(msg: ModelTrainingRequest):
         logger.info(f"start training msg={msg}")
+        print(f"on_infobip_start_training_data({msg=})")
         with get_session_with_context() as session:
             user = session.exec(
                 select(User).where(User.username == start_process_for_username)
@@ -617,6 +618,10 @@ def create_fastkafka_application(
         logger.debug(
             f"on_infobip_training_data_status({account_id=}, {no_of_records=}, {total_no_of_records=})"
         )
+        print(
+            f"on_infobip_training_data_status({account_id=}, {no_of_records=}, {total_no_of_records=})"
+        )
+
         msg = TrainingDataStatus(
             AccountId=account_id,
             ApplicationId=application_id,
@@ -636,17 +641,21 @@ def create_fastkafka_application(
         model_id: str,
         no_of_records: int,
     ) -> TrainingModelStart:
+        print(
+            f"to_infobip_start_training({account_id=}, {application_id=}, {model_id=}, {no_of_records=})"
+        )
         msg = TrainingModelStart(
             AccountId=account_id,
             ApplicationId=application_id,
             ModelId=model_id,
             no_of_records=no_of_records,
         )
-        print(f"to_infobip_start_training({msg})")
+        #         print(f"to_infobip_start_training({msg})")
         return msg
 
     @fastkafka_app.consumes(topic=f"{start_process_for_username}_start_training")  # type: ignore
     async def on_infobip_start_training(msg: TrainingModelStart):
+        print(f"on_infobip_start_training({msg=})")
         # update progress
         total_no_of_steps = 5
         for i in range(total_no_of_steps + 1):
@@ -718,16 +727,14 @@ def create_fastkafka_application(
     async def to_infobip_training_model_status(
         msg: TrainingModelStatus,
     ) -> TrainingModelStatus:
-        logger.debug(f"on_infobip_training_model_status(msg={msg})")
+        logger.debug(f"to_infobip_training_model_status(msg={msg})")
+        print(f"to_infobip_training_model_status(msg={msg})")
         return msg
 
     @fastkafka_app.produces(topic=f"{start_process_for_username}_model_metrics")  # type: ignore
     async def to_infobip_model_metrics(msg: ModelMetrics) -> ModelMetrics:
+        print(f"to_infobip_model_metrics(msg={msg})")
         return msg
-
-    @fastkafka_app.consumes(topic=f"{start_process_for_username}_model_metrics")  # type: ignore
-    async def on_infobip_model_metrics(msg: ModelMetrics):
-        pass
 
     @fastkafka_app.produces(topic=f"{start_process_for_username}_prediction")  # type: ignore
     async def to_infobip_prediction(msg: Prediction) -> Prediction:
