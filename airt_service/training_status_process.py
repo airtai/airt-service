@@ -2,7 +2,8 @@
 
 # %% auto 0
 __all__ = ['update_mysql', 'create_sqlalchemy_engine', 'get_recent_events_for_user', 'get_count_from_training_data_ch_table',
-           'get_user', 'get_new_update_table', 'update_kafka', 'process_training_status']
+           'get_user', 'get_new_update_table', 'update_kafka', 'process_training_status', 'ModelType',
+           'ModelTrainingRequest', 'process_start_training_data']
 
 # %% ../notebooks/Training_Status_Process.ipynb 2
 import asyncio
@@ -10,6 +11,7 @@ import random
 import traceback
 from contextlib import contextmanager
 from datetime import datetime, timedelta
+from enum import Enum
 from os import environ
 from time import sleep
 from typing import *
@@ -22,6 +24,7 @@ from asyncer import asyncify, create_task_group
 from fastapi import FastAPI
 from fastcore.meta import delegates
 from fastkafka import FastKafka
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, NonNegativeInt, validator
 from sqlalchemy import create_engine as sqlalchemy_create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import NoResultFound
@@ -275,6 +278,94 @@ async def process_training_status(
         except Exception as e:
             logger.info(
                 f"Error in process_training_status - {e}, {traceback.format_exc()}"
+            )
+
+        await asyncio.sleep(random.randint(sleep_min, sleep_max))  # nosec B311
+
+# %% ../notebooks/Training_Status_Process.ipynb 27
+class ModelType(str, Enum):
+    churn = "churn"
+    propensity_to_buy = "propensity_to_buy"
+
+
+class ModelTrainingRequest(BaseModel):
+    AccountId: NonNegativeInt = Field(
+        ..., example=202020, description="ID of an account"
+    )
+    ApplicationId: Optional[str] = Field(
+        default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: Optional[str] = Field(
+        default=None,
+        example="ChurnModelForDrivers",
+        description="User supplied ID of the model trained",
+    )
+    model_type: ModelType = Field(
+        ..., description="Model type, only 'churn' is supported right now"
+    )
+    total_no_of_records: NonNegativeInt = Field(
+        ...,
+        example=1_000_000,
+        description="approximate total number of records (rows) to be ingested",
+    )
+
+# %% ../notebooks/Training_Status_Process.ipynb 28
+async def process_start_training_data(
+    msg: ModelTrainingRequest,
+    fastkafka_app: FastKafka,
+    *,
+    sleep_min: int = 5,
+    sleep_max: int = 20,
+    end_timedelta: int = 120,
+) -> None:
+    """
+    An infinite loop to keep track of training_data uploads from user
+
+    Args:
+        username: username of user to track training data uploads
+    """
+
+    prev_count = 0
+    prev_check_on = datetime.utcnow()
+    async_get_count_from_training_data_ch_table = asyncify(
+        get_count_from_training_data_ch_table
+    )
+
+    while True:
+        try:
+            ch_df = await async_get_count_from_training_data_ch_table(
+                account_ids=[msg.AccountId]
+            )
+            curr_count = ch_df.loc[msg.AccountId].curr_count
+            curr_check_on = ch_df.loc[msg.AccountId].curr_check_on
+            #             logger.info(f"process_start_training_data - {curr_count=}, {prev_count=}, {curr_check_on - prev_check_on}")
+
+            if curr_count > prev_count:
+                await fastkafka_app.to_infobip_training_data_status(
+                    account_id=msg.AccountId,
+                    application_id=msg.ApplicationId,
+                    model_id=msg.ModelId,
+                    no_of_records=curr_count,
+                    total_no_of_records=msg.total_no_of_records,
+                )
+                prev_count = curr_count
+                prev_check_on = curr_check_on
+            elif (curr_check_on - prev_check_on) > timedelta(
+                seconds=end_timedelta
+            ) or curr_count >= msg.total_no_of_records:
+                await fastkafka_app.to_infobip_start_training(
+                    account_id=msg.AccountId,
+                    application_id=msg.ApplicationId,
+                    model_id=msg.ModelId,
+                    no_of_records=curr_count,
+                )
+                break
+
+        except Exception as e:
+            logger.info(
+                f"Error in process_start_training_data - {e}, {traceback.format_exc()}"
             )
 
         await asyncio.sleep(random.randint(sleep_min, sleep_max))  # nosec B311
