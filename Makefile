@@ -60,7 +60,7 @@ test: install mypy alembic_migrate empty_bucket
 	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
 	nbdev_test --timing --do_print --path notebooks/API_Web_Service.ipynb
 	nbdev_test --timing --do_print --path notebooks/Kafka_Service.ipynb
-	nbdev_test --timing --do_print --pause 1 --skip_file_re "^([_.]|DB_Models|API_Web_Service|Kafka_Service)" 
+	nbdev_test --n_workers 1 --timing --do_print --pause 1 --skip_file_re "^([_.]|DB_Models|API_Web_Service|Kafka_Service)" 
 
 release: pypi
 	nbdev_bump_version
