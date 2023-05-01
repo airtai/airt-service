@@ -36,8 +36,6 @@ from .db.models import User, get_session_with_context
 from .model.prediction import model_prediction_router
 from .model.train import model_train_router
 from .sanitizer import sanitized_print
-
-# from airt_service.training_status_process import process_start_training_data, ModelTrainingRequest, ModelType
 from .users import user_router
 from airt_service.kafka_server import (
     create_fastkafka_application,
