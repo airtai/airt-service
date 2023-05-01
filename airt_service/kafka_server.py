@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['get_count_from_training_data_ch_table', 'json_datetime_sec_encoder', 'ModelType', 'ModelTrainingRequest', 'EventData',
-           'RealtimeData', 'TrainingDataStatus', 'TrainingModelStart', 'Tracker', 'add_process_start_training',
+           'RealtimeData', 'TrainingDataStatus', 'TrainingModelStart', 'Tracker', 'add_process_start_training_data',
            'TrainingModelStatus', 'ModelMetrics', 'add_process_training_model_start', 'Prediction', 'add_predictions',
            'create_fastkafka_application']
 
@@ -206,7 +206,7 @@ class Tracker:
             return False
 
 # %% ../notebooks/Kafka_Service.ipynb 27
-def add_process_start_training(
+def add_process_start_training_data(
     app: FastKafka,
     *,
     username: str = "infobip",
@@ -236,9 +236,9 @@ def add_process_start_training(
     app.to_training_data_status = to_training_data_status
     app.to_training_model_start = to_training_model_start
 
-    @app.consumes(topic=f"{username}_start_training")  # type: ignore
-    async def on_start_training(msg: ModelTrainingRequest, app=app) -> None:
-        print(f"on_start_training({msg}) starting...")
+    @app.consumes(topic=f"{username}_start_training_data")  # type: ignore
+    async def on_start_training_data(msg: ModelTrainingRequest, app=app) -> None:
+        print(f"on_start_training_data({msg}) starting...")
 
         account_ids = [msg.AccountId]
         total_no_of_records = msg.total_no_of_records
@@ -266,7 +266,7 @@ def add_process_start_training(
         )
         await app.to_training_model_start(training_model_start)
 
-        print(f"on_start_training({msg}) finished.")
+        print(f"on_start_training_data({msg}) finished.")
 
 # %% ../notebooks/Kafka_Service.ipynb 29
 class TrainingModelStatus(BaseModel):
@@ -564,7 +564,7 @@ def create_fastkafka_application(
         **kafka_config,
     )
 
-    add_process_start_training(app)
+    add_process_start_training_data(app)
     add_process_training_model_start(app)
     add_predictions(app)
 
