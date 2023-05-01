@@ -59,6 +59,11 @@ check: mypy check_secrets detect_secrets sast dast trivy_scan_repo
 test: install mypy alembic_migrate empty_bucket
 	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
 	nbdev_test --timing --do_print --path notebooks/API_Web_Service.ipynb
+	nbdev_test --timing --do_print --path notebooks/Kafka_Service.ipynb
+
+test_one_by_one: install mypy alembic_migrate empty_bucket
+	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
+	nbdev_test --timing --do_print --path notebooks/API_Web_Service.ipynb
 	nbdev_test --timing --do_print --path notebooks/AWS_Batch_Job_Context.ipynb
 	nbdev_test --timing --do_print --path notebooks/AWS_Batch_Job_Utils.ipynb
 	nbdev_test --timing --do_print --path notebooks/AWS_Utils.ipynb
@@ -101,11 +106,13 @@ test: install mypy alembic_migrate empty_bucket
 	nbdev_test --timing --do_print --path notebooks/TOTP.ipynb
 	nbdev_test --timing --do_print --path notebooks/Users.ipynb
 	nbdev_test --timing --do_print --path notebooks/Uvicorn_Helpers.ipynb
-	nbdev_test --timing --do_print --path notebooks/index.ipynb    
-nothing:    
+	nbdev_test --timing --do_print --path notebooks/index.ipynb  
+    
+test_old:
+	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
 	nbdev_test --timing --do_print --path notebooks/API_Web_Service.ipynb
 	nbdev_test --timing --do_print --path notebooks/Kafka_Service.ipynb
-	nbdev_test --n_workers 1 --timing --do_print --pause 1 --skip_file_re "^([_.]|DB_Models|API_Web_Service|Kafka_Service)" 
+	nbdev_test --timing --do_print --pause 1 --skip_file_re "^([_.]|DB_Models|API_Web_Service|Kafka_Service)" 
 
 release: pypi
 	nbdev_bump_version
