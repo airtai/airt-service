@@ -489,6 +489,7 @@ def add_predictions(
 
         rng = np.random.default_rng(42)
 
+        print(f"Sending predictions for ({AccountId=}, {ApplicationId=}, {ModelId})")
         for PersonId in person_ids:
             prediction = Prediction(
                 AccountId=AccountId,
