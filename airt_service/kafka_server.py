@@ -246,17 +246,23 @@ def add_process_start_training_data(
         tracker = Tracker(limit=total_no_of_records, timeout=stop_on_no_change_interval)
 
         while not tracker.finished():
-            curr_count, _ = get_count_from_training_data_ch_table(
+            df = get_count_from_training_data_ch_table(
                 account_ids=account_ids  # type: ignore
-            ).iloc[0, :]
+            )
+            if df.shape[0] == 1:
+                curr_count, _ = df.iloc[0, :]
 
-            print(f"{curr_count=}")
+                print(f"{curr_count=}")
 
-            if tracker.update(curr_count):
-                training_data_status = TrainingDataStatus(
-                    no_of_records=curr_count, **msg.dict()
+                if tracker.update(curr_count):
+                    training_data_status = TrainingDataStatus(
+                        no_of_records=curr_count, **msg.dict()
+                    )
+                    await app.to_training_data_status(training_data_status)
+            else:
+                logger.info(
+                    f"on_start_training_data(): no data yet received in clickhouse for {msg=}."
                 )
-                await app.to_training_data_status(training_data_status)
 
             await asyncio.sleep(sleep_interval)
 
