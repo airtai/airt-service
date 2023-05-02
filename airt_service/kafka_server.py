@@ -489,7 +489,10 @@ def add_predictions(
 
         rng = np.random.default_rng(42)
 
-        print(f"Sending predictions for ({AccountId=}, {ApplicationId=}, {ModelId})")
+        print(
+            f"Sending predictions for ({AccountId=}, {ApplicationId=}, {ModelId}) started."
+        )
+        t0 = datetime.now()
         for PersonId in person_ids:
             prediction = Prediction(
                 AccountId=AccountId,
@@ -501,6 +504,9 @@ def add_predictions(
                 score=rng.uniform(),
             )
             await to_prediction(prediction)
+        print(
+            f"Sending predictions for ({AccountId=}, {ApplicationId=}, {ModelId}) finished in {datetime.now()-t0}."
+        )
 
         print(f"on_model_metrics({msg}) finished.")
 
