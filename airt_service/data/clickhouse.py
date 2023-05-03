@@ -691,7 +691,7 @@ def get_count(
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 46
 def fillna(s: Optional[Any]) -> str:
     quote = "'"
-    return f"{quote + 'None' + quote if s is None else quote + str(s) + quote}"
+    return f"{quote + '' + quote if (s is None) else quote + str(s) + quote}"
 
 
 def _get_count_for_account_id(
