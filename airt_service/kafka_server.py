@@ -26,13 +26,14 @@ from airt_service.data.clickhouse import (
 )
 
 # %% ../notebooks/Kafka_Service.ipynb 3
+supress_timestamps(False)
 logger = get_logger(__name__)
 
-# %% ../notebooks/Kafka_Service.ipynb 11
+# %% ../notebooks/Kafka_Service.ipynb 12
 def json_datetime_sec_encoder(dt: datetime) -> str:
     return dt.strftime("%Y-%m-%dT%H:%M:%S")
 
-# %% ../notebooks/Kafka_Service.ipynb 13
+# %% ../notebooks/Kafka_Service.ipynb 14
 class ModelType(str, Enum):
     churn = "churn"
     propensity_to_buy = "propensity_to_buy"
@@ -61,7 +62,7 @@ class ModelTrainingRequest(BaseModel):
         description="approximate total number of records (rows) to be ingested",
     )
 
-# %% ../notebooks/Kafka_Service.ipynb 15
+# %% ../notebooks/Kafka_Service.ipynb 16
 class EventData(BaseModel):
     """
     A sequence of events for a fixed account_id
@@ -105,7 +106,7 @@ class EventData(BaseModel):
 class RealtimeData(EventData):
     pass
 
-# %% ../notebooks/Kafka_Service.ipynb 17
+# %% ../notebooks/Kafka_Service.ipynb 18
 class TrainingDataStatus(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
@@ -132,7 +133,7 @@ class TrainingDataStatus(BaseModel):
         description="total number of records (rows) to be ingested",
     )
 
-# %% ../notebooks/Kafka_Service.ipynb 19
+# %% ../notebooks/Kafka_Service.ipynb 20
 class TrainingModelStart(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
@@ -156,7 +157,7 @@ class TrainingModelStart(BaseModel):
         description="number of records (rows) in the DB used for training",
     )
 
-# %% ../notebooks/Kafka_Service.ipynb 21
+# %% ../notebooks/Kafka_Service.ipynb 22
 class Tracker:
     def __init__(self, *, limit: int, timeout: int):
         self._limit = limit
@@ -180,7 +181,7 @@ class Tracker:
         else:
             return False
 
-# %% ../notebooks/Kafka_Service.ipynb 24
+# %% ../notebooks/Kafka_Service.ipynb 25
 def add_process_start_training_data(
     app: FastKafka,
     *,
@@ -245,7 +246,7 @@ def add_process_start_training_data(
 
         print(f"on_start_training_data({msg}) finished.")
 
-# %% ../notebooks/Kafka_Service.ipynb 26
+# %% ../notebooks/Kafka_Service.ipynb 27
 class TrainingModelStatus(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
@@ -277,7 +278,7 @@ class TrainingModelStatus(BaseModel):
         description="total number of steps for training the model",
     )
 
-# %% ../notebooks/Kafka_Service.ipynb 28
+# %% ../notebooks/Kafka_Service.ipynb 29
 class ModelMetrics(BaseModel):
     """The standard metrics for classification models.
 
@@ -326,7 +327,7 @@ class ModelMetrics(BaseModel):
             datetime: json_datetime_sec_encoder,
         }
 
-# %% ../notebooks/Kafka_Service.ipynb 31
+# %% ../notebooks/Kafka_Service.ipynb 32
 def add_process_training_model_start(
     app: FastKafka,
     *,
@@ -390,7 +391,7 @@ def add_process_training_model_start(
 
         print(f"on_training_model_start({msg}) finished.")
 
-# %% ../notebooks/Kafka_Service.ipynb 33
+# %% ../notebooks/Kafka_Service.ipynb 34
 class Prediction(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
@@ -432,7 +433,7 @@ class Prediction(BaseModel):
             datetime: json_datetime_sec_encoder,
         }
 
-# %% ../notebooks/Kafka_Service.ipynb 35
+# %% ../notebooks/Kafka_Service.ipynb 36
 def add_predictions(
     app: FastKafka,
     *,
@@ -483,7 +484,7 @@ def add_predictions(
 
         print(f"on_model_metrics({msg}) finished.")
 
-# %% ../notebooks/Kafka_Service.ipynb 37
+# %% ../notebooks/Kafka_Service.ipynb 38
 def _construct_kafka_brokers() -> Dict[str, Dict[str, Any]]:
     url, port = aio_kafka_config["bootstrap_servers"].split(":")
 
@@ -515,7 +516,7 @@ def _construct_kafka_brokers() -> Dict[str, Dict[str, Any]]:
 
     return kafka_brokers
 
-# %% ../notebooks/Kafka_Service.ipynb 39
+# %% ../notebooks/Kafka_Service.ipynb 40
 def create_fastkafka_application(
     start_process_for_username: Optional[str] = "infobip",
 ) -> FastKafka:

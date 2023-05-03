@@ -20,7 +20,7 @@ from urllib.parse import unquote_plus as urlunquote
 import pandas as pd
 from airt.engine.engine import get_default_engine, using_cluster
 from airt.helpers import ensure
-from airt.logger import get_logger
+from airt.logger import get_logger, supress_timestamps
 from airt.remote_path import RemotePath
 from fastcore.script import Param, call_parse
 from pandas.api.types import is_datetime64_any_dtype
@@ -43,9 +43,10 @@ from ..db.models import DataBlob, PredictionPush, get_session_with_context
 from ..helpers import truncate, validate_user_inputs
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 6
+supress_timestamps(False)
 logger = get_logger(__name__)
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 7
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 8
 def _create_clickhouse_connection_string(
     username: str,
     password: str,
@@ -62,7 +63,7 @@ def _create_clickhouse_connection_string(
 
     return conn_str
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 9
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 10
 def create_db_uri_for_clickhouse_datablob(
     username: str,
     password: str,
@@ -97,7 +98,7 @@ def create_db_uri_for_clickhouse_datablob(
     clickhouse_uri = f"{clickhouse_uri}/{table}"
     return clickhouse_uri
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 11
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 12
 def _get_clickhouse_connection_params_from_db_uri(
     db_uri: str,
 ) -> Tuple[str, str, str, int, str, str, str, str]:
@@ -120,7 +121,7 @@ def _get_clickhouse_connection_params_from_db_uri(
     table = result.group(8)  # type: ignore
     return username, password, host, port, table, database, protocol, database_server
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 14
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 15
 @contextmanager  # type: ignore
 def get_clickhouse_connection(  # type: ignore
     *,
@@ -150,7 +151,7 @@ def get_clickhouse_connection(  # type: ignore
         logger.info(f"Connected to database using {db_engine}")
         yield connection
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 16
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 17
 def get_max_timestamp(
     timestamp_column: str,
     connection: Connection,
@@ -172,7 +173,7 @@ def get_max_timestamp(
     result: int = session.query(query).scalar()
     return result
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 18
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 19
 def _construct_filter_query(filters: Optional[Dict[str, str]] = None) -> str:
     filter_query = ""
     if filters:
@@ -180,7 +181,7 @@ def _construct_filter_query(filters: Optional[Dict[str, str]] = None) -> str:
             filter_query = filter_query + f" AND {column}={value}"
     return filter_query
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 20
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 21
 def _get_value_counts_for_index_column(
     index_column: str,
     timestamp_column: str,
@@ -201,7 +202,7 @@ def _get_value_counts_for_index_column(
     df = pd.read_sql(sql=query, con=connection)
     return df
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 22
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 23
 def partition_index_value_counts_into_chunks(
     index_column: str,
     index_value_counts: pd.DataFrame,
@@ -232,7 +233,7 @@ def partition_index_value_counts_into_chunks(
     logger.info("Partitioning finished")
     return pd.DataFrame(partitions)
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 24
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 25
 def _download_from_clickhouse(
     *,
     host: str,
@@ -331,7 +332,7 @@ def _download_from_clickhouse(
             )
             ddf.to_parquet(output_path, engine="pyarrow")
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 26
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 27
 @call_parse  # type: ignore
 def clickhouse_pull(
     datablob_id: Param("id of datablob in db", int),  # type: ignore
@@ -428,7 +429,7 @@ def clickhouse_pull(
         session.add(datablob)
         session.commit()
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 29
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 30
 def _sql_type(xs: pd.Series) -> str:
     dtype = str(xs.dtype)
     if dtype.startswith("int"):
@@ -453,7 +454,7 @@ def _sql_types(df: pd.DataFrame) -> str:
         + [f"{c} {_sql_type(df[c])}" for c in df]
     )
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 31
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 32
 def _insert_table_query(
     df: pd.DataFrame,
     table_name: str,
@@ -468,7 +469,7 @@ def _insert_table_query(
 
     return f"CREATE TABLE {if_not_exists_str}{table_name} ({_sql_types(df)}) ENGINE = {engine} ORDER BY {df.index.name};"
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 33
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 34
 def _insert_table(
     df: pd.DataFrame,
     table_name: str,
@@ -502,7 +503,7 @@ def _insert_table(
 
         return connection.execute(query)
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 34
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 35
 def _drop_table(
     table_name: str,
     *,
@@ -541,7 +542,7 @@ def _drop_table(
         # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query, python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         return connection.execute(query)
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 37
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 38
 def _insert_data(
     df: pd.DataFrame,
     table_name: str,
@@ -581,7 +582,7 @@ def _insert_data(
         logger.info(f"Inserting data to table '{table_name}'")
         df.to_sql(table_name, connection, if_exists="append")
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 39
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 40
 @call_parse  # type: ignore
 def clickhouse_push(prediction_push_id: int) -> None:
     """Push the data to a clickhouse database
@@ -640,7 +641,7 @@ def clickhouse_push(prediction_push_id: int) -> None:
         session.add(prediction_push)
         session.commit()
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 42
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 43
 def get_count(
     account_id: int,
     username: str,
@@ -687,10 +688,10 @@ def get_count(
         count: int = result.fetchall()[0][0]
         return count
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 44
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 46
 def fillna(s: Optional[Any]) -> str:
     quote = "'"
-    return f"{quote+quote if s is None else quote + str(s) + quote}"
+    return f"{quote + 'None' + quote if s is None else quote + str(s) + quote}"
 
 
 def _get_count_for_account_id(
@@ -747,6 +748,8 @@ def _get_count_for_account_id(
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         result = connection.execute(query).fetchall()
 
+        print(result)
+
         if len(result) == 0:
             return (None, None)
         elif len(result) == 1:
@@ -756,7 +759,7 @@ def _get_count_for_account_id(
                 f"More than one result returned from the database: {result}"
             )
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 46
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 48
 def get_count_for_account_id(
     account_id: Union[int, str],
     application_id: Optional[Union[int, str]],
@@ -784,7 +787,7 @@ def get_count_for_account_id(
         protocol=environ["KAFKA_CH_PROTOCOL"],
     )
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 49
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 51
 def _get_all_person_ids_for_account_id(
     account_id: Union[int, str],
     application_id: Optional[Union[int, str]],
@@ -840,7 +843,7 @@ def _get_all_person_ids_for_account_id(
         df = pd.read_sql(sql=query, con=connection)
     return df.iloc[:, 0]
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 51
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 53
 def get_all_person_ids_for_account_id(
     *,
     account_id: Union[int, str],
