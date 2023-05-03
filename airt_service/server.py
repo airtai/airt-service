@@ -29,7 +29,6 @@ from sqlmodel import select
 import airt_service
 from .auth import auth_router
 from .confluent import aio_kafka_config
-from .data.clickhouse import get_all_person_ids_for_account_ids
 from .data.datablob import datablob_router
 from .data.datasource import datasource_router
 from .db.models import User, get_session_with_context

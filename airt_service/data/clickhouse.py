@@ -2,14 +2,15 @@
 
 # %% auto 0
 __all__ = ['create_db_uri_for_clickhouse_datablob', 'get_clickhouse_connection', 'get_max_timestamp',
-           'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push', 'get_count',
-           'get_count_for_account_ids', 'get_all_person_ids_for_account_ids']
+           'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push', 'get_count', 'fillna',
+           'get_count_for_account_id', 'get_all_person_ids_for_account_id']
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 3
 import json
 import re
 import tempfile
 from contextlib import contextmanager
+from datetime import datetime, timedelta
 from os import environ
 from pathlib import Path
 from typing import *
@@ -687,8 +688,15 @@ def get_count(
         return count
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 44
-def get_count_for_account_ids(
-    account_ids: List[Union[int, str]],
+def fillna(s: Optional[Any]) -> str:
+    quote = "'"
+    return f"{quote+quote if s is None else quote + str(s) + quote}"
+
+
+def _get_count_for_account_id(
+    account_id: Union[int, str],
+    application_id: Optional[Union[int, str]],
+    model_id: Optional[Union[int, str]],
     username: str,
     password: str,
     host: str,
@@ -696,7 +704,7 @@ def get_count_for_account_ids(
     database: str,
     table: str,
     protocol: str,
-) -> pd.DataFrame:
+) -> Tuple[Optional[int], Optional[datetime]]:
     """
     Function to get count for the given account ids from given table
 
@@ -725,18 +733,61 @@ def get_count_for_account_ids(
         if not type(connection) == Connection:
             raise ValueError(f"{type(connection)=} != Connection")
 
-        account_ids_query = ", ".join([str(a_id) for a_id in account_ids])
-
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
-        query = f"SELECT AccountId, count() AS curr_count, now() AS curr_check_on FROM {database}.{table} WHERE AccountId IN ({account_ids_query}) GROUP BY AccountId ORDER BY AccountId ASC"  # nosec B608
+        query = (
+            f"SELECT AccountId, ApplicationId, ModelId, count() as count, now() as now FROM {database}.{table} "
+            + f"WHERE AccountId={account_id} "
+            + f"AND ModelId={fillna(model_id)} "
+            + f"AND ApplicationId={fillna(application_id)} "
+            + "GROUP BY AccountId, ApplicationId, ModelId "
+        )  # nosec B608
+
         logger.info(f"Getting count with query={query}")
 
-        df = pd.read_sql(sql=query, con=connection)
-    return df.set_index("AccountId")
+        result = connection.execute(query).fetchall()
+
+        if len(result) == 0:
+            return (None, None)
+        elif len(result) == 1:
+            return (result[0][-2], result[0][-1])
+        else:
+            raise RuntimeError(
+                f"More than one result returned from the database: {result}"
+            )
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 46
-def _get_all_person_ids_for_account_ids(
-    account_ids: Union[Union[int, str], List[Union[int, str]]],
+def get_count_for_account_id(
+    account_id: Union[int, str],
+    application_id: Optional[Union[int, str]],
+    model_id: Optional[Union[int, str]],
+) -> Tuple[Optional[int], Optional[datetime]]:
+    """
+    Get count of all rows for given account ids from clickhouse table
+
+    Args:
+        account_ids: List of account_ids to get count
+
+    Returns:
+        Count for the given account id
+    """
+    return _get_count_for_account_id(
+        account_id=account_id,
+        application_id=application_id,
+        model_id=model_id,
+        username=environ["KAFKA_CH_USERNAME"],
+        password=environ["KAFKA_CH_PASSWORD"],
+        host=environ["KAFKA_CH_HOST"],
+        port=int(environ["KAFKA_CH_PORT"]),
+        database=environ["KAFKA_CH_DATABASE"],
+        table=environ["KAFKA_CH_TABLE"],
+        protocol=environ["KAFKA_CH_PROTOCOL"],
+    )
+
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 49
+def _get_all_person_ids_for_account_id(
+    account_id: Union[int, str],
+    application_id: Optional[Union[int, str]],
+    model_id: Optional[Union[int, str]],
     username: str,
     password: str,
     host: str,
@@ -744,12 +795,14 @@ def _get_all_person_ids_for_account_ids(
     database: str,
     table: str,
     protocol: str,
-) -> pd.DataFrame:
+) -> pd.Series:
     """
     Internal function to get all person ids for the given account id from clickhouse table
 
     Args:
         account_id: Account id
+        application_id: Application id
+        model_id: Model id
         username: Username of clickhouse database
         password: Password of clickhouse database
         host: Host of clickhouse database
@@ -773,21 +826,27 @@ def _get_all_person_ids_for_account_ids(
         if not type(connection) == Connection:
             raise ValueError(f"{type(connection)=} != Connection")
 
-        if not isinstance(account_ids, list):
-            account_ids = [account_ids]
-
-        account_ids_query = ", ".join([str(a_id) for a_id in account_ids])
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
-        query = f"SELECT DISTINCT PersonId, AccountId FROM {database}.{table} WHERE AccountId IN ({account_ids_query}) ORDER BY PersonId ASC"  # nosec B608
+        query = f"SELECT DISTINCT PersonId, AccountId, ApplicationId, ModelId FROM {database}.{table} WHERE AccountId={account_id} AND ApplicationId={application_id} AND ModelId={model_id}  ORDER BY PersonId ASC"  # nosec B608
+        query = (
+            f"SELECT DISTINCT PersonId FROM {database}.{table} "
+            + f"WHERE AccountId={account_id} "
+            + f"AND ModelId={fillna(model_id)} "
+            + f"AND ApplicationId={fillna(application_id)} "
+            + "ORDER BY PersonId"
+        )  # nosec B608
         logger.info(f"Getting count with query={query}")
 
         df = pd.read_sql(sql=query, con=connection)
-    return df.set_index("AccountId")
+    return df.iloc[:, 0]
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 48
-def get_all_person_ids_for_account_ids(
-    account_ids: Union[Union[int, str], List[Union[int, str]]],
-) -> pd.DataFrame:
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 51
+def get_all_person_ids_for_account_id(
+    *,
+    account_id: Union[int, str],
+    application_id: Optional[Union[int, str]],
+    model_id: Optional[Union[int, str]],
+) -> pd.Series:
     """
     Function to get all person ids for the given account id from clickhouse table
 
@@ -797,8 +856,10 @@ def get_all_person_ids_for_account_ids(
     Returns:
         A pandas dataframe which contains all person ids
     """
-    return _get_all_person_ids_for_account_ids(
-        account_ids=account_ids,
+    return _get_all_person_ids_for_account_id(
+        account_id=account_id,
+        application_id=application_id,
+        model_id=model_id,
         username=environ["KAFKA_CH_USERNAME"],
         password=environ["KAFKA_CH_PASSWORD"],
         host=environ["KAFKA_CH_HOST"],
