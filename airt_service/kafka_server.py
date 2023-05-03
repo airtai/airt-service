@@ -14,7 +14,7 @@ from typing import *
 
 import numpy as np
 import pandas as pd
-from airt.logger import get_logger
+from airt.logger import get_logger, supress_timestamps
 from fastkafka import FastKafka
 from pydantic import BaseModel, EmailStr, Field, HttpUrl, NonNegativeInt, validator
 
