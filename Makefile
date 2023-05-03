@@ -57,10 +57,12 @@ check_secrets: .install_git_secrets_hooks .add_allowed_git_secrets
 check: mypy check_secrets detect_secrets sast dast trivy_scan_repo
 
 test: install mypy alembic_migrate empty_bucket
+	nbdev_test --timing --do_print --path notebooks/DataBlob_Clickhouse.ipynb
+	nbdev_test --timing --do_print --path notebooks/Kafka_Service.ipynb
 	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
 	nbdev_test --timing --do_print --path notebooks/API_Web_Service.ipynb
-	nbdev_test --timing --do_print --path notebooks/Kafka_Service.ipynb
 	nbdev_test --timing --do_print --path notebooks/Integration_Test.ipynb
+    
 
 test_one_by_one: install mypy alembic_migrate empty_bucket
 	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
