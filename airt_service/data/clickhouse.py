@@ -735,15 +735,16 @@ def _get_count_for_account_id(
 
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         query = (
-            f"SELECT AccountId, ApplicationId, ModelId, count() as count, now() as now FROM {database}.{table} "
+            f"SELECT AccountId, ApplicationId, ModelId, count() as count, now() as now FROM {database}.{table} "  # nosec B608
             + f"WHERE AccountId={account_id} "
             + f"AND ModelId={fillna(model_id)} "
             + f"AND ApplicationId={fillna(application_id)} "
             + "GROUP BY AccountId, ApplicationId, ModelId "
-        )  # nosec B608
+        )
 
         logger.info(f"Getting count with query={query}")
 
+        # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         result = connection.execute(query).fetchall()
 
         if len(result) == 0:
@@ -827,14 +828,13 @@ def _get_all_person_ids_for_account_id(
             raise ValueError(f"{type(connection)=} != Connection")
 
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
-        query = f"SELECT DISTINCT PersonId, AccountId, ApplicationId, ModelId FROM {database}.{table} WHERE AccountId={account_id} AND ApplicationId={application_id} AND ModelId={model_id}  ORDER BY PersonId ASC"  # nosec B608
         query = (
-            f"SELECT DISTINCT PersonId FROM {database}.{table} "
+            f"SELECT DISTINCT PersonId FROM {database}.{table} "  # nosec B608
             + f"WHERE AccountId={account_id} "
             + f"AND ModelId={fillna(model_id)} "
             + f"AND ApplicationId={fillna(application_id)} "
             + "ORDER BY PersonId"
-        )  # nosec B608
+        )
         logger.info(f"Getting count with query={query}")
 
         df = pd.read_sql(sql=query, con=connection)
