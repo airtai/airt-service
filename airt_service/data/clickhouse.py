@@ -696,7 +696,7 @@ def fillna(s: Optional[Any]) -> str:
 
 def _get_count_for_account_id(
     account_id: Union[int, str],
-    application_id: Optional[Union[int, str]],
+    #     application_id: Optional[Union[int, str]],
     model_id: Optional[Union[int, str]],
     username: str,
     password: str,
@@ -710,7 +710,8 @@ def _get_count_for_account_id(
     Function to get count for the given account ids from given table
 
     Args:
-        account_ids: List of account ids
+        account_id: account id
+        model_id: model id
         username: Username of clickhouse database
         password: Password of clickhouse database
         host: Host of clickhouse database
@@ -720,7 +721,7 @@ def _get_count_for_account_id(
         protocol: Protocol to connect to clickhouse (native/http)
 
     Returns:
-        A pandas dataframe which contains all account ids and their counts
+        A pair containing count and timestamp from the db
     """
     with get_clickhouse_connection(  # type: ignore
         username=username,
@@ -736,11 +737,10 @@ def _get_count_for_account_id(
 
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         query = (
-            f"SELECT AccountId, ApplicationId, ModelId, count() as count, now() as now FROM {database}.{table} "  # nosec B608
+            f"SELECT AccountId, ModelId, count() as count, now() as now FROM {database}.{table} "  # nosec B608
             + f"WHERE AccountId={account_id} "
             + f"AND ModelId={fillna(model_id)} "
-            + f"AND ApplicationId={fillna(application_id)} "
-            + "GROUP BY AccountId, ApplicationId, ModelId "
+            + "GROUP BY AccountId, ModelId "
         )
 
         logger.info(f"Getting count with query={query}")
@@ -748,7 +748,7 @@ def _get_count_for_account_id(
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         result = connection.execute(query).fetchall()
 
-        print(result)
+        #         print(result)
 
         if len(result) == 0:
             return (None, None)
@@ -762,7 +762,6 @@ def _get_count_for_account_id(
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 48
 def get_count_for_account_id(
     account_id: Union[int, str],
-    application_id: Optional[Union[int, str]],
     model_id: Optional[Union[int, str]],
 ) -> Tuple[Optional[int], Optional[datetime]]:
     """
@@ -776,7 +775,6 @@ def get_count_for_account_id(
     """
     return _get_count_for_account_id(
         account_id=account_id,
-        application_id=application_id,
         model_id=model_id,
         username=environ["KAFKA_CH_USERNAME"],
         password=environ["KAFKA_CH_PASSWORD"],
@@ -790,7 +788,6 @@ def get_count_for_account_id(
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 51
 def _get_all_person_ids_for_account_id(
     account_id: Union[int, str],
-    application_id: Optional[Union[int, str]],
     model_id: Optional[Union[int, str]],
     username: str,
     password: str,
@@ -805,7 +802,6 @@ def _get_all_person_ids_for_account_id(
 
     Args:
         account_id: Account id
-        application_id: Application id
         model_id: Model id
         username: Username of clickhouse database
         password: Password of clickhouse database
@@ -835,7 +831,6 @@ def _get_all_person_ids_for_account_id(
             f"SELECT DISTINCT PersonId FROM {database}.{table} "  # nosec B608
             + f"WHERE AccountId={account_id} "
             + f"AND ModelId={fillna(model_id)} "
-            + f"AND ApplicationId={fillna(application_id)} "
             + "ORDER BY PersonId"
         )
         logger.info(f"Getting count with query={query}")
@@ -847,7 +842,6 @@ def _get_all_person_ids_for_account_id(
 def get_all_person_ids_for_account_id(
     *,
     account_id: Union[int, str],
-    application_id: Optional[Union[int, str]],
     model_id: Optional[Union[int, str]],
 ) -> pd.Series:
     """
@@ -861,7 +855,6 @@ def get_all_person_ids_for_account_id(
     """
     return _get_all_person_ids_for_account_id(
         account_id=account_id,
-        application_id=application_id,
         model_id=model_id,
         username=environ["KAFKA_CH_USERNAME"],
         password=environ["KAFKA_CH_PASSWORD"],
