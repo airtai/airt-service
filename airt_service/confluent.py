@@ -30,7 +30,7 @@ if "KAFKA_API_KEY" in environ:
         **aio_kafka_config,
         **{
             "security_protocol": "SASL_SSL",
-            "sasl_mechanism": "PLAIN",
+            "sasl_mechanism": environ["KAFKA_SASL_MECHANISM"],
             "sasl_plain_username": environ["KAFKA_API_KEY"],
             "sasl_plain_password": environ["KAFKA_API_SECRET"],
             "ssl_context": create_ssl_context(),
