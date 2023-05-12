@@ -627,6 +627,8 @@ def create_fastkafka_application(
         for k in set(list(aio_kafka_config.keys())) - set(exclude_keys)
     }
 
+    logger.info(f"create_fastkafka_application(): {kafka_config=}")
+
     # global description
     version = airt_service.__version__
     contact = dict(name="airt.ai", url="https://airt.ai", email="info@airt.ai")
@@ -637,6 +639,7 @@ def create_fastkafka_application(
         kafka_brokers=kafka_brokers,
         version=version,
         contact=contact,
+        enable_idempotence=True,
         #         auto_offset_reset="earliest",
         **kafka_config,
     )
