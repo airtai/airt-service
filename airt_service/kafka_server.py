@@ -8,9 +8,9 @@ __all__ = ['json_datetime_sec_encoder', 'LogMessage', 'add_logging', 'ModelType'
 
 # %% ../notebooks/Kafka_Service.ipynb 1
 import asyncio
+import logging
 from datetime import datetime, timedelta
 from enum import Enum
-import logging
 from os import environ
 from typing import *
 
@@ -24,8 +24,8 @@ from pydantic import (
     Field,
     HttpUrl,
     NonNegativeInt,
-    validator,
     root_validator,
+    validator,
 )
 
 import airt_service
