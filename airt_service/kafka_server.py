@@ -126,7 +126,7 @@ def add_logging(
     ) -> None:
         await app.log(org_msg, msg=msg, key=key, level=30)
 
-    app.to_logger = to_logger
+    #     app.to_logger = to_logger
     app.log = log
     app.info = info
     app.warning = warning
@@ -306,8 +306,8 @@ def add_process_start_training_data(
         print(f"to_training_model_start({training_model_start})")
         return training_model_start
 
-    app.to_training_data_status = to_training_data_status
-    app.to_training_model_start = to_training_model_start
+    #     app.to_training_data_status = to_training_data_status
+    #     app.to_training_model_start = to_training_model_start
 
     @app.consumes(topic=f"{username}_start_training_data")  # type: ignore
     async def on_start_training_data(
@@ -448,8 +448,8 @@ def add_process_training_model_start(
         print(f"to_model_metrics({model_metrics})")
         return model_metrics
 
-    app.to_training_model_status = to_training_model_status
-    app.to_model_metrics = to_model_metrics
+    #     app.to_training_model_status = to_training_model_status
+    #     app.to_model_metrics = to_model_metrics
 
     @app.consumes(topic=f"{username}_training_model_start")  # type: ignore
     async def on_training_model_start(
@@ -640,6 +640,8 @@ def create_fastkafka_application(
         version=version,
         contact=contact,
         enable_idempotence=True,
+        request_timeout_ms=120_000,
+        max_batch_size=120_000,
         #         auto_offset_reset="earliest",
         **kafka_config,
     )
