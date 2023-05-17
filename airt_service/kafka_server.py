@@ -643,7 +643,7 @@ def create_fastkafka_application(
         enable_idempotence=True,
         request_timeout_ms=120_000,
         max_batch_size=120_000,
-        connections_max_idle_ms=600_000,
+        connections_max_idle_ms=10_000,
         #         auto_offset_reset="earliest",
         **kafka_config,
     )
