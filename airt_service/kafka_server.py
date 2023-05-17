@@ -576,11 +576,12 @@ def add_predictions(
 
 # %% ../notebooks/Kafka_Service.ipynb 46
 def _construct_kafka_brokers() -> Dict[str, Dict[str, Any]]:
-    url, port = aio_kafka_config["bootstrap_servers"].split(":")
+    url = aio_kafka_config["bootstrap_servers"].split(":")[0]
+    port = aio_kafka_config["bootstrap_servers"].split(":")[-1]
 
     kafka_brokers = {
         "staging": {
-            "url": "kafka.staging.airt.ai,kafka-cluster-1.staging.airt.ai,kafka-cluster-2.staging.airt.ai",
+            "url": "kafka.staging.airt.ai",
             "description": "Staging Kafka broker",
             "port": 9092,
             "protocol": "kafka-secure",
