@@ -649,8 +649,9 @@ def create_fastkafka_application(
     )
 
     add_logging(app)
-    add_process_start_training_data(app)
-    add_process_training_model_start(app)
-    add_predictions(app)
+    # temporarely removed from the processor => we'll do training and predictions locally
+    #     add_process_start_training_data(app)
+    #     add_process_training_model_start(app)
+    #     add_predictions(app)
 
     return app
