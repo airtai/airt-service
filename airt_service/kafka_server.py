@@ -40,7 +40,7 @@ supress_timestamps(False)
 logger = get_logger(__name__)
 
 # %% ../notebooks/Kafka_Service.ipynb 5
-def heading(title: Optional[str] = None, width: int = 160):
+def heading(title: Optional[str] = None, width: int = 160) -> None:
     print()
     print("*" * width)
     print("*" * 3 + " " * (width - 6) + "*" * 3)
