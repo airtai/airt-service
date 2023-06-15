@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['create_db_uri_for_clickhouse_datablob', 'get_clickhouse_connection', 'get_max_timestamp',
            'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push', 'get_count', 'fillna',
-           'get_count_for_account_id', 'get_all_person_ids_for_account_id']
+           'get_count_for_account_id', 'get_all_person_ids_for_account_id', 'download_account_id_rows_as_parquet']
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 3
 import json
@@ -120,6 +120,18 @@ def _get_clickhouse_connection_params_from_db_uri(
     database = result.group(7)  # type: ignore
     table = result.group(8)  # type: ignore
     return username, password, host, port, table, database, protocol, database_server
+
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 14
+def get_clickhouse_params_from_env_vars():
+    return dict(
+        username=environ["CLICKHOUSE_USERNAME"],
+        password=environ["CLICKHOUSE_PASSWORD"],
+        host=environ["CLICKHOUSE_HOST"],
+        database=environ["CLICKHOUSE_DATABASE"],
+        port=int(environ["CLICKHOUSE_PORT"]),
+        protocol=environ["CLICKHOUSE_PROTOCOL"],
+        table=environ["CLICKHOUSE_EVENTS_TABLE"],
+    )
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 15
 @contextmanager  # type: ignore
@@ -785,7 +797,7 @@ def get_count_for_account_id(
         protocol=environ["KAFKA_CH_PROTOCOL"],
     )
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 51
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 52
 def _get_all_person_ids_for_account_id(
     account_id: Union[int, str],
     model_id: Optional[Union[int, str]],
@@ -838,7 +850,7 @@ def _get_all_person_ids_for_account_id(
         df = pd.read_sql(sql=query, con=connection)
     return df.iloc[:, 0]
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 53
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 54
 def get_all_person_ids_for_account_id(
     *,
     account_id: Union[int, str],
@@ -856,6 +868,86 @@ def get_all_person_ids_for_account_id(
     return _get_all_person_ids_for_account_id(
         account_id=account_id,
         model_id=model_id,
+        username=environ["KAFKA_CH_USERNAME"],
+        password=environ["KAFKA_CH_PASSWORD"],
+        host=environ["KAFKA_CH_HOST"],
+        port=int(environ["KAFKA_CH_PORT"]),
+        database=environ["KAFKA_CH_DATABASE"],
+        table=environ["KAFKA_CH_TABLE"],
+        protocol=environ["KAFKA_CH_PROTOCOL"],
+    )
+
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 56
+def _download_account_id_rows_as_parquet(
+    *,
+    account_id: Union[int, str],
+    model_id: Optional[Union[int, str]],
+    host: str,
+    port: int,
+    username: str,
+    password: str,
+    database: str,
+    protocol: str,
+    table: str,
+    chunksize: Optional[int] = 1_000_000,
+    index_column: str = "PersonId",
+    output_path: Path,
+) -> None:
+    with get_clickhouse_connection(  # type: ignore
+        username=username,
+        password=password,
+        host=host,
+        port=port,
+        database=database,
+        table=table,
+        protocol=protocol,
+    ) as connection:
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td)
+            i = 0
+
+            query = f"SELECT * FROM {table} WHERE AccountId={account_id} AND ModelId={fillna(model_id)} ORDER BY PersonId ASC"  # nosec B608
+            #             query = f"SELECT * FROM {table} WHERE AccountId={account_id} ORDER BY PersonId ASC"  # nosec B608
+            logger.info(f"_download_account_id_rows_as_parquet(): {query=}")
+
+            for df in pd.read_sql(sql=query, con=connection, chunksize=chunksize):
+                fname = d / f"clickhouse_data_{i:09d}.parquet"
+                logger.info(
+                    f"_download_account_id_rows_as_parquet() Writing data retrieved from the database to temporary file {fname}, dtypes={df.dtypes.to_dict()}"
+                )
+                df.to_parquet(fname, engine="pyarrow")  # type: ignore
+                i = i + 1
+
+            engine = get_default_engine()
+            logger.info(
+                f"_download_account_id_rows_as_parquet() Rewriting temporary parquet files from {d / f'clickhouse_data_*.parquet'} to output directory {output_path}"
+            )
+            ddf = engine.dd.read_parquet(
+                d,
+                blocksize=None,
+            )
+            ddf["AccountId"] = ddf["AccountId"].astype("int64")
+            ddf = ddf.set_index("PersonId")
+            ddf.to_parquet(output_path, engine="pyarrow")
+
+            # test if everything is ok
+            test_ddf = engine.dd.read_parquet(output_path).head()
+
+
+def download_account_id_rows_as_parquet(
+    *,
+    account_id: Union[int, str],
+    model_id: Optional[Union[int, str]],
+    chunksize: Optional[int] = 1_000_000,
+    index_column: str = "PersonId",
+    output_path: Path,
+) -> None:
+    return _download_account_id_rows_as_parquet(
+        account_id=account_id,
+        model_id=model_id,
+        chunksize=chunksize,
+        index_column=index_column,
+        output_path=output_path,
         username=environ["KAFKA_CH_USERNAME"],
         password=environ["KAFKA_CH_PASSWORD"],
         host=environ["KAFKA_CH_HOST"],
