@@ -122,7 +122,7 @@ def _get_clickhouse_connection_params_from_db_uri(
     return username, password, host, port, table, database, protocol, database_server
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 14
-def get_clickhouse_params_from_env_vars():
+def get_clickhouse_params_from_env_vars() -> Dict[str, Union[str, int]]:
     return dict(
         username=environ["CLICKHOUSE_USERNAME"],
         password=environ["CLICKHOUSE_PASSWORD"],
@@ -913,7 +913,7 @@ def _download_account_id_rows_as_parquet(
             for df in pd.read_sql(sql=query, con=connection, chunksize=chunksize):
                 fname = d / f"clickhouse_data_{i:09d}.parquet"
                 logger.info(
-                    f"_download_account_id_rows_as_parquet() Writing data retrieved from the database to temporary file {fname}, dtypes={df.dtypes.to_dict()}"
+                    f"_download_account_id_rows_as_parquet() Writing data retrieved from the database to temporary file: {fname}"
                 )
                 df.to_parquet(fname, engine="pyarrow")  # type: ignore
                 i = i + 1
