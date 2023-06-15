@@ -184,3 +184,9 @@ dast-api-scan-report.html
 mkdocs/docs/
 mkdocs/site/
 notebooks/sidebar.yml
+
+# 
+notebooks/infobip-downloader-*
+notebooks/_*.ipynb
+
+
