@@ -63,7 +63,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: [bandit, semgrep, trivy, secrets_scan, detect_secrets]
+    # needs: [bandit, semgrep, trivy, secrets_scan, detect_secrets]
     container:
       image: ghcr.io/airtai/airt-service-dev:latest
     env:
