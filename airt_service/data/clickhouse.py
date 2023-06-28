@@ -2,14 +2,15 @@
 
 # %% auto 0
 __all__ = ['create_db_uri_for_clickhouse_datablob', 'get_clickhouse_connection', 'get_max_timestamp',
-           'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push', 'get_count',
-           'get_count_for_account_ids', 'get_all_person_ids_for_account_ids']
+           'partition_index_value_counts_into_chunks', 'clickhouse_pull', 'clickhouse_push', 'get_count', 'fillna',
+           'get_count_for_account_id', 'get_all_person_ids_for_account_id', 'download_account_id_rows_as_parquet']
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 3
 import json
 import re
 import tempfile
 from contextlib import contextmanager
+from datetime import datetime, timedelta
 from os import environ
 from pathlib import Path
 from typing import *
@@ -19,7 +20,7 @@ from urllib.parse import unquote_plus as urlunquote
 import pandas as pd
 from airt.engine.engine import get_default_engine, using_cluster
 from airt.helpers import ensure
-from airt.logger import get_logger
+from airt.logger import get_logger, supress_timestamps
 from airt.remote_path import RemotePath
 from fastcore.script import Param, call_parse
 from pandas.api.types import is_datetime64_any_dtype
@@ -42,9 +43,10 @@ from ..db.models import DataBlob, PredictionPush, get_session_with_context
 from ..helpers import truncate, validate_user_inputs
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 6
+supress_timestamps(False)
 logger = get_logger(__name__)
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 7
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 8
 def _create_clickhouse_connection_string(
     username: str,
     password: str,
@@ -61,7 +63,7 @@ def _create_clickhouse_connection_string(
 
     return conn_str
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 9
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 10
 def create_db_uri_for_clickhouse_datablob(
     username: str,
     password: str,
@@ -96,7 +98,7 @@ def create_db_uri_for_clickhouse_datablob(
     clickhouse_uri = f"{clickhouse_uri}/{table}"
     return clickhouse_uri
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 11
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 12
 def _get_clickhouse_connection_params_from_db_uri(
     db_uri: str,
 ) -> Tuple[str, str, str, int, str, str, str, str]:
@@ -120,6 +122,18 @@ def _get_clickhouse_connection_params_from_db_uri(
     return username, password, host, port, table, database, protocol, database_server
 
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 14
+def get_clickhouse_params_from_env_vars() -> Dict[str, Union[str, int]]:
+    return dict(
+        username=environ["CLICKHOUSE_USERNAME"],
+        password=environ["CLICKHOUSE_PASSWORD"],
+        host=environ["CLICKHOUSE_HOST"],
+        database=environ["CLICKHOUSE_DATABASE"],
+        port=int(environ["CLICKHOUSE_PORT"]),
+        protocol=environ["CLICKHOUSE_PROTOCOL"],
+        table=environ["CLICKHOUSE_EVENTS_TABLE"],
+    )
+
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 15
 @contextmanager  # type: ignore
 def get_clickhouse_connection(  # type: ignore
     *,
@@ -149,7 +163,7 @@ def get_clickhouse_connection(  # type: ignore
         logger.info(f"Connected to database using {db_engine}")
         yield connection
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 16
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 17
 def get_max_timestamp(
     timestamp_column: str,
     connection: Connection,
@@ -171,7 +185,7 @@ def get_max_timestamp(
     result: int = session.query(query).scalar()
     return result
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 18
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 19
 def _construct_filter_query(filters: Optional[Dict[str, str]] = None) -> str:
     filter_query = ""
     if filters:
@@ -179,7 +193,7 @@ def _construct_filter_query(filters: Optional[Dict[str, str]] = None) -> str:
             filter_query = filter_query + f" AND {column}={value}"
     return filter_query
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 20
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 21
 def _get_value_counts_for_index_column(
     index_column: str,
     timestamp_column: str,
@@ -200,7 +214,7 @@ def _get_value_counts_for_index_column(
     df = pd.read_sql(sql=query, con=connection)
     return df
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 22
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 23
 def partition_index_value_counts_into_chunks(
     index_column: str,
     index_value_counts: pd.DataFrame,
@@ -231,7 +245,7 @@ def partition_index_value_counts_into_chunks(
     logger.info("Partitioning finished")
     return pd.DataFrame(partitions)
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 24
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 25
 def _download_from_clickhouse(
     *,
     host: str,
@@ -330,7 +344,7 @@ def _download_from_clickhouse(
             )
             ddf.to_parquet(output_path, engine="pyarrow")
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 26
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 27
 @call_parse  # type: ignore
 def clickhouse_pull(
     datablob_id: Param("id of datablob in db", int),  # type: ignore
@@ -427,7 +441,7 @@ def clickhouse_pull(
         session.add(datablob)
         session.commit()
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 29
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 30
 def _sql_type(xs: pd.Series) -> str:
     dtype = str(xs.dtype)
     if dtype.startswith("int"):
@@ -452,7 +466,7 @@ def _sql_types(df: pd.DataFrame) -> str:
         + [f"{c} {_sql_type(df[c])}" for c in df]
     )
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 31
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 32
 def _insert_table_query(
     df: pd.DataFrame,
     table_name: str,
@@ -467,7 +481,7 @@ def _insert_table_query(
 
     return f"CREATE TABLE {if_not_exists_str}{table_name} ({_sql_types(df)}) ENGINE = {engine} ORDER BY {df.index.name};"
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 33
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 34
 def _insert_table(
     df: pd.DataFrame,
     table_name: str,
@@ -501,7 +515,7 @@ def _insert_table(
 
         return connection.execute(query)
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 34
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 35
 def _drop_table(
     table_name: str,
     *,
@@ -540,7 +554,7 @@ def _drop_table(
         # nosemgrep: python.lang.security.audit.formatted-sql-query.formatted-sql-query, python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         return connection.execute(query)
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 37
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 38
 def _insert_data(
     df: pd.DataFrame,
     table_name: str,
@@ -580,7 +594,7 @@ def _insert_data(
         logger.info(f"Inserting data to table '{table_name}'")
         df.to_sql(table_name, connection, if_exists="append")
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 39
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 40
 @call_parse  # type: ignore
 def clickhouse_push(prediction_push_id: int) -> None:
     """Push the data to a clickhouse database
@@ -639,7 +653,7 @@ def clickhouse_push(prediction_push_id: int) -> None:
         session.add(prediction_push)
         session.commit()
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 42
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 43
 def get_count(
     account_id: int,
     username: str,
@@ -686,9 +700,16 @@ def get_count(
         count: int = result.fetchall()[0][0]
         return count
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 44
-def get_count_for_account_ids(
-    account_ids: List[Union[int, str]],
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 46
+def fillna(s: Optional[Any]) -> str:
+    quote = "'"
+    return f"{quote + '' + quote if (s is None) else quote + str(s) + quote}"
+
+
+def _get_count_for_account_id(
+    account_id: Union[int, str],
+    #     application_id: Optional[Union[int, str]],
+    model_id: Optional[Union[int, str]],
     username: str,
     password: str,
     host: str,
@@ -696,12 +717,13 @@ def get_count_for_account_ids(
     database: str,
     table: str,
     protocol: str,
-) -> pd.DataFrame:
+) -> Tuple[Optional[int], Optional[datetime]]:
     """
     Function to get count for the given account ids from given table
 
     Args:
-        account_ids: List of account ids
+        account_id: account id
+        model_id: model id
         username: Username of clickhouse database
         password: Password of clickhouse database
         host: Host of clickhouse database
@@ -711,7 +733,7 @@ def get_count_for_account_ids(
         protocol: Protocol to connect to clickhouse (native/http)
 
     Returns:
-        A pandas dataframe which contains all account ids and their counts
+        A pair containing count and timestamp from the db
     """
     with get_clickhouse_connection(  # type: ignore
         username=username,
@@ -725,18 +747,60 @@ def get_count_for_account_ids(
         if not type(connection) == Connection:
             raise ValueError(f"{type(connection)=} != Connection")
 
-        account_ids_query = ", ".join([str(a_id) for a_id in account_ids])
-
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
-        query = f"SELECT AccountId, count() AS curr_count, now() AS curr_check_on FROM {database}.{table} WHERE AccountId IN ({account_ids_query}) GROUP BY AccountId ORDER BY AccountId ASC"  # nosec B608
+        query = (
+            f"SELECT AccountId, ModelId, count() as count, now() as now FROM {database}.{table} "  # nosec B608
+            + f"WHERE AccountId={account_id} "
+            + f"AND ModelId={fillna(model_id)} "
+            + "GROUP BY AccountId, ModelId "
+        )
+
         logger.info(f"Getting count with query={query}")
 
-        df = pd.read_sql(sql=query, con=connection)
-    return df.set_index("AccountId")
+        # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
+        result = connection.execute(query).fetchall()
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 46
-def _get_all_person_ids_for_account_ids(
-    account_ids: Union[Union[int, str], List[Union[int, str]]],
+        #         print(result)
+
+        if len(result) == 0:
+            return (None, None)
+        elif len(result) == 1:
+            return (result[0][-2], result[0][-1])
+        else:
+            raise RuntimeError(
+                f"More than one result returned from the database: {result}"
+            )
+
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 48
+def get_count_for_account_id(
+    account_id: Union[int, str],
+    model_id: Optional[Union[int, str]],
+) -> Tuple[Optional[int], Optional[datetime]]:
+    """
+    Get count of all rows for given account ids from clickhouse table
+
+    Args:
+        account_ids: List of account_ids to get count
+
+    Returns:
+        Count for the given account id
+    """
+    return _get_count_for_account_id(
+        account_id=account_id,
+        model_id=model_id,
+        username=environ["KAFKA_CH_USERNAME"],
+        password=environ["KAFKA_CH_PASSWORD"],
+        host=environ["KAFKA_CH_HOST"],
+        port=int(environ["KAFKA_CH_PORT"]),
+        database=environ["KAFKA_CH_DATABASE"],
+        table=environ["KAFKA_CH_TABLE"],
+        protocol=environ["KAFKA_CH_PROTOCOL"],
+    )
+
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 52
+def _get_all_person_ids_for_account_id(
+    account_id: Union[int, str],
+    model_id: Optional[Union[int, str]],
     username: str,
     password: str,
     host: str,
@@ -744,12 +808,13 @@ def _get_all_person_ids_for_account_ids(
     database: str,
     table: str,
     protocol: str,
-) -> pd.DataFrame:
+) -> pd.Series:
     """
     Internal function to get all person ids for the given account id from clickhouse table
 
     Args:
         account_id: Account id
+        model_id: Model id
         username: Username of clickhouse database
         password: Password of clickhouse database
         host: Host of clickhouse database
@@ -773,21 +838,24 @@ def _get_all_person_ids_for_account_ids(
         if not type(connection) == Connection:
             raise ValueError(f"{type(connection)=} != Connection")
 
-        if not isinstance(account_ids, list):
-            account_ids = [account_ids]
-
-        account_ids_query = ", ".join([str(a_id) for a_id in account_ids])
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
-        query = f"SELECT DISTINCT PersonId, AccountId FROM {database}.{table} WHERE AccountId IN ({account_ids_query}) ORDER BY PersonId ASC"  # nosec B608
+        query = (
+            f"SELECT DISTINCT PersonId FROM {database}.{table} "  # nosec B608
+            + f"WHERE AccountId={account_id} "
+            + f"AND ModelId={fillna(model_id)} "
+            + "ORDER BY PersonId"
+        )
         logger.info(f"Getting count with query={query}")
 
         df = pd.read_sql(sql=query, con=connection)
-    return df.set_index("AccountId")
+    return df.iloc[:, 0]
 
-# %% ../../notebooks/DataBlob_Clickhouse.ipynb 48
-def get_all_person_ids_for_account_ids(
-    account_ids: Union[Union[int, str], List[Union[int, str]]],
-) -> pd.DataFrame:
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 54
+def get_all_person_ids_for_account_id(
+    *,
+    account_id: Union[int, str],
+    model_id: Optional[Union[int, str]],
+) -> pd.Series:
     """
     Function to get all person ids for the given account id from clickhouse table
 
@@ -797,8 +865,89 @@ def get_all_person_ids_for_account_ids(
     Returns:
         A pandas dataframe which contains all person ids
     """
-    return _get_all_person_ids_for_account_ids(
-        account_ids=account_ids,
+    return _get_all_person_ids_for_account_id(
+        account_id=account_id,
+        model_id=model_id,
+        username=environ["KAFKA_CH_USERNAME"],
+        password=environ["KAFKA_CH_PASSWORD"],
+        host=environ["KAFKA_CH_HOST"],
+        port=int(environ["KAFKA_CH_PORT"]),
+        database=environ["KAFKA_CH_DATABASE"],
+        table=environ["KAFKA_CH_TABLE"],
+        protocol=environ["KAFKA_CH_PROTOCOL"],
+    )
+
+# %% ../../notebooks/DataBlob_Clickhouse.ipynb 56
+def _download_account_id_rows_as_parquet(
+    *,
+    account_id: Union[int, str],
+    model_id: Optional[Union[int, str]],
+    host: str,
+    port: int,
+    username: str,
+    password: str,
+    database: str,
+    protocol: str,
+    table: str,
+    chunksize: Optional[int] = 1_000_000,
+    index_column: str = "PersonId",
+    output_path: Path,
+) -> None:
+    with get_clickhouse_connection(  # type: ignore
+        username=username,
+        password=password,
+        host=host,
+        port=port,
+        database=database,
+        table=table,
+        protocol=protocol,
+    ) as connection:
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td)
+            i = 0
+
+            query = f"SELECT * FROM {table} WHERE AccountId={account_id} AND ModelId={fillna(model_id)} ORDER BY PersonId ASC"  # nosec B608
+            #             query = f"SELECT * FROM {table} WHERE AccountId={account_id} ORDER BY PersonId ASC"  # nosec B608
+            logger.info(f"_download_account_id_rows_as_parquet(): {query=}")
+
+            for df in pd.read_sql(sql=query, con=connection, chunksize=chunksize):
+                fname = d / f"clickhouse_data_{i:09d}.parquet"
+                logger.info(
+                    f"_download_account_id_rows_as_parquet() Writing data retrieved from the database to temporary file: {fname}"
+                )
+                df.to_parquet(fname, engine="pyarrow")  # type: ignore
+                i = i + 1
+
+            engine = get_default_engine()
+            logger.info(
+                f"_download_account_id_rows_as_parquet() Rewriting temporary parquet files from {d / f'clickhouse_data_*.parquet'} to output directory {output_path}"
+            )
+            ddf = engine.dd.read_parquet(
+                d,
+                blocksize=None,
+            )
+            ddf["AccountId"] = ddf["AccountId"].astype("int64")
+            ddf = ddf.set_index("PersonId")
+            ddf.to_parquet(output_path, engine="pyarrow")
+
+            # test if everything is ok
+            test_ddf = engine.dd.read_parquet(output_path).head()
+
+
+def download_account_id_rows_as_parquet(
+    *,
+    account_id: Union[int, str],
+    model_id: Optional[Union[int, str]],
+    chunksize: Optional[int] = 1_000_000,
+    index_column: str = "PersonId",
+    output_path: Path,
+) -> None:
+    return _download_account_id_rows_as_parquet(
+        account_id=account_id,
+        model_id=model_id,
+        chunksize=chunksize,
+        index_column=index_column,
+        output_path=output_path,
         username=environ["KAFKA_CH_USERNAME"],
         password=environ["KAFKA_CH_PASSWORD"],
         host=environ["KAFKA_CH_HOST"],

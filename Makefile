@@ -57,8 +57,65 @@ check_secrets: .install_git_secrets_hooks .add_allowed_git_secrets
 check: mypy check_secrets detect_secrets sast dast trivy_scan_repo
 
 test: install mypy alembic_migrate empty_bucket
+	nbdev_test --timing --do_print --path notebooks/DataBlob_Clickhouse.ipynb
+	nbdev_test --timing --do_print --path notebooks/Kafka_Service.ipynb
 	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
-	nbdev_test --timing --do_print --pause 1 --skip_file_glob "DB_Models.ipynb"
+	nbdev_test --timing --do_print --path notebooks/API_Web_Service.ipynb
+	nbdev_test --timing --do_print --path notebooks/Integration_Test.ipynb
+    
+
+test_one_by_one: install mypy alembic_migrate empty_bucket
+	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
+	nbdev_test --timing --do_print --path notebooks/API_Web_Service.ipynb
+	nbdev_test --timing --do_print --path notebooks/AWS_Batch_Job_Context.ipynb
+	nbdev_test --timing --do_print --path notebooks/AWS_Batch_Job_Utils.ipynb
+	nbdev_test --timing --do_print --path notebooks/AWS_Utils.ipynb
+	nbdev_test --timing --do_print --path notebooks/AirflowAWSBatchExecutor.ipynb
+	nbdev_test --timing --do_print --path notebooks/AirflowAzureBatchExecutor.ipynb
+	nbdev_test --timing --do_print --path notebooks/AirflowBashExecutor.ipynb
+	nbdev_test --timing --do_print --path notebooks/AirflowExecutor.ipynb
+	nbdev_test --timing --do_print --path notebooks/Airflow_Utils.ipynb
+	nbdev_test --timing --do_print --path notebooks/Auth.ipynb
+	nbdev_test --timing --do_print --path notebooks/Azure_Batch_Job_Context.ipynb
+	nbdev_test --timing --do_print --path notebooks/Azure_Batch_Job_Utils.ipynb
+	nbdev_test --timing --do_print --path notebooks/Azure_Utils.ipynb
+	nbdev_test --timing --do_print --path notebooks/Background_Task.ipynb
+	nbdev_test --timing --do_print --path notebooks/BaseAirflowExecutor.ipynb
+	nbdev_test --timing --do_print --path notebooks/Base_Batch_Job_Context.ipynb
+	nbdev_test --timing --do_print --path notebooks/BatchJob.ipynb
+	nbdev_test --timing --do_print --path notebooks/Cleanup.ipynb
+	nbdev_test --timing --do_print --path notebooks/Confluent.ipynb
+	nbdev_test --timing --do_print --path notebooks/Constants.ipynb
+	nbdev_test --timing --do_print --path notebooks/DataBlob_Azure_Blob_Storage.ipynb
+	nbdev_test --timing --do_print --path notebooks/DataBlob_Clickhouse.ipynb
+	nbdev_test --timing --do_print --path notebooks/DataBlob_DB.ipynb
+	nbdev_test --timing --do_print --path notebooks/DataBlob_Router.ipynb
+	nbdev_test --timing --do_print --path notebooks/DataBlob_S3.ipynb
+	nbdev_test --timing --do_print --path notebooks/DataSource_CSV.ipynb
+	nbdev_test --timing --do_print --path notebooks/DataSource_Parquet.ipynb
+	nbdev_test --timing --do_print --path notebooks/DataSource_Router.ipynb
+	nbdev_test --timing --do_print --path notebooks/Data_Utils.ipynb
+	nbdev_test --timing --do_print --path notebooks/Errors.ipynb
+	nbdev_test --timing --do_print --path notebooks/FastAPI_Batch_Job_Context.ipynb
+	nbdev_test --timing --do_print --path notebooks/Helpers.ipynb
+	nbdev_test --timing --do_print --path notebooks/Integration_Test.ipynb
+	nbdev_test --timing --do_print --path notebooks/Kafka_Service.ipynb
+	nbdev_test --timing --do_print --path notebooks/Model_Prediction.ipynb
+	nbdev_test --timing --do_print --path notebooks/Model_Train.ipynb
+	nbdev_test --timing --do_print --path notebooks/None_Batch_Job_Context.ipynb
+	nbdev_test --timing --do_print --path notebooks/SMS_Utils.ipynb
+	nbdev_test --timing --do_print --path notebooks/SSO.ipynb
+	nbdev_test --timing --do_print --path notebooks/Sanitize_Secrets.ipynb
+	nbdev_test --timing --do_print --path notebooks/TOTP.ipynb
+	nbdev_test --timing --do_print --path notebooks/Users.ipynb
+	nbdev_test --timing --do_print --path notebooks/Uvicorn_Helpers.ipynb
+	nbdev_test --timing --do_print --path notebooks/index.ipynb  
+    
+test_old:
+	nbdev_test --timing --do_print --path notebooks/DB_Models.ipynb
+	nbdev_test --timing --do_print --path notebooks/API_Web_Service.ipynb
+	nbdev_test --timing --do_print --path notebooks/Kafka_Service.ipynb
+	nbdev_test --timing --do_print --pause 1 --skip_file_re "^([_.]|DB_Models|API_Web_Service|Kafka_Service)" 
 
 release: pypi
 	nbdev_bump_version

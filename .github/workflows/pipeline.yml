@@ -314,7 +314,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: [docker_image_check]
+    needs: [docker_image_check, unit_test, test_cloud_provider_batch_executor]
     if: github.ref_name == 'main' || github.ref_name == 'dev'
     container:
       image: python:3.7-stretch
