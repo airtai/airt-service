@@ -609,7 +609,7 @@ def _construct_kafka_brokers() -> Dict[str, Dict[str, Any]]:
     if (url != kafka_brokers["staging"]["url"]) and (
         url != kafka_brokers["production"]["url"]
     ):
-        kafka_brokers["dev"] = {
+        kafka_brokers["localhost"] = {
             "url": url,
             "description": "Development Kafka broker",
             "port": port,
