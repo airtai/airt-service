@@ -598,11 +598,11 @@ def _construct_kafka_brokers() -> Dict[str, Dict[str, Any]]:
             "security": {"type": "scramSha256"},
         },
         "production": {
-            "url": "pkc-1wvvj.westeurope.azure.confluent.cloud",
+            "url": "kafka.airt.ai",
             "description": "Production Kafka broker",
             "port": 9092,
             "protocol": "kafka-secure",
-            "security": {"type": "plain"},
+            "security": {"type": "scramSha256"},
         },
     }
 
