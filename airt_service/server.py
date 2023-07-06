@@ -36,11 +36,7 @@ from .model.prediction import model_prediction_router
 from .model.train import model_train_router
 from .sanitizer import sanitized_print
 from .users import user_router
-from airt_service.kafka_server import (
-    create_fastkafka_application,
-    ModelTrainingRequest,
-    ModelType,
-)
+from .kafka_server import create_fastkafka_application, ModelTrainingRequest
 
 # %% ../notebooks/API_Web_Service.ipynb 4
 logger = get_logger(__name__)
