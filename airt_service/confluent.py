@@ -26,7 +26,7 @@ kafka_bootstrap_servers = (
 
 aio_kafka_config = {
     "bootstrap_servers": kafka_bootstrap_servers,
-    "group_id": f"{kafka_bootstrap_servers}_group",
+    "group_id": f"{kafka_bootstrap_servers}_as_group",
     "auto_offset_reset": "earliest",
 }
 if "KAFKA_API_KEY" in environ:

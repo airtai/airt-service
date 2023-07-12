@@ -326,7 +326,6 @@ def add_process_start_training_data(
         await app.info(msg, f"on_start_training_data() starting...")
 
         account_id = msg.AccountId
-        model_id = msg.ModelId
         total_no_of_records = msg.total_no_of_records
 
         tracker = Tracker(
@@ -338,7 +337,6 @@ def add_process_start_training_data(
         while not tracker.finished():
             curr_count, timestamp = get_count_for_account_id(
                 account_id=account_id,
-                model_id=model_id,
             )
             if curr_count is not None:
                 if tracker.update(curr_count):
@@ -559,9 +557,7 @@ def add_predictions(
         task_type = msg.task_type
         prediction_time = datetime.now()
 
-        person_ids = get_all_person_ids_for_account_id(
-            account_id=AccountId, model_id=ModelId
-        )
+        person_ids = get_all_person_ids_for_account_id(account_id=AccountId)
 
         rng = np.random.default_rng(42)
 

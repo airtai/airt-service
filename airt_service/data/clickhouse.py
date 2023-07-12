@@ -709,7 +709,6 @@ def fillna(s: Optional[Any]) -> str:
 def _get_count_for_account_id(
     account_id: Union[int, str],
     #     application_id: Optional[Union[int, str]],
-    model_id: Optional[Union[int, str]],
     username: str,
     password: str,
     host: str,
@@ -723,7 +722,6 @@ def _get_count_for_account_id(
 
     Args:
         account_id: account id
-        model_id: model id
         username: Username of clickhouse database
         password: Password of clickhouse database
         host: Host of clickhouse database
@@ -749,10 +747,9 @@ def _get_count_for_account_id(
 
         # nosemgrep: python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query
         query = (
-            f"SELECT AccountId, ModelId, count() as count, now() as now FROM {database}.{table} "  # nosec B608
+            f"SELECT AccountId, count() as count, now() as now FROM {database}.{table} "  # nosec B608
             + f"WHERE AccountId={account_id} "
-            + f"AND ModelId={fillna(model_id)} "
-            + "GROUP BY AccountId, ModelId "
+            + "GROUP BY AccountId "
         )
 
         logger.info(f"Getting count with query={query}")
@@ -774,7 +771,6 @@ def _get_count_for_account_id(
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 48
 def get_count_for_account_id(
     account_id: Union[int, str],
-    model_id: Optional[Union[int, str]],
 ) -> Tuple[Optional[int], Optional[datetime]]:
     """
     Get count of all rows for given account ids from clickhouse table
@@ -787,7 +783,6 @@ def get_count_for_account_id(
     """
     return _get_count_for_account_id(
         account_id=account_id,
-        model_id=model_id,
         username=environ["KAFKA_CH_USERNAME"],
         password=environ["KAFKA_CH_PASSWORD"],
         host=environ["KAFKA_CH_HOST"],
@@ -800,7 +795,6 @@ def get_count_for_account_id(
 # %% ../../notebooks/DataBlob_Clickhouse.ipynb 52
 def _get_all_person_ids_for_account_id(
     account_id: Union[int, str],
-    model_id: Optional[Union[int, str]],
     username: str,
     password: str,
     host: str,
@@ -814,7 +808,6 @@ def _get_all_person_ids_for_account_id(
 
     Args:
         account_id: Account id
-        model_id: Model id
         username: Username of clickhouse database
         password: Password of clickhouse database
         host: Host of clickhouse database
@@ -842,7 +835,6 @@ def _get_all_person_ids_for_account_id(
         query = (
             f"SELECT DISTINCT PersonId FROM {database}.{table} "  # nosec B608
             + f"WHERE AccountId={account_id} "
-            + f"AND ModelId={fillna(model_id)} "
             + "ORDER BY PersonId"
         )
         logger.info(f"Getting count with query={query}")
@@ -854,7 +846,6 @@ def _get_all_person_ids_for_account_id(
 def get_all_person_ids_for_account_id(
     *,
     account_id: Union[int, str],
-    model_id: Optional[Union[int, str]],
 ) -> pd.Series:
     """
     Function to get all person ids for the given account id from clickhouse table
@@ -867,7 +858,6 @@ def get_all_person_ids_for_account_id(
     """
     return _get_all_person_ids_for_account_id(
         account_id=account_id,
-        model_id=model_id,
         username=environ["KAFKA_CH_USERNAME"],
         password=environ["KAFKA_CH_PASSWORD"],
         host=environ["KAFKA_CH_HOST"],
@@ -881,7 +871,6 @@ def get_all_person_ids_for_account_id(
 def _download_account_id_rows_as_parquet(
     *,
     account_id: Union[int, str],
-    model_id: Optional[Union[int, str]],
     host: str,
     port: int,
     username: str,
@@ -906,7 +895,7 @@ def _download_account_id_rows_as_parquet(
             d = Path(td)
             i = 0
 
-            query = f"SELECT * FROM {table} WHERE AccountId={account_id} AND ModelId={fillna(model_id)} ORDER BY PersonId ASC"  # nosec B608
+            query = f"SELECT * FROM {table} WHERE AccountId={account_id} ORDER BY PersonId ASC"  # nosec B608
             #             query = f"SELECT * FROM {table} WHERE AccountId={account_id} ORDER BY PersonId ASC"  # nosec B608
             logger.info(f"_download_account_id_rows_as_parquet(): {query=}")
 
@@ -937,14 +926,12 @@ def _download_account_id_rows_as_parquet(
 def download_account_id_rows_as_parquet(
     *,
     account_id: Union[int, str],
-    model_id: Optional[Union[int, str]],
     chunksize: Optional[int] = 1_000_000,
     index_column: str = "PersonId",
     output_path: Path,
 ) -> None:
     return _download_account_id_rows_as_parquet(
         account_id=account_id,
-        model_id=model_id,
         chunksize=chunksize,
         index_column=index_column,
         output_path=output_path,
