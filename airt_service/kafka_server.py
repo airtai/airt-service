@@ -152,13 +152,18 @@ class ModelTrainingRequest(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    ModelId: Optional[str] = Field(
+    ApplicationId: Optional[str] = Field(
         default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        ...,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
     task_type: TaskType = Field(
-        ..., description="Task type, only 'churn' is supported right now"
+        ..., description="Model type, only 'churn' is supported right now"
     )
     total_no_of_records: NonNegativeInt = Field(
         ...,
@@ -180,8 +185,8 @@ class EventData(BaseModel):
         example="TestApplicationId",
         description="Id of the application in case there is more than one for the AccountId",
     )
-    ModelId: Optional[str] = Field(
-        default=None,
+    ModelId: str = Field(
+        default=...,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -215,8 +220,8 @@ class TrainingDataStatus(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    ModelId: Optional[str] = Field(
-        default=None,
+    ModelId: str = Field(
+        ...,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -237,13 +242,18 @@ class TrainingModelStart(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    ModelId: Optional[str] = Field(
+    ApplicationId: Optional[str] = Field(
         default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        ...,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
     task_type: TaskType = Field(
-        ..., description="Task type, only 'churn' is supported right now"
+        ..., description="Model type, only 'churn' is supported right now"
     )
     no_of_records: NonNegativeInt = Field(
         ...,
@@ -326,6 +336,8 @@ def add_process_start_training_data(
         await app.info(msg, f"on_start_training_data() starting...")
 
         account_id = msg.AccountId
+        application_id = msg.ApplicationId
+        model_id = msg.ModelId
         total_no_of_records = msg.total_no_of_records
 
         tracker = Tracker(
@@ -368,8 +380,13 @@ class TrainingModelStatus(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    ModelId: Optional[str] = Field(
+    ApplicationId: Optional[str] = Field(
         default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        ...,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -402,14 +419,19 @@ class ModelMetrics(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    ModelId: Optional[str] = Field(
+    ApplicationId: Optional[str] = Field(
         default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        ...,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
 
     timestamp: datetime = Field(
-        ...,
+        default_factory=datetime.now,
         example="2021-03-28T00:34:08",
         description="UTC time when the model was trained",
     )
@@ -466,6 +488,7 @@ def add_process_training_model_start(
         await app.info(msg, f"on_training_model_start() starting")
 
         AccountId = msg.AccountId
+        ApplicationId = msg.ApplicationId
         ModelId = msg.ModelId
         task_type = msg.task_type
 
@@ -473,6 +496,7 @@ def add_process_training_model_start(
             for current_step_percentage in [0.0, 0.2, 0.5, 0.75, 1.0]:
                 training_model_status = TrainingModelStatus(
                     AccountId=AccountId,
+                    ApplicationId=ApplicationId,
                     ModelId=ModelId,
                     current_step=current_step,
                     current_step_percentage=current_step_percentage,
@@ -484,6 +508,7 @@ def add_process_training_model_start(
 
         model_metrics = ModelMetrics(
             AccountId=AccountId,
+            ApplicationId=ApplicationId,
             ModelId=ModelId,
             task_type=task_type,
             timestamp=datetime.now(),
@@ -502,8 +527,13 @@ class Prediction(BaseModel):
     AccountId: NonNegativeInt = Field(
         ..., example=202020, description="ID of an account"
     )
-    ModelId: Optional[str] = Field(
+    ApplicationId: Optional[str] = Field(
         default=None,
+        example="TestApplicationId",
+        description="Id of the application in case there is more than one for the AccountId",
+    )
+    ModelId: str = Field(
+        ...,
         example="ChurnModelForDrivers",
         description="User supplied ID of the model trained",
     )
@@ -512,7 +542,7 @@ class Prediction(BaseModel):
         ..., example=12345678, description="ID of a person"
     )
     prediction_time: datetime = Field(
-        ...,
+        default_factory=datetime.now,
         example="2021-03-28T00:34:08",
         description="UTC time of prediction",
     )
@@ -553,6 +583,7 @@ def add_predictions(
         await app.info(msg, "on_model_metrics() starting")
 
         AccountId = msg.AccountId
+        ApplicationId = msg.ApplicationId
         ModelId = msg.ModelId
         task_type = msg.task_type
         prediction_time = datetime.now()
@@ -566,6 +597,7 @@ def add_predictions(
         for PersonId in person_ids:
             prediction = Prediction(
                 AccountId=AccountId,
+                ApplicationId=ApplicationId,
                 ModelId=ModelId,
                 task_type=task_type,
                 prediction_time=prediction_time,
