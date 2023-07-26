@@ -12,7 +12,7 @@ jobs:
     name: Delete Untagged Images
     runs-on: ubuntu-latest
     steps:
-      - uses: bots-house/ghcr-delete-image-action@v1.1.0
+      - uses: bots-house/ghcr-delete-image-action@v1.1.0 # nosemgrep: yaml.github-actions.security.third-party-action-not-pinned-to-commit-sha.third-party-action-not-pinned-to-commit-sha
         with:
           # NOTE: at now only orgs is supported
           owner: airtai

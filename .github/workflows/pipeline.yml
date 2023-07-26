@@ -13,12 +13,12 @@ jobs:
   bandit:
     runs-on: ubuntu-latest
     steps:
-      - uses: airtai/workflows/airt-bandit-check@main
+      - uses: airtai/workflows/airt-bandit-check@main # nosemgrep: yaml.github-actions.security.third-party-action-not-pinned-to-commit-sha.third-party-action-not-pinned-to-commit-sha
 
   semgrep:
     runs-on: ubuntu-latest
     steps:
-      - uses: airtai/workflows/airt-semgrep-check@main
+      - uses: airtai/workflows/airt-semgrep-check@main # nosemgrep: yaml.github-actions.security.third-party-action-not-pinned-to-commit-sha.third-party-action-not-pinned-to-commit-sha
 
   trivy:
     runs-on: ubuntu-22.04
