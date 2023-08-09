@@ -1,0 +1,32 @@
+name: Check letsencrypt certificate expiry
+
+on:
+  # every sunday at 00:00
+  schedule:
+    - cron: "0 0 * * SUN"
+  # or manually
+  workflow_dispatch:
+
+jobs:
+  check-certs-expiry:
+    name: Check letsencrypt certificate expiry
+    runs-on: ubuntu-latest
+    steps:
+        - name: Check the health and certificate date for the specified URL(s)
+          uses: padurean/https-certificate-expiry-health-check-action@v1.0.0 # nosemgrep: yaml.github-actions.security.third-party-action-not-pinned-to-commit-sha.third-party-action-not-pinned-to-commit-sha
+          with:
+            # Check the following URLs
+            url: https://api.airt.ai|https://api.staging.airt.ai
+            # Verify TLS certificate, defaults to "no" (port and max-cert-days-left are only used if this is set to "yes")
+            check-cert: yes
+            # Port is only used with check-cert "yes", otherwise it can be included in the URL
+            port: 443
+            # Max number of days till cert expiration; if this value is reached, the check will fail
+            # (only used with check-cert "yes")
+            max-cert-days-left: 5
+            # Follow redirects, or just report success on 3xx reponse status codes
+            follow-redirect: yes # Optional, defaults to "no"
+            # Fail this action after this many failed attempts
+            max-attempts: 3 # Optional, defaults to 1
+            # Delay between retries
+            retry-delay: 3s # Optional, only used if max-attempts > 1
