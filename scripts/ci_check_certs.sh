@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the threshold for certificate expiration (in days)
-THRESHOLD=365
+THRESHOLD=5
 
 # Check if certificate is expiring within the threshold
 expiry_str=$(ssh -o StrictHostKeyChecking=no -i key.pem azureuser@"$DOMAIN" "sudo openssl x509 -in /etc/letsencrypt/live/$DOMAIN/fullchain.pem -noout -enddate | cut -d= -f2")
