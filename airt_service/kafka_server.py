@@ -619,14 +619,14 @@ def _construct_kafka_brokers() -> Dict[str, Dict[str, Any]]:
 
     kafka_brokers = {
         "staging": {
-            "url": "kafka.staging.airt.ai",
+            "url": "kafka-cluster-1.staging.airt.ai",
             "description": "Staging Kafka broker",
             "port": 9092,
             "protocol": "kafka-secure",
             "security": {"type": "scramSha256"},
         },
         "production": {
-            "url": "kafka.airt.ai",
+            "url": "kafka-cluster-1.airt.ai",
             "description": "Production Kafka broker",
             "port": 9092,
             "protocol": "kafka-secure",
